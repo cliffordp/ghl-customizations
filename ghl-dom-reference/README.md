@@ -29,17 +29,18 @@ Use the **desktop web app** in Chrome, Edge, or Firefox. Use a **test contact / 
 5. Move the file into this folder, replacing the old one.
 6. **Review before committing** (see below), then commit, e.g. `docs(reference): refresh contact-detail snapshot`.
 
-> **Note:** If an appointment modal is open, it's captured instead of the page underneath. Close it first to capture the Contact page.
+> **Note:** If an appointment modal is open, it's captured instead of the page underneath. Close it first to capture the Contact page. To force a screen, run `window.tkCaptureScreen = 'contact'` (or `'appointment'` / `'company'`) before pasting the script.
 
-## What Gets Sanitized
+## What Gets Anonymized
 
-`capture.js` strips or replaces:
+`capture.js` uses allowlists: anything it doesn't recognize as GHL UI is removed or replaced.
 
-- Inline `style` attributes, Vue `data-v-*` hashes, Sentry attributes, `<script>`/`<style>` tags, and SVG contents (noise that changes every GHL build)
-- Text that looks like record data (names, addresses, notes), which becomes `[text]`. Labels, buttons, headings, and dropdown options are kept.
-- `value`, `title`, `alt`, `src`, `aria-label`, and `data-value` attributes, which become `[redacted]`. Time zone values are kept.
-- Emails, phone numbers, and 20+ character IDs (location, contact, and record IDs) anywhere in the markup
-- Our own injected elements (`.tk-gmaps-container`, `.tk-pac-container`), so the snapshot shows GHL's markup only
+- **Attributes:** only structural ones are kept (`class`, `id`, `name`, `type`, `role`, `for`, `aria-*` states, `data-testid`, etc.). Inline styles, Vue props, `data-*` values, image sources, and SVG paths are dropped.
+- **Record data:** input `value`, `title`, and `aria-label` become `[redacted]`. Displayed field values (inputs, selects, tags, avatars, record names) become `[value]`. Time zone labels are kept because they document GHL's format.
+- **Agency-defined names:** Contact custom fields become `contact.custom_field_N` / "Custom field N" (placeholders `[custom]`), and custom folders become "Custom folder N". Built-in fields and folders keep their names. Latitude/Longitude keep theirs because `script.js` finds them by label.
+- **Other text:** labels, buttons, headings, and placeholders are kept. Everything else becomes `[text]`. Open dropdown menus keep time zone options only; other options become `[option]`.
+- **Anywhere:** emails, US phone numbers, generated IDs (`[id]`), and links (`[url]`)
+- **Our own elements** (`.tk-gmaps-container`, `.tk-pac-container`) are removed, so the snapshot shows GHL's markup only.
 
 ### Review Checklist (Required)
 
