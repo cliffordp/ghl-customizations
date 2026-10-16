@@ -42,7 +42,7 @@ Because users may type an address without clicking an autocomplete suggestion—
    - **Maps Embed API**
 3. Restrict the API key by **HTTP referrers** to your GHL domains (e.g., `app.gohighlevel.com/*` and your white-label domain `app.YOURDOMAIN.com/*`), and restrict it to the APIs above.
 
-<img width="910" height="1404" alt="image" src="https://github.com/user-attachments/assets/90afc5c5-7c7a-42dc-96ec-8408be440761" />
+<img width="898" height="1378" alt="image" src="https://github.com/user-attachments/assets/b4a508bc-1b34-4a7d-b6c5-a254f9ba8c22" />
 
 ## Installation
 
