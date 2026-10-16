@@ -18,6 +18,16 @@ Adds **Google Maps Places Address Autocomplete** to public-facing GoHighLevel Fo
 
 ---
 
+## Prerequisites (Google Cloud Console)
+
+1. Create a Google Maps API key in the [Google Cloud Console](https://console.cloud.google.com/).
+2. Enable **Maps JavaScript API** and **Places API (New)** on your project.
+3. Restrict the key by **HTTP referrers** to the domains your forms are served on, and restrict it to those two APIs.
+
+> **Upgrading from an older version?** This snippet previously used the legacy **Places API**, which Google no longer offers to new projects. Enable **Places API (New)** on your key or suggestions won't load.
+
+---
+
 ## Installation
 
 1. Create a Custom Value in your GHL sub-account named `Google Maps API Key` (`{{custom_values.google_maps_api_key}}`), or replace `{{custom_values.google_maps_api_key}}` directly with your HTTP-referrer-restricted Google Maps API key.
