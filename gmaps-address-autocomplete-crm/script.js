@@ -867,32 +867,22 @@
 
 				// Extract address components
 				place.address_components.forEach(component => {
-					switch (component.types[0]) {
-						case 'street_number':
-							streetNumber = component.long_name;
-							break;
-						case 'route':
-							streetName = component.long_name;
-							break;
-						case 'subpremise':
-						case 'sublocality_level_1':
-							addressLine2 = component.long_name;
-							break;
-						case 'locality':
-						case 'administrative_area_level_3':
-						case 'postal_town':
-							city = component.long_name;
-							break;
-						case 'administrative_area_level_1':
-							state = component.long_name; // Automated tax calculation requires long_name (e.g. "Oklahoma" not "OK").
-							break;
-						case 'postal_code':
-							postal_code = component.long_name;
-							break;
-						case 'country':
-							country = component.long_name;
-							countryCode = component.short_name; // ISO 3166-1 alpha-2, e.g. 'CZ'
-							break;
+					const types = component.types || [];
+					if (types.includes('street_number')) {
+						streetNumber = component.long_name;
+					} else if (types.includes('route')) {
+						streetName = component.long_name;
+					} else if (types.includes('subpremise') || types.includes('sublocality_level_1')) {
+						addressLine2 = component.long_name;
+					} else if (types.includes('locality') || types.includes('administrative_area_level_3') || types.includes('postal_town')) {
+						city = component.long_name;
+					} else if (types.includes('administrative_area_level_1')) {
+						state = component.long_name; // Automated tax calculation requires long_name (e.g. "Oklahoma" not "OK").
+					} else if (types.includes('postal_code')) {
+						postal_code = component.long_name;
+					} else if (types.includes('country')) {
+						country = component.long_name;
+						countryCode = component.short_name; // ISO 3166-1 alpha-2, e.g. 'CZ'
 					}
 				});
 
@@ -950,17 +940,21 @@
 					// Dropdowns are set one at a time so two menus are never open at once.
 					// Runs after closeAutocompleteDropdown() so its body click can't close the menus we open.
 					(async () => {
-						const savedScroll = captureScrollState(streetInput || inputElement);
+						const anchorInput = streetInput || inputElement;
+						const savedScroll = captureScrollState(anchorInput);
 						if (countryCode) {
-							await setCountry(type, countryCode, country);
+							await setCountry(type, countryCode, country, anchorInput);
 						}
 						// Time zone only exists on Contact Details
 						if (type === 'contact' && setTimeZoneEnabled && latitude !== '' && longitude !== '') {
-							await setTimeZoneFromCoordinates(latitude, longitude, state, countryCode);
+							await setTimeZoneFromCoordinates(latitude, longitude, state, countryCode, anchorInput);
 						}
-						restoreScrollState(savedScroll);
-						requestAnimationFrame(() => restoreScrollState(savedScroll));
-						setTimeout(() => restoreScrollState(savedScroll), 100);
+						restoreScrollState(savedScroll, anchorInput);
+						requestAnimationFrame(() => restoreScrollState(savedScroll, anchorInput));
+						setTimeout(() => restoreScrollState(savedScroll, anchorInput), 50);
+						setTimeout(() => restoreScrollState(savedScroll, anchorInput), 150);
+						setTimeout(() => restoreScrollState(savedScroll, anchorInput), 350);
+						setTimeout(() => restoreScrollState(savedScroll, anchorInput), 600);
 					})();
 
 					// For business type, reattach autocomplete after a delay
@@ -994,32 +988,37 @@
 			'America/Indiana/Vincennes', 'America/Indiana/Winamac',
 			'America/Indiana/Marengo', 'America/Indiana/Petersburg',
 			'America/Indiana/Vevay', 'America/Toronto', 'America/Montreal',
-			'US/Eastern', 'EST5EDT', 'EDT', 'EST', 'Eastern Time'
+			'US/Eastern', 'EST5EDT', 'EDT', 'EST', 'Eastern Time', 'Eastern',
+			'Detroit', 'New York', 'Louisville', 'Indianapolis', 'Toronto', 'Montreal'
 		],
 		central: [
 			'America/Chicago', 'America/Indiana/Knox', 'America/Indiana/Tell_City',
 			'America/Menominee', 'America/North_Dakota/Center',
 			'America/North_Dakota/New_Salem', 'America/North_Dakota/Beulah',
-			'America/Winnipeg', 'US/Central', 'CST6CDT', 'CDT', 'CST', 'Central Time'
+			'America/Winnipeg', 'US/Central', 'CST6CDT', 'CDT', 'CST', 'Central Time', 'Central',
+			'Chicago', 'Winnipeg'
 		],
 		mountain: [
 			'America/Denver', 'America/Boise', 'America/Edmonton',
-			'US/Mountain', 'MST7MDT', 'MDT', 'MST', 'Mountain Time'
+			'US/Mountain', 'MST7MDT', 'MDT', 'MST', 'Mountain Time', 'Mountain',
+			'Denver', 'Boise', 'Edmonton'
 		],
 		arizona: [
-			'America/Phoenix', 'America/Hermosillo', 'US/Arizona', 'Arizona'
+			'America/Phoenix', 'America/Hermosillo', 'US/Arizona', 'Arizona', 'Phoenix'
 		],
 		pacific: [
-			'America/Los_Angeles', 'America/Vancouver', 'US/Pacific',
-			'PST8PDT', 'PDT', 'PST', 'Pacific Time'
+			'America/Los_Angeles', 'America/Vancouver', 'America/Tijuana', 'US/Pacific',
+			'PST8PDT', 'PDT', 'PST', 'Pacific Time', 'Pacific',
+			'Los Angeles', 'Vancouver', 'Tijuana'
 		],
 		alaska: [
 			'America/Anchorage', 'America/Juneau', 'America/Sitka',
 			'America/Nome', 'America/Yakutat', 'America/Metlakatla',
-			'US/Alaska', 'AKST', 'AKDT', 'Alaska'
+			'US/Alaska', 'AKST', 'AKDT', 'Alaska',
+			'Anchorage', 'Juneau', 'Sitka'
 		],
 		hawaii: [
-			'Pacific/Honolulu', 'US/Hawaii', 'HST', 'Hawaii'
+			'Pacific/Honolulu', 'US/Hawaii', 'HST', 'Hawaii', 'Honolulu'
 		]
 	};
 
@@ -1159,7 +1158,7 @@
 
 		// Also capture common scroll containers in GHL CRM
 		const crmContainers = document.querySelectorAll(
-			'#field-container, .contact-details, .hl-card-content, .n-layout-sider, .n-layout-content, [class*="overflow-y-auto"], [class*="overflow-auto"], [class*="scrollbar"]'
+			'#field-container, .contact-details, #contact-details, .hl-card-content, .n-layout-sider, .n-layout-content, [class*="overflow-y-auto"], [class*="overflow-auto"], [class*="scrollbar"]'
 		);
 		crmContainers.forEach(add);
 
@@ -1173,9 +1172,9 @@
 	}
 
 	/**
-	 * Restore previously captured scroll positions.
+	 * Restore previously captured scroll positions, and ensure the anchor element remains in view.
 	 */
-	function restoreScrollState(saved) {
+	function restoreScrollState(saved, anchorElement) {
 		if (!saved) return;
 		for (const { el, top, left } of saved.states) {
 			if (el.scrollTop !== top) el.scrollTop = top;
@@ -1188,6 +1187,18 @@
 			document.documentElement.scrollTop = saved.docTop;
 		}
 		window.scrollTo(saved.windowX, saved.windowY);
+
+		if (anchorElement) {
+			if (typeof anchorElement.focus === 'function') {
+				anchorElement.focus({ preventScroll: true });
+			}
+			if (typeof anchorElement.scrollIntoView === 'function') {
+				const rect = anchorElement.getBoundingClientRect();
+				if (rect.top < 0 || rect.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
+					anchorElement.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+				}
+			}
+		}
 	}
 
 	/**
@@ -1197,10 +1208,16 @@
 	 * @returns {HTMLElement|null} The .hr-base-selection element
 	 */
 	function getHighRiseSelectByLabel(labelText, scope) {
-		const wanted = labelText.toLowerCase().replace(/\s+/g, '');
-		const labels = document.querySelectorAll('.hr-form-item-label__text, .n-form-item-label__text');
+		const wanted = labelText.toLowerCase().replace(/[^a-z0-9]/g, '');
+		const labels = document.querySelectorAll(
+			'.hr-form-item-label__text, .n-form-item-label__text, .hr-form-item label, .n-form-item label, label'
+		);
 		for (const label of labels) {
-			if (label.textContent.trim().toLowerCase().replace(/\s+/g, '') !== wanted || !label.closest(scope)) {
+			const clean = label.textContent.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+			if (!clean.includes(wanted)) {
+				continue;
+			}
+			if (scope && scope !== 'body' && !label.closest(scope)) {
 				continue;
 			}
 			const selection = label.closest('.hr-form-item, .n-form-item')?.querySelector('.hr-base-selection, .n-base-selection');
@@ -1224,6 +1241,12 @@
 		// Exact match on timeZoneId token (delimited by boundary, whitespace, slashes, or parens)
 		const escaped = timeZoneId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 		if (new RegExp(`(^|[/\\s(])${escaped}([/\\s)]|$)`, 'i').test(cleanText)) {
+			return true;
+		}
+
+		// Also check city part of timeZoneId (e.g. 'Detroit' for 'America/Detroit')
+		const cityPart = timeZoneId.split('/').pop().replace(/_/g, ' ');
+		if (cityPart && new RegExp(`(^|[/\\s(])${cityPart.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([/\\s)]|$)`, 'i').test(cleanText)) {
 			return true;
 		}
 
@@ -1257,90 +1280,184 @@
 	 * @param {HTMLElement} selection - The .hr-base-selection element
 	 * @param {Function} matches - (optionText) => boolean
 	 * @param {string} filterText - Text to type if the select is filterable
+	 * @param {HTMLElement} [anchorElement] - Element that was focused before, to keep in view
 	 * @returns {Promise<boolean>} Whether an option was selected (or already selected)
 	 */
-	async function selectHighRiseOption(selection, matches, filterText) {
+	async function selectHighRiseOption(selection, matches, filterText, anchorElement) {
 		const currentText = (
 			selection.querySelector(
 				'.hr-base-selection-input__content, .n-base-selection-input__content, .hr-base-selection-label, .n-base-selection-label, .hr-base-selection-overlay__wrapper, .n-base-selection-overlay__wrapper, .hr-base-selection-tags, .n-base-selection-tags, .hr-base-selection-value, .n-base-selection-value'
 			)?.textContent ||
+			selection.querySelector('input')?.value ||
 			selection.textContent ||
 			''
 		).replace(/\s+/g, ' ').trim();
 		if (matches(currentText)) return true; // Already correct
 
-		const savedScroll = captureScrollState(selection);
+		const savedScroll = captureScrollState(anchorElement || selection);
 
-		const findOption = () => {
-			const options = document.querySelectorAll('.hr-base-select-option, .n-base-select-option');
-			return Array.from(options).find(option => matches(option.textContent || '')) || null;
+		// Temporarily suppress programmatic scroll and focus jumps during dropdown interaction
+		const origFocus = HTMLElement.prototype.focus;
+		const origScrollIntoView = Element.prototype.scrollIntoView;
+		let cleanedUp = false;
+
+		const patchedFocus = function(opts) {
+			return origFocus.call(this, { preventScroll: true, ...(opts || {}) });
 		};
 
-		// Open the dropdown
-		const trigger = selection.querySelector('.hr-base-selection-label, .n-base-selection-label') || selection;
-		trigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-		trigger.click();
-		await wait(250);
-
-		let option = findOption();
-
-		// If the select is filterable, type to narrow the list
-		if (!option && filterText) {
-			const filterInput = selection.querySelector('input.hr-base-selection-input, input.n-base-selection-input');
-			if (filterInput) {
-				filterInput.focus({ preventScroll: true });
-				setNativeInputValue(filterInput, filterText);
-				filterInput.dispatchEvent(new Event('input', { bubbles: true }));
-				await wait(250);
-				option = findOption();
+		const patchedScrollIntoView = function(opts) {
+			if (this.closest && this.closest('.hr-base-selection, .n-base-selection, .hr-base-select-menu, .n-base-select-menu, #contact\\.timezone, [data-field-id="contact.timezone"], .hr-form-item, .n-form-item')) {
+				return;
 			}
-		}
+			return origScrollIntoView.call(this, opts);
+		};
 
-		// Long lists are virtualized (only visible options exist in the DOM), so scroll through to render the rest
-		if (!option) {
-			const menu = document.querySelector('.hr-base-select-menu, .n-base-select-menu');
-			const scroller = menu?.querySelector('.v-vl, .hr-virtual-list, .n-virtual-list, .hr-scrollbar-container, .n-scrollbar-container');
-			if (scroller) {
-				const step = Math.max(scroller.clientHeight * 0.8, 100);
-				for (let top = 0; top <= scroller.scrollHeight && !option; top += step) {
-					scroller.scrollTop = top;
-					scroller.dispatchEvent(new Event('scroll'));
-					await wait(60);
+		HTMLElement.prototype.focus = patchedFocus;
+		Element.prototype.scrollIntoView = patchedScrollIntoView;
+
+		const restorePrototypes = () => {
+			if (cleanedUp) return;
+			cleanedUp = true;
+			if (HTMLElement.prototype.focus === patchedFocus) {
+				HTMLElement.prototype.focus = origFocus;
+			}
+			if (Element.prototype.scrollIntoView === patchedScrollIntoView) {
+				Element.prototype.scrollIntoView = origScrollIntoView;
+			}
+		};
+
+		// Helper to restore scroll and remove active focus from dropdown
+		const finish = () => {
+			if (document.activeElement && typeof document.activeElement.blur === 'function') {
+				document.activeElement.blur();
+			}
+			restorePrototypes();
+			restoreScrollState(savedScroll, anchorElement);
+			requestAnimationFrame(() => restoreScrollState(savedScroll, anchorElement));
+			setTimeout(() => {
+				if (document.activeElement && typeof document.activeElement.blur === 'function') {
+					document.activeElement.blur();
+				}
+				restoreScrollState(savedScroll, anchorElement);
+			}, 50);
+			setTimeout(() => {
+				if (document.activeElement && typeof document.activeElement.blur === 'function') {
+					document.activeElement.blur();
+				}
+				restoreScrollState(savedScroll, anchorElement);
+			}, 150);
+			setTimeout(() => {
+				if (document.activeElement && typeof document.activeElement.blur === 'function') {
+					document.activeElement.blur();
+				}
+				restoreScrollState(savedScroll, anchorElement);
+			}, 350);
+			setTimeout(() => {
+				if (document.activeElement && typeof document.activeElement.blur === 'function') {
+					document.activeElement.blur();
+				}
+				restoreScrollState(savedScroll, anchorElement);
+			}, 600);
+		};
+
+		try {
+			const findOption = () => {
+				const options = document.querySelectorAll('.hr-base-select-option, .n-base-select-option');
+				return Array.from(options).find(option => matches(option.textContent || '')) || null;
+			};
+
+			// Open the dropdown
+			const trigger = selection.querySelector('.hr-base-selection-label, .n-base-selection-label') || selection;
+			trigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+			trigger.click();
+			await wait(250);
+
+			let option = findOption();
+
+			// If the select is filterable, type to narrow the list
+			if (!option && filterText) {
+				const filterInput = selection.querySelector('input.hr-base-selection-input, input.n-base-selection-input');
+				if (filterInput) {
+					filterInput.focus({ preventScroll: true });
+					setNativeInputValue(filterInput, filterText);
+					filterInput.dispatchEvent(new Event('input', { bubbles: true }));
+					await wait(250);
 					option = findOption();
 				}
 			}
-		}
 
-		if (option) {
-			option.click();
-			restoreScrollState(savedScroll);
-			requestAnimationFrame(() => restoreScrollState(savedScroll));
-			setTimeout(() => restoreScrollState(savedScroll), 100);
-			return true;
+			// Long lists are virtualized (only visible options exist in the DOM), so scroll through to render the rest
+			if (!option) {
+				const menu = document.querySelector('.hr-base-select-menu, .n-base-select-menu');
+				const scroller = menu?.querySelector('.v-vl, .hr-virtual-list, .n-virtual-list, .hr-scrollbar-container, .n-scrollbar-container');
+				if (scroller) {
+					const step = Math.max(scroller.clientHeight * 0.8, 100);
+					for (let top = 0; top <= scroller.scrollHeight && !option; top += step) {
+						scroller.scrollTop = top;
+						scroller.dispatchEvent(new Event('scroll'));
+						await wait(60);
+						option = findOption();
+					}
+				}
+			}
+
+			if (option) {
+				option.click();
+				finish();
+				return true;
+			}
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+			finish();
+			return false;
+		} catch (err) {
+			restorePrototypes();
+			throw err;
 		}
-		document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-		restoreScrollState(savedScroll);
-		requestAnimationFrame(() => restoreScrollState(savedScroll));
-		setTimeout(() => restoreScrollState(savedScroll), 100);
-		return false;
 	}
 
 	/**
 	 * Look up the time zone for coordinates and select it in the Contact "Time zone" field.
 	 * Like other fields, the user still has to click Save.
 	 */
-	async function setTimeZoneFromCoordinates(latitude, longitude, state, countryCode) {
+	async function setTimeZoneFromCoordinates(latitude, longitude, state, countryCode, anchorElement) {
 		try {
 			const timeZoneId = getTimeZoneIdFromCoordinates(latitude, longitude, state, countryCode);
 			if (!timeZoneId) return;
 
 			// Prefer the stable id (label text may be translated per GHL user language)
+			const scope = '#field-container, #contact-details, .contact-details, .fields, .details-view, body';
+			const tzContainer =
+				document.getElementById('contact.timezone') ||
+				document.querySelector('[data-field-id="contact.timezone"]') ||
+				document.querySelector('input[name="contact.timezone"]')?.closest('.hr-form-item, .n-form-item');
+
 			const selection =
-				document.getElementById('contact.timezone')?.querySelector('.hr-base-selection, .n-base-selection') ||
-				getHighRiseSelectByLabel('Time zone', '#field-container');
+				(tzContainer?.matches('.hr-base-selection, .n-base-selection') ? tzContainer : null) ||
+				tzContainer?.querySelector('.hr-base-selection, .n-base-selection') ||
+				getHighRiseSelectByLabel('Time zone', scope);
 			if (!selection) return; // No Time zone field on this screen
 
-			const selected = await selectHighRiseOption(selection, text => textMatchesTimeZone(text, timeZoneId), timeZoneId);
+			// Check if already set to matching or equivalent time zone before touching the dropdown
+			const currentText = [
+				selection.querySelector('input')?.value,
+				selection.querySelector('.hr-base-selection-input__content, .n-base-selection-input__content')?.textContent,
+				selection.querySelector('.hr-base-selection-label, .n-base-selection-label')?.textContent,
+				selection.querySelector('.hr-base-selection-overlay__wrapper, .n-base-selection-overlay__wrapper')?.textContent,
+				selection.querySelector('.hr-base-selection-overlay__content, .n-base-selection-overlay__content')?.textContent,
+				selection.querySelector('.hr-base-selection-tags, .n-base-selection-tags')?.textContent,
+				selection.getAttribute('title'),
+				selection.querySelector('[title]')?.getAttribute('title'),
+				selection.textContent,
+				selection.closest('.hr-form-item, .n-form-item')?.textContent,
+				tzContainer?.textContent,
+				document.querySelector('input[name="contact.timezone"]')?.value
+			].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+
+			if (textMatchesTimeZone(currentText, timeZoneId)) {
+				return; // Already correct: do not open dropdown, do not dispatch click or focus
+			}
+
+			const selected = await selectHighRiseOption(selection, text => textMatchesTimeZone(text, timeZoneId), timeZoneId, anchorElement);
 			if (!selected) {
 				console.warn(`Time zone "${timeZoneId}" not found in the Time zone dropdown.`);
 			}
@@ -1416,7 +1533,7 @@
 	 * @param {string} countryCode - ISO 3166-1 alpha-2 code from Google (e.g. 'CZ')
 	 * @param {string} countryName - Google's name, only used in warnings
 	 */
-	async function setCountry(type, countryCode, countryName) {
+	async function setCountry(type, countryCode, countryName, anchorElement) {
 		try {
 			const ghlLabel = GHL_COUNTRY_BY_ISO[(countryCode || '').toUpperCase()];
 			if (!ghlLabel) {
@@ -1432,7 +1549,7 @@
 			if (!selection) return;
 
 			const wanted = normalizeName(ghlLabel);
-			const selected = await selectHighRiseOption(selection, text => normalizeName(text) === wanted, ghlLabel);
+			const selected = await selectHighRiseOption(selection, text => normalizeName(text) === wanted, ghlLabel, anchorElement);
 			if (!selected) {
 				console.warn(`Country "${ghlLabel}" not found in the Country dropdown.`);
 			}
@@ -1521,7 +1638,7 @@
 
 			if (field) {
 				// Focus first so HighRise inline-edit fields enter edit state before value changes
-				field.focus();
+				field.focus({ preventScroll: true });
 				field.dispatchEvent(new FocusEvent('focus', { bubbles: false }));
 				field.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
 				setNativeInputValue(field, value);
