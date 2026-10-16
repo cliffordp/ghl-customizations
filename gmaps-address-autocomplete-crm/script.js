@@ -22,6 +22,13 @@
 	const setTimeZoneEnabled = !['false', '0', 'no', 'off'].includes(
 		String(scriptElement?.dataset?.setTz ?? window.tkGmapsSetTz ?? 'true').trim().toLowerCase()
 	);
+	// Verbose console logging. Enable with data-debug="true" on the <script> tag, or window.tkGmapsDebug = true.
+	const debugEnabled = ['true', '1', 'yes', 'on'].includes(
+		String(scriptElement?.dataset?.debug ?? window.tkGmapsDebug ?? 'false').trim().toLowerCase()
+	);
+	const log = (...args) => {
+		if (debugEnabled) console.log('[tk-gmaps]', ...args);
+	};
 	const config = {
 		debounceTime: 500,
 		retryTime: 4000,
@@ -29,6 +36,9 @@
 		mapHeight: '240',
 		modalWaitTime: 300
 	};
+
+	// Book/Edit Appointment modal: "Enter meeting location" input (only rendered when Meeting location is Custom)
+	const APPT_INPUT_SELECTOR = '.bookAppointmentFormContainer #meeting-location-text-input input';
 
 	// Cache for DOM elements and autocomplete instances
 	const cache = {
@@ -331,7 +341,8 @@
 	}
 
 	/**
-	 * Check if the appointment dropdown is set to 'Custom'\n		 * @returns {boolean} Whether the dropdown is set to 'Custom'
+	 * Check if the appointment dropdown is set to 'Custom'
+	 * @returns {boolean} Whether the dropdown is set to 'Custom'
 	 */
 	function isAppointmentDropdownCustom() {
 		try {
@@ -473,7 +484,7 @@
 			iframe.src = `https://www.google.com/maps/embed/v1/place?q=${encodedAddress}&key=${resolvedApiKey}`;
 			mapContainer.appendChild(iframe);
 
-			const streetAddressInput = getStreetAddressInputSelector(type);
+			const streetAddressInput = getStreetAddressInput(type);
 			const addressFieldGroup = getFieldGroupContainer(type, streetAddressInput);
 
 			if (addressFieldGroup && addressFieldGroup.parentNode) {
@@ -498,20 +509,20 @@
 			return;
 		}
 
-		console.log('Attempting to reattach appointment autocomplete...');
+		log('Attempting to reattach appointment autocomplete...');
 
 		// Only proceed if dropdown is 'Custom'
 		if (!isAppointmentDropdownCustom()) {
-			console.log('Dropdown is not Custom, skipping autocomplete attachment');
+			log('Dropdown is not Custom, skipping autocomplete attachment');
 			return;
 		}
 
 		// Clear any existing autocomplete instances for appointment
 		if (cache.autocompleteInstances['appt']) {
 			try {
-				const apptInput = document.querySelector('.bookAppointmentFormContainer #meeting-location-text-input input');
+				const apptInput = document.querySelector(APPT_INPUT_SELECTOR);
 				if (apptInput) {
-					console.log('Clearing existing autocomplete listeners');
+					log('Clearing existing autocomplete listeners');
 					destroyPlacesAutocomplete(apptInput);
 					delete apptInput.dataset.tkAutocompleteAttached;
 				}
@@ -522,7 +533,7 @@
 		}
 
 		// Get the appointment address input
-		const apptAddressInput = document.querySelector('.bookAppointmentFormContainer #meeting-location-text-input input');
+		const apptAddressInput = document.querySelector(APPT_INPUT_SELECTOR);
 		if (!apptAddressInput) {
 			console.error('Could not find appointment address input');
 			return;
@@ -530,25 +541,25 @@
 
 		// Check if Google Maps Places API is loaded
 		if (!isGooglePlacesReady()) {
-			console.log('Google Maps API not loaded yet, waiting...');
+			log('Google Maps API not loaded yet, waiting...');
 			setTimeout(reattachAppointmentAutocomplete, 500);
 			return;
 		}
 
 		// If we have a stored address value, restore it
 		if (lastKnownAddressValue && !apptAddressInput.value) {
-			console.log('Restoring saved address value before attaching autocomplete:', lastKnownAddressValue);
+			log('Restoring saved address value before attaching autocomplete:', lastKnownAddressValue);
 			setNativeInputValue(apptAddressInput, lastKnownAddressValue);
 			triggerInputEvents(apptAddressInput);
 		}
 
 		// Attach autocomplete
-		console.log('Attaching autocomplete to appointment input');
+		log('Attaching autocomplete to appointment input');
 
 		try {
 			// Create new autocomplete instance directly
 			const autocomplete = createPlacesAutocomplete(apptAddressInput, function (place) {
-				console.log('Appointment autocomplete place selected');
+				log('Appointment autocomplete place selected');
 
 				if (!place || !place.geometry) {
 					console.error('Invalid place selected or no geometry');
@@ -557,22 +568,22 @@
 
 				// Ensure the dropdown is still 'Custom'
 				if (!isAppointmentDropdownCustom()) {
-					console.log('Dropdown no longer Custom, ignoring selection');
+					log('Dropdown no longer Custom, ignoring selection');
 					return;
 				}
 
-				console.log('Setting appointment address to:', place.formatted_address);
+				log('Setting appointment address to:', place.formatted_address);
 
 				// Store the address value for later use
 				lastKnownAddressValue = place.formatted_address;
-				console.log('Stored address value for future use:', lastKnownAddressValue);
+				log('Stored address value for future use:', lastKnownAddressValue);
 
 				// Set the input value to the formatted address and force update
 				setNativeInputValue(apptAddressInput, place.formatted_address);
 				triggerInputEvents(apptAddressInput);
 
 				// Embed map for appointment with the selected address
-				console.log('Embedding map for appointment with address:', place.formatted_address);
+				log('Embedding map for appointment with address:', place.formatted_address);
 				embedGoogleMap('appt', place.formatted_address);
 
 				// Force close any open autocomplete dropdowns
@@ -583,7 +594,7 @@
 			cache.autocompleteInstances['appt'] = autocomplete;
 			apptAddressInput.dataset.tkAutocompleteAttached = 'true';
 
-			console.log('Appointment autocomplete attached successfully');
+			log('Appointment autocomplete attached successfully');
 		} catch (error) {
 			console.error('Error attaching appointment autocomplete:', error);
 		}
@@ -597,22 +608,6 @@
 	let lastKnownAddressValue = ''; // Store the last known address value
 
 	/**
-	 * Store the current address value for later use
-	 * This should be called whenever an address is selected
-	 */
-	function storeCurrentAddressValue() {
-		try {
-			const apptInput = document.querySelector('.bookAppointmentFormContainer #meeting-location-text-input input');
-			if (apptInput && apptInput.value) {
-				lastKnownAddressValue = apptInput.value;
-				console.log('Stored address value:', lastKnownAddressValue);
-			}
-		} catch (error) {
-			console.error('Error storing address value:', error);
-		}
-	}
-
-	/**
 	 * Force reattachment of the appointment autocomplete
 	 * This can be called from anywhere to ensure the autocomplete is attached
 	 */
@@ -621,20 +616,20 @@
 			return;
 		}
 
-		console.log('Forcing reattachment of appointment autocomplete');
+		log('Forcing reattachment of appointment autocomplete');
 		forceReattachmentNeeded = false;
 
 		// Only proceed if dropdown is 'Custom'
 		if (!isAppointmentDropdownCustom()) {
-			console.log('Dropdown is not Custom, skipping forced reattachment');
+			log('Dropdown is not Custom, skipping forced reattachment');
 			return;
 		}
 
 		try {
 			// First, clear any existing autocomplete instances
-			const apptInput = document.querySelector('.bookAppointmentFormContainer #meeting-location-text-input input');
+			const apptInput = document.querySelector(APPT_INPUT_SELECTOR);
 			if (apptInput) {
-				console.log('Clearing autocomplete listeners');
+				log('Clearing autocomplete listeners');
 
 				destroyPlacesAutocomplete(apptInput);
 				delete apptInput.dataset.tkAutocompleteAttached;
@@ -653,7 +648,7 @@
 
 				// If we have a stored address value, restore it
 				if (lastKnownAddressValue) {
-					console.log('Restoring saved address value:', lastKnownAddressValue);
+					log('Restoring saved address value:', lastKnownAddressValue);
 					setNativeInputValue(apptInput, lastKnownAddressValue);
 
 					// Force the input to update
@@ -670,20 +665,20 @@
 		// Wait a bit to ensure the DOM is stable
 		setTimeout(() => {
 			// Get a fresh reference to the input
-			const apptAddressInput = document.querySelector('.bookAppointmentFormContainer #meeting-location-text-input input');
+			const apptAddressInput = document.querySelector(APPT_INPUT_SELECTOR);
 			if (apptAddressInput) {
-				console.log('Reattaching autocomplete to input');
+				log('Reattaching autocomplete to input');
 
 				// Double-check if the value is set correctly
 				if (lastKnownAddressValue && !apptAddressInput.value) {
-					console.log('Value was lost, restoring again:', lastKnownAddressValue);
+					log('Value was lost, restoring again:', lastKnownAddressValue);
 					setNativeInputValue(apptAddressInput, lastKnownAddressValue);
 					triggerInputEvents(apptAddressInput);
 				}
 
 				reattachAppointmentAutocomplete();
 			} else {
-				console.log('Could not find appointment input');
+				log('Could not find appointment input');
 			}
 		}, 300);
 	}
@@ -708,7 +703,7 @@
 
 		if (modalContainer && !modalContainer.dataset.clickListenerAttached) {
 			modalContainer.dataset.clickListenerAttached = 'true';
-			console.log('Setting up location dropdown & radio listener on appointment modal');
+			log('Setting up location dropdown & radio listener on appointment modal');
 
 			modalContainer.addEventListener('click', function (event) {
 				const clickedRadio = event.target.closest('#location-default, #location-custom, .n-radio, .hr-radio, .n-radio__label, .hr-radio__label');
@@ -744,7 +739,7 @@
 					wasCustomPreviously = isCustomNow;
 				}
 
-				const apptInput = document.querySelector('.bookAppointmentFormContainer #meeting-location-text-input input');
+				const apptInput = document.querySelector(APPT_INPUT_SELECTOR);
 				if (isCustomNow && (forceReattachmentNeeded || (apptInput && !apptInput.dataset.tkAutocompleteAttached && isGooglePlacesReady()))) {
 					forceReattachAppointmentAutocomplete();
 				}
@@ -803,7 +798,7 @@
 				return;
 			}
 
-			const address1 = getStreetAddressInputSelector(type)?.value?.trim();
+			const address1 = getStreetAddressInput(type)?.value?.trim();
 
 			if (!address1 || address1 === '--') {
 				return;
@@ -826,22 +821,48 @@
 	}
 
 	/**
-	 * Attach Google Maps autocomplete to an input element
-	 * @param {string} type - The type of address ('contact', 'business', or 'appt')
+	 * Split a Places result into the pieces GHL's Contact/Company fields need
+	 * @param {Object} place - Legacy-shaped place from toLegacyPlace()
+	 * @returns {{street: string, city: string, state: string, postalCode: string, country: string, countryCode: string, latitude: (number|string), longitude: (number|string)}}
+	 */
+	function parsePlace(place) {
+		const parts = {};
+		for (const component of place.address_components) {
+			for (const type of component.types || []) {
+				if (!(type in parts)) {
+					parts[type] = component;
+				}
+			}
+		}
+		const long = (type) => parts[type]?.long_name || '';
+
+		const line2 = long('subpremise') || long('sublocality_level_1');
+		return {
+			street: `${long('street_number')} ${long('route')}`.trim() + (line2 ? `, ${line2}` : ''),
+			// Prefer locality; postal_town (UK) and administrative_area_level_3 are fallbacks
+			city: long('locality') || long('postal_town') || long('administrative_area_level_3'),
+			state: long('administrative_area_level_1'), // Full name (e.g. "Oklahoma" not "OK") for GHL automated tax calculation
+			postalCode: long('postal_code'),
+			country: long('country'),
+			countryCode: parts.country?.short_name || '', // ISO 3166-1 alpha-2, e.g. 'CZ'
+			latitude: place.geometry?.location?.lat() ?? '',
+			longitude: place.geometry?.location?.lng() ?? ''
+		};
+	}
+
+	/**
+	 * Attach Google Maps autocomplete to the Contact or Company street address input
+	 * (appointments use reattachAppointmentAutocomplete())
+	 * @param {string} type - 'contact' or 'business'
 	 * @param {HTMLElement} inputElement - The input element to attach autocomplete to
 	 */
-	async function attachAutocompleteToElement(type, inputElement) {
+	function attachAutocompleteToElement(type, inputElement) {
 		if (!inputElement) {
 			return;
 		}
 
-		// For appointment type, only proceed if dropdown is 'Custom'
-		if (type === 'appt' && !isAppointmentDropdownCustom()) {
-			return;
-		}
-
 		try {
-			// If there's already an autocomplete instance for this input, remove it
+			// If there's already an autocomplete instance for this type, remove it
 			if (cache.autocompleteInstances[type]) {
 				cache.autocompleteInstances[type].destroy();
 				delete cache.autocompleteInstances[type];
@@ -853,116 +874,36 @@
 					return; // Invalid place selected
 				}
 
-				let fullStreet = '';
-				let streetNumber = '';
-				let streetName = '';
-				let addressLine2 = '';
-				let city = '';
-				let state = '';
-				let postal_code = '';
-				let latitude = '';
-				let longitude = '';
-				let country = '';
-				let countryCode = '';
+				const address = parsePlace(place);
 
-				// Extract address components
-				place.address_components.forEach(component => {
-					const types = component.types || [];
-					if (types.includes('street_number')) {
-						streetNumber = component.long_name;
-					} else if (types.includes('route')) {
-						streetName = component.long_name;
-					} else if (types.includes('subpremise') || types.includes('sublocality_level_1')) {
-						addressLine2 = component.long_name;
-					} else if (types.includes('locality') || types.includes('administrative_area_level_3') || types.includes('postal_town')) {
-						city = component.long_name;
-					} else if (types.includes('administrative_area_level_1')) {
-						state = component.long_name; // Automated tax calculation requires long_name (e.g. "Oklahoma" not "OK").
-					} else if (types.includes('postal_code')) {
-						postal_code = component.long_name;
-					} else if (types.includes('country')) {
-						country = component.long_name;
-						countryCode = component.short_name; // ISO 3166-1 alpha-2, e.g. 'CZ'
+				const streetInput = type === 'business' ? inputElement : (getStreetAddressInput(type) || inputElement);
+				setNativeInputValue(streetInput, address.street);
+				triggerInputEvents(streetInput);
+
+				setFieldValue(type, 'City', address.city);
+				setFieldValue(type, 'State', address.state);
+				setFieldValue(type, 'Postal Code', address.postalCode);
+				setFieldValue(type, 'Latitude', address.latitude); // Custom Field name
+				setFieldValue(type, 'Longitude', address.longitude); // Custom Field name
+
+				closeAutocompleteDropdown();
+				embedGoogleMap(type, place.formatted_address);
+
+				// Dropdowns are set one at a time so two menus are never open at once.
+				// Runs after closeAutocompleteDropdown() so its body click can't close the menus we open.
+				(async () => {
+					if (address.countryCode) {
+						await setCountry(type, address.countryCode, address.country);
 					}
-				});
-
-				fullStreet = `${streetNumber} ${streetName}`.trim() + (addressLine2 ? ', ' + addressLine2 : '');
-
-				if (place.geometry && place.geometry.location) {
-					latitude = place.geometry.location.lat();
-					longitude = place.geometry.location.lng();
-				}
-
-				if (type === 'appt') {
-					// For appointment type, only proceed if dropdown is still 'Custom'
-					if (!isAppointmentDropdownCustom()) {
-						return;
+					// Time zone only exists on Contact Details
+					if (type === 'contact' && setTimeZoneEnabled && address.latitude !== '' && address.longitude !== '') {
+						await setTimeZoneFromCoordinates(address.latitude, address.longitude, address.state, address.countryCode);
 					}
+				})();
 
-					// Ensure the value is properly set for appointment type
-					setNativeInputValue(inputElement, place.formatted_address); // Single line address field.
-
-					// Force the input to update by triggering events
-					triggerInputEvents(inputElement);
-
-					// Force close the autocomplete dropdown
-					closeAutocompleteDropdown();
-
-					// Now we can embed map for appointment type
-					embedGoogleMap(type, place.formatted_address);
-
-					// Reattach autocomplete after a longer delay to ensure it works for subsequent typing
-					// and to ensure the dropdown is fully closed
-					setTimeout(() => {
-						attachAutocompleteToElement(type, inputElement);
-					}, config.modalWaitTime);
-				} else {
-					// For contact and business types, update street address first while focused
-					const streetInput = type === 'business' ? inputElement : (getStreetAddressInputSelector(type) || inputElement);
-					if (streetInput) {
-						setNativeInputValue(streetInput, fullStreet);
-						triggerInputEvents(streetInput);
-					}
-
-					setFieldValue(type, 'City', city);
-					setFieldValue(type, 'State', state);
-					setFieldValue(type, 'Postal Code', postal_code);
-					setFieldValue(type, 'Latitude', latitude); // Custom Field name
-					setFieldValue(type, 'Longitude', longitude); // Custom Field name
-					// Country is a dropdown, set below via setCountry()
-
-					// Force close the autocomplete dropdown
-					closeAutocompleteDropdown();
-
-					// Embed map for non-appointment types
-					embedGoogleMap(type, place.formatted_address);
-
-					// Dropdowns are set one at a time so two menus are never open at once.
-					// Runs after closeAutocompleteDropdown() so its body click can't close the menus we open.
-					(async () => {
-						const anchorInput = streetInput || inputElement;
-						const savedScroll = captureScrollState(anchorInput);
-						if (countryCode) {
-							await setCountry(type, countryCode, country, anchorInput);
-						}
-						// Time zone only exists on Contact Details
-						if (type === 'contact' && setTimeZoneEnabled && latitude !== '' && longitude !== '') {
-							await setTimeZoneFromCoordinates(latitude, longitude, state, countryCode, anchorInput);
-						}
-						restoreScrollState(savedScroll, anchorInput);
-						requestAnimationFrame(() => restoreScrollState(savedScroll, anchorInput));
-						setTimeout(() => restoreScrollState(savedScroll, anchorInput), 50);
-						setTimeout(() => restoreScrollState(savedScroll, anchorInput), 150);
-						setTimeout(() => restoreScrollState(savedScroll, anchorInput), 350);
-						setTimeout(() => restoreScrollState(savedScroll, anchorInput), 600);
-					})();
-
-					// For business type, reattach autocomplete after a delay
-					if (type === 'business') {
-						setTimeout(() => {
-							attachAutocompleteToElement(type, inputElement);
-						}, config.modalWaitTime);
-					}
+				// The Company panel re-renders after edits, so reattach to the fresh input
+				if (type === 'business') {
+					setTimeout(() => attachAutocompleteToElement(type, inputElement), config.modalWaitTime);
 				}
 			});
 
@@ -977,50 +918,38 @@
 	const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 	/**
-	 * Equivalent IANA timezone groups.
-	 * If the contact's Time zone field is already set to an equivalent zone in the same group,
-	 * we keep it to avoid unnecessary UI changes and dropdown interactions.
+	 * Groups of IANA time zone IDs that share the same offsets and DST rules (US & Canada).
+	 * If the contact's Time zone already holds a zone from the same group (e.g. America/Detroit
+	 * when we computed America/New_York), we leave it alone instead of changing the dropdown.
+	 * IANA IDs only: abbreviations like 'EST' or words like 'Pacific' falsely match other zones' labels.
 	 */
-	const TIMEZONE_GROUPS = {
-		eastern: [
-			'America/New_York', 'America/Detroit', 'America/Kentucky/Louisville',
-			'America/Kentucky/Monticello', 'America/Indiana/Indianapolis',
-			'America/Indiana/Vincennes', 'America/Indiana/Winamac',
-			'America/Indiana/Marengo', 'America/Indiana/Petersburg',
-			'America/Indiana/Vevay', 'America/Toronto', 'America/Montreal',
-			'US/Eastern', 'EST5EDT', 'EDT', 'EST', 'Eastern Time', 'Eastern',
-			'Detroit', 'New York', 'Louisville', 'Indianapolis', 'Toronto', 'Montreal'
+	const TIMEZONE_GROUPS = [
+		[
+			'America/New_York', 'America/Detroit', 'America/Kentucky/Louisville', 'America/Kentucky/Monticello',
+			'America/Indiana/Indianapolis', 'America/Indiana/Vincennes', 'America/Indiana/Winamac',
+			'America/Indiana/Marengo', 'America/Indiana/Petersburg', 'America/Indiana/Vevay',
+			'America/Toronto', 'America/Montreal', 'US/Eastern', 'EST5EDT'
 		],
-		central: [
-			'America/Chicago', 'America/Indiana/Knox', 'America/Indiana/Tell_City',
-			'America/Menominee', 'America/North_Dakota/Center',
-			'America/North_Dakota/New_Salem', 'America/North_Dakota/Beulah',
-			'America/Winnipeg', 'US/Central', 'CST6CDT', 'CDT', 'CST', 'Central Time', 'Central',
-			'Chicago', 'Winnipeg'
+		[
+			'America/Chicago', 'America/Indiana/Knox', 'America/Indiana/Tell_City', 'America/Menominee',
+			'America/North_Dakota/Center', 'America/North_Dakota/New_Salem', 'America/North_Dakota/Beulah',
+			'America/Winnipeg', 'US/Central', 'CST6CDT'
 		],
-		mountain: [
-			'America/Denver', 'America/Boise', 'America/Edmonton',
-			'US/Mountain', 'MST7MDT', 'MDT', 'MST', 'Mountain Time', 'Mountain',
-			'Denver', 'Boise', 'Edmonton'
-		],
-		arizona: [
-			'America/Phoenix', 'America/Hermosillo', 'US/Arizona', 'Arizona', 'Phoenix'
-		],
-		pacific: [
-			'America/Los_Angeles', 'America/Vancouver', 'America/Tijuana', 'US/Pacific',
-			'PST8PDT', 'PDT', 'PST', 'Pacific Time', 'Pacific',
-			'Los Angeles', 'Vancouver', 'Tijuana'
-		],
-		alaska: [
-			'America/Anchorage', 'America/Juneau', 'America/Sitka',
-			'America/Nome', 'America/Yakutat', 'America/Metlakatla',
-			'US/Alaska', 'AKST', 'AKDT', 'Alaska',
-			'Anchorage', 'Juneau', 'Sitka'
-		],
-		hawaii: [
-			'Pacific/Honolulu', 'US/Hawaii', 'HST', 'Hawaii', 'Honolulu'
-		]
-	};
+		['America/Denver', 'America/Boise', 'America/Edmonton', 'US/Mountain', 'MST7MDT'],
+		['America/Phoenix', 'US/Arizona'],
+		['America/Los_Angeles', 'America/Vancouver', 'America/Tijuana', 'US/Pacific', 'PST8PDT'],
+		['America/Anchorage', 'America/Juneau', 'America/Sitka', 'America/Nome', 'America/Yakutat', 'America/Metlakatla', 'US/Alaska'],
+		['Pacific/Honolulu', 'US/Hawaii']
+	];
+
+	/**
+	 * @param {string} timeZoneId
+	 * @returns {string[]} The ID plus any equivalent IDs from TIMEZONE_GROUPS
+	 */
+	function getEquivalentTimeZoneIds(timeZoneId) {
+		const group = TIMEZONE_GROUPS.find(ids => ids.includes(timeZoneId));
+		return group || [timeZoneId];
+	}
 
 	/**
 	 * Client-side lookup of IANA time zone ID from coordinates and optional state/country.
@@ -1137,68 +1066,21 @@
 	}
 
 	/**
-	 * Capture scroll positions of an element, all its ancestors, window, and CRM scrollable panels.
+	 * Snapshot the scroll position of every scrollable ancestor of an element
+	 * (on Contact Details that's GHL's #record-details-lhs panel).
+	 * @param {HTMLElement} element
+	 * @returns {Function} Call to put the saved positions back
 	 */
-	function captureScrollState(element) {
-		const states = [];
-		const seen = new Set();
-
-		const add = (el) => {
-			if (el && !seen.has(el)) {
-				seen.add(el);
-				states.push({ el, top: el.scrollTop, left: el.scrollLeft });
+	function saveScrollPositions(element) {
+		const saved = [];
+		for (let el = element?.parentElement; el; el = el.parentElement) {
+			if (el.scrollHeight > el.clientHeight) {
+				saved.push([el, el.scrollTop]);
 			}
-		};
-
-		let el = element;
-		while (el && el !== document.body && el !== document.documentElement) {
-			add(el);
-			el = el.parentElement;
 		}
-
-		// Also capture common scroll containers in GHL CRM
-		const crmContainers = document.querySelectorAll(
-			'#field-container, .contact-details, #contact-details, .hl-card-content, .n-layout-sider, .n-layout-content, [class*="overflow-y-auto"], [class*="overflow-auto"], [class*="scrollbar"]'
-		);
-		crmContainers.forEach(add);
-
-		return {
-			states,
-			bodyTop: document.body ? document.body.scrollTop : 0,
-			docTop: document.documentElement ? document.documentElement.scrollTop : 0,
-			windowX: window.scrollX || window.pageXOffset || 0,
-			windowY: window.scrollY || window.pageYOffset || 0
-		};
-	}
-
-	/**
-	 * Restore previously captured scroll positions, and ensure the anchor element remains in view.
-	 */
-	function restoreScrollState(saved, anchorElement) {
-		if (!saved) return;
-		for (const { el, top, left } of saved.states) {
+		return () => saved.forEach(([el, top]) => {
 			if (el.scrollTop !== top) el.scrollTop = top;
-			if (el.scrollLeft !== left) el.scrollLeft = left;
-		}
-		if (document.body && document.body.scrollTop !== saved.bodyTop) {
-			document.body.scrollTop = saved.bodyTop;
-		}
-		if (document.documentElement && document.documentElement.scrollTop !== saved.docTop) {
-			document.documentElement.scrollTop = saved.docTop;
-		}
-		window.scrollTo(saved.windowX, saved.windowY);
-
-		if (anchorElement) {
-			if (typeof anchorElement.focus === 'function') {
-				anchorElement.focus({ preventScroll: true });
-			}
-			if (typeof anchorElement.scrollIntoView === 'function') {
-				const rect = anchorElement.getBoundingClientRect();
-				if (rect.top < 0 || rect.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
-					anchorElement.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-				}
-			}
-		}
+		});
 	}
 
 	/**
@@ -1210,14 +1092,10 @@
 	function getHighRiseSelectByLabel(labelText, scope) {
 		const wanted = labelText.toLowerCase().replace(/[^a-z0-9]/g, '');
 		const labels = document.querySelectorAll(
-			'.hr-form-item-label__text, .n-form-item-label__text, .hr-form-item label, .n-form-item label, label'
+			'.hr-form-item-label__text, .n-form-item-label__text, .hr-form-item label, .n-form-item label'
 		);
 		for (const label of labels) {
-			const clean = label.textContent.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-			if (!clean.includes(wanted)) {
-				continue;
-			}
-			if (scope && scope !== 'body' && !label.closest(scope)) {
+			if (label.textContent.toLowerCase().replace(/[^a-z0-9]/g, '') !== wanted || !label.closest(scope)) {
 				continue;
 			}
 			const selection = label.closest('.hr-form-item, .n-form-item')?.querySelector('.hr-base-selection, .n-base-selection');
@@ -1229,41 +1107,24 @@
 	}
 
 	/**
-	 * Whether option/label text matches a time zone ID as a whole token,
-	 * or matches any equivalent time zone in the same geographic time zone group.
-	 * e.g. 'GMT-04:00 America/Detroit (EDT)' matches 'America/Detroit' and also matches
-	 * 'America/New_York' since both belong to the same Eastern Time group.
+	 * Currently displayed value of a HighRise select.
+	 * The label's title attribute holds the full value even when the visible text is truncated.
+	 * @param {HTMLElement} selection - The .hr-base-selection element
+	 * @returns {string}
 	 */
-	function textMatchesTimeZone(text, timeZoneId) {
+	function getSelectionText(selection) {
+		const label = selection.querySelector('.hr-base-selection-label, .n-base-selection-label');
+		return (label?.getAttribute('title') || label?.textContent || selection.textContent || '').replace(/\s+/g, ' ').trim();
+	}
+
+	/**
+	 * Whether text contains an IANA time zone ID as a whole token, e.g. 'GMT-04:00 America/Detroit (EDT)'
+	 * contains 'America/Detroit', but 'America/Indiana/Indianapolis' does not contain 'America/Indiana'.
+	 */
+	function textHasTimeZoneId(text, timeZoneId) {
 		if (!text || !timeZoneId) return false;
-		const cleanText = text.trim();
-
-		// Exact match on timeZoneId token (delimited by boundary, whitespace, slashes, or parens)
 		const escaped = timeZoneId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-		if (new RegExp(`(^|[/\\s(])${escaped}([/\\s)]|$)`, 'i').test(cleanText)) {
-			return true;
-		}
-
-		// Also check city part of timeZoneId (e.g. 'Detroit' for 'America/Detroit')
-		const cityPart = timeZoneId.split('/').pop().replace(/_/g, ' ');
-		if (cityPart && new RegExp(`(^|[/\\s(])${cityPart.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([/\\s)]|$)`, 'i').test(cleanText)) {
-			return true;
-		}
-
-		// Equivalent timezone group match (e.g. America/Detroit and America/New_York are both Eastern)
-		for (const group of Object.values(TIMEZONE_GROUPS)) {
-			if (group.some(id => id.toLowerCase() === timeZoneId.toLowerCase())) {
-				for (const altId of group) {
-					const altEscaped = altId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-					if (new RegExp(`(^|[/\\s(])${altEscaped}([/\\s)]|$)`, 'i').test(cleanText)) {
-						return true;
-					}
-				}
-				break;
-			}
-		}
-
-		return false;
+		return new RegExp(`(^|[\\s(])${escaped}(?=[\\s)]|$)`, 'i').test(text);
 	}
 
 	/**
@@ -1280,92 +1141,18 @@
 	 * @param {HTMLElement} selection - The .hr-base-selection element
 	 * @param {Function} matches - (optionText) => boolean
 	 * @param {string} filterText - Text to type if the select is filterable
-	 * @param {HTMLElement} [anchorElement] - Element that was focused before, to keep in view
 	 * @returns {Promise<boolean>} Whether an option was selected (or already selected)
 	 */
-	async function selectHighRiseOption(selection, matches, filterText, anchorElement) {
-		const currentText = (
-			selection.querySelector(
-				'.hr-base-selection-input__content, .n-base-selection-input__content, .hr-base-selection-label, .n-base-selection-label, .hr-base-selection-overlay__wrapper, .n-base-selection-overlay__wrapper, .hr-base-selection-tags, .n-base-selection-tags, .hr-base-selection-value, .n-base-selection-value'
-			)?.textContent ||
-			selection.querySelector('input')?.value ||
-			selection.textContent ||
-			''
-		).replace(/\s+/g, ' ').trim();
-		if (matches(currentText)) return true; // Already correct
+	async function selectHighRiseOption(selection, matches, filterText) {
+		if (matches(getSelectionText(selection))) return true; // Already correct
 
-		const savedScroll = captureScrollState(anchorElement || selection);
-
-		// Temporarily suppress programmatic scroll and focus jumps during dropdown interaction
-		const origFocus = HTMLElement.prototype.focus;
-		const origScrollIntoView = Element.prototype.scrollIntoView;
-		let cleanedUp = false;
-
-		const patchedFocus = function(opts) {
-			return origFocus.call(this, { preventScroll: true, ...(opts || {}) });
-		};
-
-		const patchedScrollIntoView = function(opts) {
-			if (this.closest && this.closest('.hr-base-selection, .n-base-selection, .hr-base-select-menu, .n-base-select-menu, #contact\\.timezone, [data-field-id="contact.timezone"], .hr-form-item, .n-form-item')) {
-				return;
-			}
-			return origScrollIntoView.call(this, opts);
-		};
-
-		HTMLElement.prototype.focus = patchedFocus;
-		Element.prototype.scrollIntoView = patchedScrollIntoView;
-
-		const restorePrototypes = () => {
-			if (cleanedUp) return;
-			cleanedUp = true;
-			if (HTMLElement.prototype.focus === patchedFocus) {
-				HTMLElement.prototype.focus = origFocus;
-			}
-			if (Element.prototype.scrollIntoView === patchedScrollIntoView) {
-				Element.prototype.scrollIntoView = origScrollIntoView;
-			}
-		};
-
-		// Helper to restore scroll and remove active focus from dropdown
-		const finish = () => {
-			if (document.activeElement && typeof document.activeElement.blur === 'function') {
-				document.activeElement.blur();
-			}
-			restorePrototypes();
-			restoreScrollState(savedScroll, anchorElement);
-			requestAnimationFrame(() => restoreScrollState(savedScroll, anchorElement));
-			setTimeout(() => {
-				if (document.activeElement && typeof document.activeElement.blur === 'function') {
-					document.activeElement.blur();
-				}
-				restoreScrollState(savedScroll, anchorElement);
-			}, 50);
-			setTimeout(() => {
-				if (document.activeElement && typeof document.activeElement.blur === 'function') {
-					document.activeElement.blur();
-				}
-				restoreScrollState(savedScroll, anchorElement);
-			}, 150);
-			setTimeout(() => {
-				if (document.activeElement && typeof document.activeElement.blur === 'function') {
-					document.activeElement.blur();
-				}
-				restoreScrollState(savedScroll, anchorElement);
-			}, 350);
-			setTimeout(() => {
-				if (document.activeElement && typeof document.activeElement.blur === 'function') {
-					document.activeElement.blur();
-				}
-				restoreScrollState(savedScroll, anchorElement);
-			}, 600);
+		const restoreScroll = saveScrollPositions(selection);
+		const findOption = () => {
+			const options = document.querySelectorAll('.hr-base-select-option, .n-base-select-option');
+			return Array.from(options).find(option => matches(option.textContent || '')) || null;
 		};
 
 		try {
-			const findOption = () => {
-				const options = document.querySelectorAll('.hr-base-select-option, .n-base-select-option');
-				return Array.from(options).find(option => matches(option.textContent || '')) || null;
-			};
-
 			// Open the dropdown
 			const trigger = selection.querySelector('.hr-base-selection-label, .n-base-selection-label') || selection;
 			trigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
@@ -1403,61 +1190,40 @@
 
 			if (option) {
 				option.click();
-				finish();
 				return true;
 			}
 			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-			finish();
 			return false;
-		} catch (err) {
-			restorePrototypes();
-			throw err;
+		} finally {
+			// Opening the menu can scroll GHL's panel down to the select (Time zone is near the bottom).
+			// Restore now, and again after Naive UI's ~300ms close transition.
+			restoreScroll();
+			setTimeout(restoreScroll, 350);
 		}
 	}
 
 	/**
 	 * Look up the time zone for coordinates and select it in the Contact "Time zone" field.
+	 * Leaves the field alone if it already holds the same or an equivalent zone.
 	 * Like other fields, the user still has to click Save.
 	 */
-	async function setTimeZoneFromCoordinates(latitude, longitude, state, countryCode, anchorElement) {
+	async function setTimeZoneFromCoordinates(latitude, longitude, state, countryCode) {
 		try {
 			const timeZoneId = getTimeZoneIdFromCoordinates(latitude, longitude, state, countryCode);
 			if (!timeZoneId) return;
 
 			// Prefer the stable id (label text may be translated per GHL user language)
-			const scope = '#field-container, #contact-details, .contact-details, .fields, .details-view, body';
-			const tzContainer =
-				document.getElementById('contact.timezone') ||
-				document.querySelector('[data-field-id="contact.timezone"]') ||
-				document.querySelector('input[name="contact.timezone"]')?.closest('.hr-form-item, .n-form-item');
-
 			const selection =
-				(tzContainer?.matches('.hr-base-selection, .n-base-selection') ? tzContainer : null) ||
-				tzContainer?.querySelector('.hr-base-selection, .n-base-selection') ||
-				getHighRiseSelectByLabel('Time zone', scope);
+				document.getElementById('contact.timezone')?.querySelector('.hr-base-selection, .n-base-selection') ||
+				getHighRiseSelectByLabel('Time zone', '#record-details-lhs, #field-container');
 			if (!selection) return; // No Time zone field on this screen
 
-			// Check if already set to matching or equivalent time zone before touching the dropdown
-			const currentText = [
-				selection.querySelector('input')?.value,
-				selection.querySelector('.hr-base-selection-input__content, .n-base-selection-input__content')?.textContent,
-				selection.querySelector('.hr-base-selection-label, .n-base-selection-label')?.textContent,
-				selection.querySelector('.hr-base-selection-overlay__wrapper, .n-base-selection-overlay__wrapper')?.textContent,
-				selection.querySelector('.hr-base-selection-overlay__content, .n-base-selection-overlay__content')?.textContent,
-				selection.querySelector('.hr-base-selection-tags, .n-base-selection-tags')?.textContent,
-				selection.getAttribute('title'),
-				selection.querySelector('[title]')?.getAttribute('title'),
-				selection.textContent,
-				selection.closest('.hr-form-item, .n-form-item')?.textContent,
-				tzContainer?.textContent,
-				document.querySelector('input[name="contact.timezone"]')?.value
-			].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
-
-			if (textMatchesTimeZone(currentText, timeZoneId)) {
-				return; // Already correct: do not open dropdown, do not dispatch click or focus
+			const currentText = getSelectionText(selection);
+			if (getEquivalentTimeZoneIds(timeZoneId).some(id => textHasTimeZoneId(currentText, id))) {
+				return; // Already correct; don't touch the dropdown
 			}
 
-			const selected = await selectHighRiseOption(selection, text => textMatchesTimeZone(text, timeZoneId), timeZoneId, anchorElement);
+			const selected = await selectHighRiseOption(selection, text => textHasTimeZoneId(text, timeZoneId), timeZoneId);
 			if (!selected) {
 				console.warn(`Time zone "${timeZoneId}" not found in the Time zone dropdown.`);
 			}
@@ -1465,7 +1231,6 @@
 			console.error('Error setting time zone:', error);
 		}
 	}
-
 
 	/**
 	 * GHL Country dropdown labels keyed by ISO 3166-1 alpha-2 code (same list on Contact and Company).
@@ -1533,7 +1298,7 @@
 	 * @param {string} countryCode - ISO 3166-1 alpha-2 code from Google (e.g. 'CZ')
 	 * @param {string} countryName - Google's name, only used in warnings
 	 */
-	async function setCountry(type, countryCode, countryName, anchorElement) {
+	async function setCountry(type, countryCode, countryName) {
 		try {
 			const ghlLabel = GHL_COUNTRY_BY_ISO[(countryCode || '').toUpperCase()];
 			if (!ghlLabel) {
@@ -1549,7 +1314,7 @@
 			if (!selection) return;
 
 			const wanted = normalizeName(ghlLabel);
-			const selected = await selectHighRiseOption(selection, text => normalizeName(text) === wanted, ghlLabel, anchorElement);
+			const selected = await selectHighRiseOption(selection, text => normalizeName(text) === wanted, ghlLabel);
 			if (!selected) {
 				console.warn(`Country "${ghlLabel}" not found in the Country dropdown.`);
 			}
@@ -1752,7 +1517,7 @@
 				result = findMatchingInput(true) || findMatchingInput(false);
 			} else { // For appointment type
 				// For appointment, we directly look for the input within the meeting-location-text-input
-				const inputs = document.querySelectorAll('.bookAppointmentFormContainer #meeting-location-text-input input');
+				const inputs = document.querySelectorAll(APPT_INPUT_SELECTOR);
 				if (inputs.length === 1) {
 					result = inputs[0];
 				}
@@ -1798,8 +1563,8 @@
 	}
 
 	/**
-	 * Try to attach autocomplete to an input element with retries
-	 * @param {string} type - The type of address ('contact', 'business', or 'appt')
+	 * Try to attach autocomplete to a Contact or Company input, retrying while the input mounts
+	 * @param {string} type - 'contact' or 'business'
 	 * @param {HTMLElement} inputElement - The input element to attach autocomplete to
 	 * @param {number} retries - The number of retries left
 	 */
@@ -1809,24 +1574,12 @@
 			return;
 		}
 
-		// For appointment type, only proceed if dropdown is 'Custom'
-		if (type === 'appt' && !isAppointmentDropdownCustom()) {
-			return;
-		}
-
 		if (inputElement) {
-			// Special handling for appointment type
-			if (type === 'appt') {
-				// Use the dedicated function for appointment type
-				reattachAppointmentAutocomplete();
-			} else {
-				// For contact and business types, use the standard approach
-				embedGoogleMap(type);
-				attachAutocompleteToElement(type, inputElement);
-			}
+			embedGoogleMap(type);
+			attachAutocompleteToElement(type, inputElement);
 		} else {
 			setTimeout(() => {
-				tryAttachAutocomplete(type, getStreetAddressInputSelector(type), retries - 1);
+				tryAttachAutocomplete(type, getStreetAddressInput(type), retries - 1);
 			}, config.retryTime);
 		}
 	}
@@ -1849,7 +1602,7 @@
 			return;
 		}
 
-		let inputElement = getStreetAddressInputSelector(type);
+		let inputElement = getStreetAddressInput(type);
 
 		if (!inputElement) {
 			return;
@@ -1874,7 +1627,7 @@
 	 * @param {string} type - The type of address ('contact', 'business', or 'appt')
 	 * @returns {HTMLElement|false} The input element or false if not found
 	 */
-	function getStreetAddressInputSelector(type) {
+	function getStreetAddressInput(type) {
 		// For appointment type, only proceed if dropdown is 'Custom'
 		if (type === 'appt' && !isAppointmentDropdownCustom()) {
 			return false;
@@ -1942,13 +1695,13 @@
 		});
 
 		// 1. Check Contact Street Address input
-		const contactAddressInput = getStreetAddressInputSelector('contact');
+		const contactAddressInput = getStreetAddressInput('contact');
 		if (contactAddressInput && !contactAddressInput.dataset.tkAutocompleteAttached) {
 			checkGoogleMapsLoaded('contact');
 		}
 
 		// 2. Check Company / Business Address input
-		const businessAddressInput = getStreetAddressInputSelector('business');
+		const businessAddressInput = getStreetAddressInput('business');
 		if (businessAddressInput && !businessAddressInput.dataset.tkAutocompleteAttached) {
 			checkGoogleMapsLoaded('business');
 		}
@@ -1957,7 +1710,7 @@
 		if (document.querySelector('.bookAppointmentFormContainer')) {
 			setupLocationDropdownListener();
 			if (isAppointmentDropdownCustom()) {
-				const apptAddressInput = getStreetAddressInputSelector('appt');
+				const apptAddressInput = getStreetAddressInput('appt');
 				if (apptAddressInput && !apptAddressInput.dataset.tkAutocompleteAttached) {
 					checkGoogleMapsLoaded('appt');
 				}
@@ -2011,22 +1764,30 @@
 		if (!target || target.tagName !== 'INPUT' || target.dataset.tkAutocompleteAttached) {
 			return;
 		}
-		const apptAddressInput = getStreetAddressInputSelector('appt');
+		const apptAddressInput = getStreetAddressInput('appt');
 		if (apptAddressInput && target === apptAddressInput) {
 			setupLocationDropdownListener();
 			checkGoogleMapsLoaded('appt');
 			return;
 		}
-		const contactAddressInput = getStreetAddressInputSelector('contact');
+		const contactAddressInput = getStreetAddressInput('contact');
 		if (contactAddressInput && target === contactAddressInput) {
 			checkGoogleMapsLoaded('contact');
 			return;
 		}
-		const businessAddressInput = getStreetAddressInputSelector('business');
+		const businessAddressInput = getStreetAddressInput('business');
 		if (businessAddressInput && target === businessAddressInput) {
 			checkGoogleMapsLoaded('business');
 		}
 	});
+
+	/**
+	 * Whether the URL is a Company / Business / custom Object list (Company details open in a side panel)
+	 * @returns {boolean}
+	 */
+	function isCompanyPath() {
+		return /\/(businesses|companies|objects)/.test(window.location.pathname);
+	}
 
 	/**
 	 * Check if the current page is relevant for address autocomplete
@@ -2035,11 +1796,7 @@
 	function isRelevantScreen() {
 		observePageChanges();
 
-		if (
-			window.location.pathname.includes('/businesses') ||
-			window.location.pathname.includes('/companies') ||
-			window.location.pathname.includes('/objects')
-		) {
+		if (isCompanyPath()) {
 			setupBusinessModalObserver();
 			return true;
 		}
@@ -2057,7 +1814,7 @@
 			return;
 		}
 		businessModalIntervalRunning = true;
-		console.log('Setting up business modal observer');
+		log('Setting up business modal observer');
 
 		let lastRecordId = null;
 		let lastCompanyName = null;
@@ -2092,13 +1849,13 @@
 						setTimeout(() => {
 							const detailsPanel = document.querySelector('.details-wrapper .details-view, .details-view, #fields-form');
 							if (detailsPanel) {
-								const businessAddressInput = getStreetAddressInputSelector('business');
+								const businessAddressInput = getStreetAddressInput('business');
 								if (businessAddressInput) {
 									delete businessAddressInput.dataset.tkAutocompleteAttached;
 									checkGoogleMapsLoaded('business');
 								} else {
 									const panelContentObserver = new MutationObserver(debounce(function () {
-										const addressInput = getStreetAddressInputSelector('business');
+										const addressInput = getStreetAddressInput('business');
 										if (addressInput && !addressInput.dataset.tkAutocompleteAttached) {
 											checkGoogleMapsLoaded('business');
 										}
@@ -2124,12 +1881,7 @@
 		}, 300);
 
 		const urlCheckInterval = setInterval(() => {
-			if (
-				!window.location.pathname.includes('/businesses') &&
-				!window.location.pathname.includes('/companies') &&
-				!window.location.pathname.includes('/objects') &&
-				!document.querySelector('.details-view')
-			) {
+			if (!isCompanyPath() && !document.querySelector('.details-view')) {
 				clearInterval(recordIdInterval);
 				clearInterval(urlCheckInterval);
 				businessModalIntervalRunning = false;
@@ -2186,7 +1938,7 @@
 				new URLSearchParams(new URL(currentUrl).search).get('recordId') !==
 				new URLSearchParams(new URL(lastUrl).search).get('recordId'))
 		) {
-			console.log('URL change detected, checking if relevant screen');
+			log('URL change detected, checking if relevant screen');
 			lastUrl = currentUrl;
 			lastPathWithId = currentPathWithId;
 			Object.keys(cache.elements).forEach(key => delete cache.elements[key]);
