@@ -74,3 +74,11 @@ This is **on by default**. If the Time Zone API isn't enabled for your key, turn
 ```
 
 For the inline embed, add `data-set-tz="false"` to the wrapper `<script>` tag, or set `window.tkGmapsSetTz = false;` before the script runs.
+
+## Troubleshooting
+
+- **Script updates not showing up in GHL?** jsDelivr edge-caches branch URLs like `@main` for up to 12 hours. You can clear it immediately:
+  - Visit the [jsDelivr Purge Link](https://purge.jsdelivr.net/gh/cliffordp/ghl-customizations@main/gmaps-address-autocomplete-crm/script.js) for this script.
+  - Or paste the URL into the [jsDelivr Purge Tool](https://www.jsdelivr.com/tools/purge).
+  - Then hard-refresh your browser (`Cmd + Shift + R` or `Ctrl + Shift + R`).
+- **Need help, found a bug, or want to contribute?** See the [main repository README](../README.md#troubleshooting--contributing) for issue reporting, PR guidelines, and contact links.
