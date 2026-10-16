@@ -74,16 +74,18 @@
 		'data-testid', 'data-pendo-id', 'disabled', 'readonly', 'checked', 'size', 'rows', 'maxlength', 'autocomplete', 'accept'
 	]);
 
-	// GHL's built-in Contact fields (id/name "contact.<key>"). Any other key is an agency custom field.
-	// latitude/longitude are custom fields, but script.js looks them up by label, so they're kept.
+	// GHL's built-in Contact fields (id "contact.<key>" / data-pendo-id "contact-details-field-<key>"). Any other key is
+	// an agency custom field. latitude/longitude are custom fields, but script.js looks them up by label, so they're kept.
 	const STANDARD_CONTACT_KEYS = /^(first_name|last_name|name|full_name|email|phone|company_name|address1|city|state|postal_code|country|timezone|website|date_of_birth|source|type|dnd|tags|assigned_to|latitude|longitude|(email|phone)-[\w-]*)$/;
+	// Company fields have random ids, so built-in ones are recognized by label
+	const STANDARD_COMPANY_LABELS = new Set(['Company Name', 'Domain name', 'Phone', 'Email', 'Website', 'Address', 'City', 'State', 'Postal Code', 'Country', 'Description']);
 	const STANDARD_FOLDERS = new Set(['Contact', 'General Info', 'Additional Info', 'Company Info', 'All fields']);
 
 	// Elements whose text is a record's data: always redacted (checked before KEEP_TEXT)
 	const VALUE_TEXT = [
 		'.hr-input__text-content', '.hr-input__inline-text', 'textarea', '[contenteditable="true"]',
 		'[class*="base-selection-overlay"]', '[class*="base-selection-input__content"]', '[class*="base-selection-tags"]',
-		'.hr-tag', '.n-tag', '.hr-avatar', '.n-avatar', '.primary-property-name', '.record-name'
+		'.hr-tag', '.n-tag', '[class*="tag-chip"]', '.hr-avatar', '.n-avatar', '.primary-property-name', '.record-name'
 	].join(', ');
 	// Elements whose text is GHL UI copy: kept
 	const KEEP_TEXT = [
@@ -92,15 +94,22 @@
 		'.hr-input__placeholder', '.n-input__placeholder'
 	].join(', ');
 	const FORM_ITEM = '.hr-form-item, .n-form-item';
+	const PENDO_FIELD_PREFIX = 'contact-details-field-';
+	const FIELD_SCOPE = `[data-pendo-id^="${PENDO_FIELD_PREFIX}"], ${FORM_ITEM}`;
+	const FORM_LABEL_TEXT = '.hr-form-item-label__text, .n-form-item-label__text';
 	const FOLDER_HEADER = '.hr-collapse-item__header-main, .folder-name';
 
 	// Time zone labels are reference data (they show GHL's option format), never personal
 	const isTimeZoneText = (text) => /^(GMT|UTC)[+-]\d{2}:\d{2} [A-Za-z_]+\/[\w/+-]+/.test(text);
-	// Generated IDs mix letters and digits (e.g. location/record IDs); readable ids like "bookAppointmentFormContainer" don't
-	const isGeneratedId = (token) => token.length >= 12 && /\d/.test(token) && /[a-z]/i.test(token) && !/[-_.]/.test(token);
+	// Generated IDs (GHL record IDs are 20 random alphanumerics) mix letters with digits or with many capitals.
+	// Readable ids like "bookAppointmentFormContainer" don't.
+	const isGeneratedId = (token) => token.length >= 12 && /^[A-Za-z0-9]+$/.test(token) && /[a-z]/i.test(token)
+		&& (/\d/.test(token) || (token.length >= 16 && (token.match(/[A-Z]/g) || []).length >= 4));
+	const EMAIL = /[\w.+-]+@[\w-]+\.[\w.-]+/g;
+	const EMAIL_IN_ID = /[\w.+]+@[\w-]+\.[\w.]+/g; // ids are hyphen-delimited, so stop at hyphens
 
 	const scrubText = (text) => text
-		.replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, '[email]')
+		.replace(EMAIL, '[email]')
 		.replace(/\+?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/g, '[phone]')
 		.split(/(\s+)/).map(token => (isGeneratedId(token) ? '[id]' : token)).join('');
 
@@ -112,19 +121,44 @@
 		return map.get(key);
 	};
 
-	/** The custom-field number for a form item, or 0 if it's a standard field */
-	function customFieldNumber(formItem) {
-		const keyed = formItem.querySelector('[id^="contact."], [name^="contact."]') || (formItem.id?.startsWith('contact.') ? formItem : null);
-		if (!keyed) return 0;
-		const key = (keyed.id || keyed.getAttribute('name')).replace(/^contact\./, '');
-		return STANDARD_CONTACT_KEYS.test(key) ? 0 : numberFor(customFieldNumbers, key);
+	/** A field's key: Contact key from data-pendo-id or a contact.* id/name, or the label on the Company panel */
+	function fieldKey(el) {
+		const pendo = el.getAttribute('data-pendo-id') || '';
+		if (pendo.startsWith(PENDO_FIELD_PREFIX)) return pendo.slice(PENDO_FIELD_PREFIX.length);
+		const keyed = el.matches('[id^="contact."]') ? el : el.querySelector('[id^="contact."], [name^="contact."]');
+		if (keyed) {
+			const id = keyed.id.startsWith('contact.') ? keyed.id : keyed.getAttribute('name');
+			return id.replace(/^contact\./, '');
+		}
+		if (screen.key === 'company') {
+			const label = el.querySelector(FORM_LABEL_TEXT)?.textContent.replace(/\s+/g, ' ').trim();
+			if (label) return `company:${label}`;
+		}
+		return null;
 	}
 
+	/** The custom-field number for a field, 0 if it's a built-in field, or null if it can't tell */
+	function customFieldNumber(el) {
+		const key = fieldKey(el);
+		if (key === null) return null;
+		const standard = key.startsWith('company:')
+			? STANDARD_COMPANY_LABELS.has(key.slice(8))
+			: STANDARD_CONTACT_KEYS.test(key);
+		return standard ? 0 : numberFor(customFieldNumbers, key);
+	}
+
+	/** Anonymize each segment of an id: "phone-label-<recordId>-additional-0-<phone>-label-trigger" */
 	function anonymizeId(id, context) {
 		if (!id) return id;
-		const match = id.match(/^contact\.(.+)$/);
-		if (match && context.customField) return `contact.custom_field_${context.customField}`;
-		return isGeneratedId(id) || /^[a-f0-9]{8}$/.test(id) ? '[id]' : id;
+		if (id.startsWith('contact.') && context.customField) return `contact.custom_field_${context.customField}`;
+		if (id.startsWith(PENDO_FIELD_PREFIX) && context.customField) return `${PENDO_FIELD_PREFIX}custom_field_${context.customField}`;
+		// Upload fields: "<fieldId>.<Field label>"
+		if (id.includes('.') && context.customField) return `[id].custom_field_${context.customField}`;
+		if (id.startsWith('tag-')) return 'tag-[value]';
+		return id.replace(EMAIL_IN_ID, '[email]').split(/([-\s])/).map(part => {
+			if (/^\+?\d{7,}$/.test(part)) return '[phone]';
+			return isGeneratedId(part) || /^[a-f0-9]{8}$/.test(part) ? '[id]' : part;
+		}).join('');
 	}
 
 	function attributesFor(el, context) {
@@ -136,11 +170,10 @@
 				switch (attr.name) {
 					case 'id':
 					case 'for':
-					case 'aria-labelledby':
-						value = anonymizeId(value, context);
-						break;
 					case 'name':
-						value = context.customField && value.startsWith('contact.') ? `contact.custom_field_${context.customField}` : value;
+					case 'aria-labelledby':
+					case 'data-pendo-id':
+						value = anonymizeId(value, context);
 						break;
 					case 'value':
 					case 'aria-label':
@@ -193,7 +226,10 @@
 		}
 
 		const context = { ...parentContext };
-		if (el.matches(FORM_ITEM)) context.customField = customFieldNumber(el);
+		if (el.matches(FIELD_SCOPE)) {
+			const number = customFieldNumber(el);
+			if (number !== null) context.customField = number;
+		}
 		if (el.matches('.hr-form-item-label, .n-form-item-label, label')) context.inLabel = true;
 		if (el.matches(VALUE_TEXT)) context.value = true;
 		if (el.matches(KEEP_TEXT)) context.keep = true;
