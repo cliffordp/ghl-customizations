@@ -80,7 +80,7 @@ GHL uses different component libraries across different screens in the same app:
    - To programmatically populate sibling fields on the Company screen, you must programmatically trigger click-to-edit on the target `.hl-text-input-container` and wait briefly (`requestAnimationFrame` / short timeout) for Vue to mount the `<input>` before setting its value.
 3. **Modals (e.g., Book/Edit Appointment Modal):**
    - Uses floating-label `.input-group` / `.input-container` wrappers where `<input id="address">`, `<input id="city">`, `<input id="state">`, `<input id="zip">` are siblings of `<label>`.
-   - Modals render inside high-z-index overlays (`.hr-modal-container`, `.n-modal-mask`) with focus/click traps. Any floating dropdowns appended to `document.body` (such as Google Maps `.pac-container`) require:
+   - Modals render inside high-z-index overlays (`.hr-modal-container`, `.n-modal-mask`) with focus/click traps. Any floating dropdowns appended to `document.body` (such as the Places autocomplete `.tk-pac-container`) require:
      - `z-index: 2147483647 !important;`
      - `pointer-events: auto !important;`
      - `mousedown` `stopPropagation()` so the modal's outside-click handler does not swallow selection clicks.
