@@ -14,7 +14,7 @@ Adds **Google Maps Places Address Autocomplete** and an **interactive embedded G
      - **State** (full state name, e.g., `Oklahoma`, as required for GHL automated tax calculation)
      - **Postal code**
      - **Latitude** & **Longitude** *(if you have created custom fields with those exact names)*
-   - Automatically triggers HighRise UI (`hr-*`) focus/input/blur events so GHL's **inline auto-save** persists every populated field.
+   - Fires the input events GHL needs to register each new value, so the fields keep their values and are saved when you click **Save**.
    - Embeds an interactive Google Map above the Street address field whenever a contact has an existing address or a new address is selected.
 
 2. **Company / Business Detail Screen** (`/businesses`, `/companies`, `/objects`)
