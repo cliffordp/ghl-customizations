@@ -1,7 +1,8 @@
-<script id="gmaps-api" src="https://maps.googleapis.com/maps/api/js?key={{custom_values.google_maps_api_key}}&loading=async&libraries=places"></script>
+<script id="gmaps-api"
+    src="https://maps.googleapis.com/maps/api/js?key={{custom_values.google_maps_api_key}}&loading=async&libraries=places"></script>
 <script defer id="forms-gmaps-address-autocomplete">
-    // Source: https://github.com/cliffordp/ghl-customizations/tree/main/gmaps-address-autocomplete-forms
-    (function() {
+    // Source: https://github.com/cliffordp/ghl-customizations
+    (function () {
         // console.log("Script loaded");
         let addressData = {
             address: '',
@@ -159,7 +160,7 @@
                 let inputElement = document.querySelector(querySelector);
                 if (inputElement) {
                     // console.log("Input element found:", inputElement);
-                    createPlacesAutocomplete(inputElement, function(place) {
+                    createPlacesAutocomplete(inputElement, function (place) {
                         // console.log("Place selected");
                         let streetNumber = '';
                         let streetName = '';
@@ -252,7 +253,7 @@
 
         // Hook into the form's internal methods
         const originalMethod = window.fillDataForStandardFieldUri;
-        window.fillDataForStandardFieldUri = function(...args) {
+        window.fillDataForStandardFieldUri = function (...args) {
             originalMethod.apply(this, args);
 
             // Restore address data after form updates
@@ -262,8 +263,8 @@
         };
 
         // MutationObserver to watch for the address input field
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
+        const observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
                 if (mutation.addedNodes.length > 0) {
                     // console.log("DOM mutation detected, checking for address input...");
                     const addressInput = document.querySelector('#form-builder input[data-q="address"]');
