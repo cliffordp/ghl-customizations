@@ -1,6 +1,10 @@
 /**
- * GHL Customizations: Google Maps Address Autocomplete & Map Embed (CRM)
- * Repository: https://github.com/cliffordp/ghl-customizations
+ * @name GHL Customizations: Google Maps Address Autocomplete & Map Embed (CRM)
+ * @description Google Places address autocomplete, sibling-field fill, Time zone auto-select, and map embed
+ *              for GHL Contact detail, Company side panel, and Book/Edit Appointment modal.
+ * @see https://github.com/cliffordp/ghl-customizations/tree/main/gmaps-address-autocomplete-crm
+ * @author Clifford Paulick (https://tourkick.com/)
+ * @license AGPL-3.0
  *
  * Copyright (c) 2026 Clifford Paulick (https://tourkick.com/)
  * Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
