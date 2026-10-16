@@ -1,0 +1,189 @@
+<script id="gmaps-api" src="https://maps.googleapis.com/maps/api/js?key={{custom_values.google_maps_api_key}}&loading=async&libraries=places"></script>
+<script defer id="forms-gmaps-address-autocomplete">
+    // Source: https://github.com/cliffordp/ghl-customizations/tree/main/gmaps-address-autocomplete-forms
+    (function() {
+        // console.log("Script loaded");
+        let addressData = {
+            address: '',
+            city: '',
+            state: '',
+            postal_code: '',
+            latitude: '',
+            longitude: ''
+        };
+
+        function initAutocomplete() {
+            // console.log("Initializing Autocomplete");
+            let querySelector = '#form-builder input[data-q="address"]';
+
+            function attachAutocompleteToElement(querySelector) {
+                // console.log("Attaching autocomplete to element");
+                let inputElement = document.querySelector(querySelector);
+                if (inputElement) {
+                    // console.log("Input element found:", inputElement);
+                    let autocomplete = new google.maps.places.Autocomplete(inputElement, {
+                        types: ['geocode']
+                    });
+                    autocomplete.setFields(['address_components', 'geometry']);
+
+                    autocomplete.addListener('place_changed', function() {
+                        // console.log("Place changed event triggered");
+                        let place = autocomplete.getPlace();
+                        let streetNumber = '';
+                        let streetName = '';
+                        let addressLine2 = '';
+                        let city = '';
+                        let state = '';
+                        let zipcode = '';
+                        let latitude = '';
+                        let longitude = '';
+
+                        place.address_components.forEach(component => {
+                            switch (component.types[0]) {
+                                case 'street_number':
+                                    streetNumber = component.long_name;
+                                    break;
+                                case 'route':
+                                    streetName = component.long_name;
+                                    break;
+                                case 'sublocality_level_1':
+                                case 'subpremise':
+                                    addressLine2 = component.long_name;
+                                    break;
+                                case 'locality':
+                                case 'administrative_area_level_3':
+                                    city = component.long_name;
+                                    break;
+                                case 'administrative_area_level_1':
+                                    state = component.short_name;
+                                    break;
+                                case 'postal_code':
+                                    zipcode = component.long_name;
+                                    break;
+                            }
+                        });
+
+                        if (place.geometry && place.geometry.location) {
+                            latitude = place.geometry.location.lat();
+                            longitude = place.geometry.location.lng();
+                        }
+
+                        addressData = {
+                            address: `${streetNumber} ${streetName}${addressLine2 ? ', ' + addressLine2 : ''}`,
+                            city: city,
+                            state: state,
+                            postal_code: zipcode,
+                            latitude: latitude,
+                            longitude: longitude
+                        };
+
+                        updateFormFields(addressData);
+
+                        // Programmatically close the autocomplete dropdown
+                        google.maps.event.trigger(inputElement, 'blur');
+                    });
+                } else {
+                    console.error("Element with selector " + querySelector + " not found.");
+                }
+            }
+
+            function updateFormFields(data) {
+                function setValueAndTriggerEvent(input, value) {
+                    if (input) {
+                        input.value = value;
+                        const event = new Event('input', { bubbles: true });
+                        input.dispatchEvent(event);
+                    }
+                }
+
+                setValueAndTriggerEvent(document.querySelector('#form-builder input[data-q="address"]'), data.address);
+                setValueAndTriggerEvent(document.querySelector('#form-builder input[data-q="city"]'), data.city);
+                setValueAndTriggerEvent(document.querySelector('#form-builder input[data-q="state"]'), data.state);
+                setValueAndTriggerEvent(document.querySelector('#form-builder input[data-q="postal_code"]'), data.postal_code);
+                setValueAndTriggerEvent(document.querySelector('#form-builder input[data-q="latitude"]'), data.latitude);
+                setValueAndTriggerEvent(document.querySelector('#form-builder input[data-q="longitude"]'), data.longitude);
+
+                // Trigger a custom event to update formFieldsValue in Vue component
+                const formFieldsValueEvent = new CustomEvent('updateFormFieldsValue', { detail: data });
+                document.dispatchEvent(formFieldsValueEvent);
+            }
+
+            function checkGoogleMapsLoaded() {
+                if (typeof google !== 'undefined' && typeof google.maps !== 'undefined' && typeof google.maps.places !== 'undefined') {
+                    // console.log("Google Maps API loaded.");
+                    attachAutocompleteToElement(querySelector);
+                } else {
+                    // console.log("Google Maps API not loaded. Retrying in 500ms...");
+                    setTimeout(checkGoogleMapsLoaded, 500);
+                }
+            }
+
+            checkGoogleMapsLoaded();
+        }
+
+        // Hook into the form's internal methods
+        const originalMethod = window.fillDataForStandardFieldUri;
+        window.fillDataForStandardFieldUri = function(...args) {
+            originalMethod.apply(this, args);
+
+            // Restore address data after form updates
+            if (addressData.address) {
+                updateFormFields(addressData);
+            }
+        };
+
+        // MutationObserver to watch for the address input field
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.addedNodes.length > 0) {
+                    // console.log("DOM mutation detected, checking for address input...");
+                    const addressInput = document.querySelector('#form-builder input[data-q="address"]');
+                    if (addressInput) {
+                        // console.log("Address input found, initializing autocomplete");
+                        observer.disconnect(); // Stop observing once the input is found
+                        initAutocomplete();
+                    }
+                }
+            });
+        });
+
+        // Start observing the document body for added nodes
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+        // Check if the element already exists on page load
+        const addressInput = document.querySelector('#form-builder input[data-q="address"]');
+        if (addressInput) {
+            observer.disconnect();
+            initAutocomplete();
+        }
+
+        // Hide the specified fields
+        function hideFields() {
+            const fieldsToHide = ['state', 'latitude', 'longitude'];
+            fieldsToHide.forEach(fieldName => {
+                const field = document.querySelector(`#form-builder input[data-q="${fieldName}"]`);
+                if (field) {
+                    const container = field.closest('.form-field-container');
+                    if (container) {
+                        container.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Ensure fields are hidden after the page is loaded
+        waitForModuleLoading(hideFields);
+
+        // Helper function to wait until the page is fully loaded
+        function waitForModuleLoading(callback) {
+            if (document.readyState === 'complete') {
+                callback();
+            } else {
+                window.addEventListener('load', callback);
+            }
+        }
+    })();
+</script>
