@@ -823,7 +823,7 @@
 	/**
 	 * Split a Places result into the pieces GHL's Contact/Company fields need
 	 * @param {Object} place - Legacy-shaped place from toLegacyPlace()
-	 * @returns {{street: string, city: string, state: string, postalCode: string, country: string, countryCode: string, latitude: (number|string), longitude: (number|string)}}
+	 * @returns {{street: string, city: string, state: string, stateCode: string, county: string, postalCode: string, country: string, countryCode: string, latitude: (number|string), longitude: (number|string)}}
 	 */
 	function parsePlace(place) {
 		const parts = {};
@@ -842,6 +842,8 @@
 			// Prefer locality; postal_town (UK) and administrative_area_level_3 are fallbacks
 			city: long('locality') || long('postal_town') || long('administrative_area_level_3'),
 			state: long('administrative_area_level_1'), // Full name (e.g. "Oklahoma" not "OK") for GHL automated tax calculation
+			stateCode: parts.administrative_area_level_1?.short_name || '', // e.g. 'OK'; used for the time zone
+			county: long('administrative_area_level_2'), // e.g. 'Gogebic County'; used for time zones in split states
 			postalCode: long('postal_code'),
 			country: long('country'),
 			countryCode: parts.country?.short_name || '', // ISO 3166-1 alpha-2, e.g. 'CZ'
@@ -896,8 +898,8 @@
 						await setCountry(type, address.countryCode, address.country);
 					}
 					// Time zone only exists on Contact Details
-					if (type === 'contact' && setTimeZoneEnabled && address.latitude !== '' && address.longitude !== '') {
-						await setTimeZoneFromCoordinates(address.latitude, address.longitude, address.state, address.countryCode);
+					if (type === 'contact' && setTimeZoneEnabled) {
+						await setTimeZone(address);
 					}
 				})();
 
@@ -917,152 +919,211 @@
 
 	const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-	/**
-	 * Groups of IANA time zone IDs that share the same offsets and DST rules (US & Canada).
-	 * If the contact's Time zone already holds a zone from the same group (e.g. America/Detroit
-	 * when we computed America/New_York), we leave it alone instead of changing the dropdown.
-	 * IANA IDs only: abbreviations like 'EST' or words like 'Pacific' falsely match other zones' labels.
+	/*
+	 * ---- Time zone lookup -------------------------------------------------------------------
+	 *
+	 * GHL's Time zone dropdown offers only ~109 zones (see ghl-dom-reference/select-options-country-timezone.json),
+	 * so every zone below must exist there. Where GHL lacks a city's own zone, we use one with identical
+	 * rules (e.g. Paris -> Europe/Brussels, Winnipeg -> America/Chicago). tests/script.test.js enforces this.
+	 *
+	 * Each lookup returns a list: the best zone first, then zones with the same rules to fall back on
+	 * if GHL ever drops the best one. Resolved in the browser from Google's address parts, so no extra
+	 * API (Google Time Zone API needs a separately billed, non-referrer-restricted key).
 	 */
-	const TIMEZONE_GROUPS = [
-		[
-			'America/New_York', 'America/Detroit', 'America/Kentucky/Louisville', 'America/Kentucky/Monticello',
-			'America/Indiana/Indianapolis', 'America/Indiana/Vincennes', 'America/Indiana/Winamac',
-			'America/Indiana/Marengo', 'America/Indiana/Petersburg', 'America/Indiana/Vevay',
-			'America/Toronto', 'America/Montreal', 'US/Eastern', 'EST5EDT'
-		],
-		[
-			'America/Chicago', 'America/Indiana/Knox', 'America/Indiana/Tell_City', 'America/Menominee',
-			'America/North_Dakota/Center', 'America/North_Dakota/New_Salem', 'America/North_Dakota/Beulah',
-			'America/Winnipeg', 'US/Central', 'CST6CDT'
-		],
-		['America/Denver', 'America/Boise', 'America/Edmonton', 'US/Mountain', 'MST7MDT'],
-		['America/Phoenix', 'US/Arizona'],
-		['America/Los_Angeles', 'America/Vancouver', 'America/Tijuana', 'US/Pacific', 'PST8PDT'],
-		['America/Anchorage', 'America/Juneau', 'America/Sitka', 'America/Nome', 'America/Yakutat', 'America/Metlakatla', 'US/Alaska'],
-		['Pacific/Honolulu', 'US/Hawaii']
-	];
+	const EASTERN = ['America/New_York', 'US/Eastern', 'America/Toronto'];
+	const CENTRAL = ['America/Chicago', 'US/Central'];
+	const MOUNTAIN = ['America/Denver', 'US/Mountain', 'America/Edmonton'];
+	const MOUNTAIN_NO_DST = ['America/Phoenix', 'US/Arizona', 'America/Dawson'];
+	const PACIFIC = ['America/Los_Angeles', 'America/Tijuana'];
+	const ATLANTIC = ['Canada/Atlantic', 'America/Glace_Bay'];
+	const CANADA_EASTERN = ['America/Toronto', 'America/New_York', 'US/Eastern'];
+	const CANADA_MOUNTAIN = ['America/Edmonton', 'America/Denver', 'US/Mountain'];
 
-	/**
-	 * @param {string} timeZoneId
-	 * @returns {string[]} The ID plus any equivalent IDs from TIMEZONE_GROUPS
-	 */
-	function getEquivalentTimeZoneIds(timeZoneId) {
-		const group = TIMEZONE_GROUPS.find(ids => ids.includes(timeZoneId));
-		return group || [timeZoneId];
+	/** Normalize a county/district name: 'LaPorte County' and 'La Porte' -> 'laporte' */
+	function normalizeCounty(name) {
+		return normalizeName(name)
+			.replace(/\b(regional district|census area|municipio de|county|parish|borough|district|municipality)\b/g, '')
+			.replace(/\s+/g, '');
 	}
 
+	/** A county exception: [zones, Set of normalized county names] */
+	const counties = (zones, names) => [zones, new Set(names.split(',').map(normalizeCounty))];
+
 	/**
-	 * Client-side lookup of IANA time zone ID from coordinates and optional state/country.
-	 * Resolves directly in the browser so no Google Time Zone API or server-side calls are needed,
-	 * keeping the implementation 100% compatible with HTTP-referrer-restricted API keys.
-	 *
-	 * @param {number|string} latitude
-	 * @param {number|string} longitude
-	 * @param {string} [state] - Region / state name or 2-letter abbreviation if available
-	 * @param {string} [countryCode] - ISO 3166-1 alpha-2 country code
-	 * @returns {string} The IANA time zone ID, or '' if undetermined
+	 * Countries with more than one zone, keyed by Google's administrative_area_level_1
+	 * (short code like 'MI', or normalized long name like 'quintana roo').
+	 * `counties` lists administrative_area_level_2 areas on a different zone than the rest of the region.
+	 * Counties split down the middle (e.g. Gulf County FL, Dunn County ND) use the region's zone.
 	 */
-	function getTimeZoneIdFromCoordinates(latitude, longitude, state, countryCode) {
-		const normState = normalizeName(state || '');
-		const cc = (countryCode || '').toUpperCase();
+	const REGION_ZONES = {
+		US: {
+			AL: CENTRAL, AK: ['US/Alaska', 'America/Juneau'], AZ: MOUNTAIN_NO_DST, AR: CENTRAL, CA: PACIFIC,
+			CO: MOUNTAIN, CT: EASTERN, DE: EASTERN, DC: EASTERN, GA: EASTERN, HI: ['Pacific/Honolulu'],
+			IL: CENTRAL, IA: CENTRAL, LA: CENTRAL, ME: EASTERN, MD: EASTERN, MA: EASTERN, MN: CENTRAL,
+			MS: CENTRAL, MO: CENTRAL, MT: MOUNTAIN, NV: PACIFIC, NH: EASTERN, NJ: EASTERN, NM: MOUNTAIN,
+			NY: EASTERN, NC: EASTERN, OH: EASTERN, OK: CENTRAL, PA: EASTERN, RI: EASTERN, SC: EASTERN,
+			UT: MOUNTAIN, VT: EASTERN, VA: EASTERN, WA: PACIFIC, WV: EASTERN, WI: CENTRAL, WY: MOUNTAIN,
+			PR: ['America/Santo_Domingo'], VI: ['America/Santo_Domingo'], GU: ['Pacific/Guam'],
+			MP: ['Pacific/Guam'], AS: ['Pacific/Midway'],
+			FL: { zones: EASTERN, counties: [counties(CENTRAL, 'Bay, Calhoun, Escambia, Holmes, Jackson, Okaloosa, Santa Rosa, Walton, Washington')] },
+			ID: { zones: ['America/Boise', ...MOUNTAIN], counties: [counties(PACIFIC, 'Benewah, Bonner, Boundary, Clearwater, Idaho, Kootenai, Latah, Lewis, Nez Perce, Shoshone')] },
+			IN: {
+				zones: ['America/Indiana/Indianapolis', 'US/East-Indiana', ...EASTERN],
+				counties: [counties(CENTRAL, 'Gibson, Jasper, Lake, LaPorte, Newton, Perry, Porter, Posey, Spencer, Starke, Vanderburgh, Warrick')]
+			},
+			KS: { zones: CENTRAL, counties: [counties(MOUNTAIN, 'Greeley, Hamilton, Sherman, Wallace')] },
+			KY: {
+				zones: ['America/Louisville', ...EASTERN],
+				counties: [counties(CENTRAL, 'Adair, Allen, Ballard, Barren, Breckinridge, Butler, Caldwell, Calloway, Carlisle, Christian, Clinton, Crittenden, Cumberland, Daviess, Edmonson, Fulton, Graves, Grayson, Green, Hancock, Hart, Henderson, Hickman, Hopkins, Livingston, Logan, Lyon, McCracken, McLean, Marshall, Metcalfe, Monroe, Muhlenberg, Ohio, Russell, Simpson, Todd, Trigg, Union, Warren, Webster')]
+			},
+			MI: { zones: ['America/Detroit', ...EASTERN], counties: [counties(CENTRAL, 'Dickinson, Gogebic, Iron, Menominee')] },
+			NE: {
+				zones: CENTRAL,
+				counties: [counties(MOUNTAIN, 'Arthur, Banner, Box Butte, Chase, Cheyenne, Dawes, Deuel, Dundy, Garden, Grant, Hooker, Keith, Kimball, Morrill, Perkins, Scotts Bluff, Sheridan, Sioux')]
+			},
+			ND: { zones: CENTRAL, counties: [counties(MOUNTAIN, 'Adams, Billings, Bowman, Golden Valley, Grant, Hettinger, Slope, Stark')] },
+			OR: { zones: PACIFIC, counties: [counties(['America/Boise', ...MOUNTAIN], 'Malheur')] },
+			SD: {
+				zones: CENTRAL,
+				counties: [counties(MOUNTAIN, 'Bennett, Butte, Corson, Custer, Dewey, Fall River, Haakon, Harding, Jackson, Lawrence, Meade, Oglala Lakota, Pennington, Perkins, Shannon, Ziebach')]
+			},
+			TN: {
+				zones: CENTRAL,
+				counties: [counties(EASTERN, 'Anderson, Blount, Bradley, Campbell, Carter, Claiborne, Cocke, Grainger, Greene, Hamblen, Hamilton, Hancock, Hawkins, Jefferson, Johnson, Knox, Loudon, McMinn, Meigs, Monroe, Morgan, Polk, Rhea, Roane, Scott, Sevier, Sullivan, Unicoi, Union, Washington')]
+			},
+			TX: { zones: CENTRAL, counties: [counties(MOUNTAIN, 'El Paso, Hudspeth')] }
+		},
+		CA: {
+			BC: { zones: PACIFIC, counties: [counties(MOUNTAIN_NO_DST.slice().reverse(), 'Peace River, Northern Rockies'), counties(CANADA_MOUNTAIN, 'East Kootenay')] },
+			AB: CANADA_MOUNTAIN, SK: ['America/Regina', 'Canada/Saskatchewan'], MB: CENTRAL,
+			ON: { zones: CANADA_EASTERN, counties: [counties(CENTRAL, 'Kenora, Rainy River')] },
+			QC: { zones: CANADA_EASTERN, counties: [counties(ATLANTIC, 'Les Îles-de-la-Madeleine')] },
+			NB: ATLANTIC, NS: ATLANTIC, PE: ATLANTIC,
+			// Labrador (mainland, except the southeast coast) is on Atlantic time
+			NL: { zones: ['America/St_Johns', 'Canada/Newfoundland'], byCoordinates: (lat, lng) => (lat > 51.6 && lng < -57.5 ? ATLANTIC : null) },
+			YT: MOUNTAIN_NO_DST.slice().reverse(), NT: CANADA_MOUNTAIN,
+			NU: { zones: CANADA_EASTERN, byCoordinates: (lat, lng) => (lng < -102 ? CANADA_MOUNTAIN : lng < -85 ? CENTRAL : null) }
+		},
+		MX: {
+			default: ['America/Mexico_City'],
+			'baja california': ['America/Tijuana', 'America/Los_Angeles'],
+			'baja california sur': MOUNTAIN_NO_DST, sinaloa: MOUNTAIN_NO_DST, sonora: MOUNTAIN_NO_DST,
+			nayarit: { zones: MOUNTAIN_NO_DST, counties: [counties(['America/Bahia_Banderas', 'America/Mexico_City'], 'Bahía de Banderas')] },
+			chihuahua: { zones: ['America/Chihuahua', 'America/Mexico_City'], counties: [counties(MOUNTAIN, 'Juárez')] },
+			'quintana roo': ['America/Cancun', 'America/Bogota']
+		},
+		BR: {
+			default: ['America/Sao_Paulo'],
+			AM: ['America/Manaus'], RR: ['America/Manaus'], RO: ['America/Manaus'], MT: ['America/Manaus'], MS: ['America/Manaus'],
+			AC: ['America/Bogota']
+		},
+		AU: {
+			default: ['Australia/Sydney', 'Australia/Canberra'],
+			WA: ['Australia/Perth'], NT: ['Australia/Darwin'], SA: ['Australia/Adelaide'], QLD: ['Australia/Brisbane'],
+			ACT: ['Australia/Canberra', 'Australia/Sydney'], TAS: ['Australia/Hobart', 'Australia/Sydney']
+		},
+		ES: { default: ['Europe/Madrid', 'Europe/Brussels'], canarias: ['Atlantic/Canary', 'Europe/London'], 'canary islands': ['Atlantic/Canary', 'Europe/London'] },
+		PT: { default: ['Europe/London'], azores: ['Atlantic/Azores'], acores: ['Atlantic/Azores'], 'regiao autonoma dos acores': ['Atlantic/Azores'] },
+		// Approximate longitude bands: Russia's zones follow oblast borders, Indonesia's follow islands
+		RU: {
+			byCoordinates: (lat, lng) => [
+				[60, 'Europe/Moscow'], [76, 'Asia/Yekaterinburg'], [98, 'Asia/Krasnoyarsk'], [113, 'Asia/Irkutsk'],
+				[130, 'Asia/Yakutsk'], [147, 'Asia/Vladivostok'], [Infinity, 'Asia/Magadan']
+			].filter(([maxLng]) => lng < maxLng).map(([, zone]) => zone).slice(0, 1)
+		},
+		ID: { byCoordinates: (lat, lng) => [lng < 114.5 ? 'Asia/Bangkok' : lng < 126 ? 'Asia/Kuala_Lumpur' : 'Asia/Tokyo'] }
+	};
 
-		// State-specific US mappings for canonical IANA zone (supports full name or 2-letter postal code)
-		if (cc === 'US' || !cc) {
-			if (normState === 'michigan' || normState === 'mi') return 'America/Detroit';
-			if (normState === 'indiana' || normState === 'in') return 'America/Indiana/Indianapolis';
-			if (normState === 'arizona' || normState === 'az') return 'America/Phoenix';
-			if (normState === 'hawaii' || normState === 'hi') return 'Pacific/Honolulu';
-			if (normState === 'alaska' || normState === 'ak') return 'America/Anchorage';
-			if (['california', 'ca', 'washington', 'wa', 'oregon', 'or', 'nevada', 'nv'].includes(normState)) {
-				return 'America/Los_Angeles';
-			}
-			if (['texas', 'tx', 'illinois', 'il', 'wisconsin', 'wi', 'minnesota', 'mn', 'iowa', 'ia', 'missouri', 'mo', 'arkansas', 'ar', 'louisiana', 'la', 'oklahoma', 'ok', 'kansas', 'ks', 'nebraska', 'ne', 'alabama', 'al', 'mississippi', 'ms', 'tennessee', 'tn'].includes(normState)) {
-				return 'America/Chicago';
-			}
-			if (['colorado', 'co', 'utah', 'ut', 'new mexico', 'nm', 'wyoming', 'wy', 'montana', 'mt'].includes(normState)) {
-				return 'America/Denver';
-			}
-			if (normState === 'idaho' || normState === 'id') {
-				return 'America/Boise';
-			}
-			if (['new york', 'ny', 'florida', 'fl', 'ohio', 'oh', 'pennsylvania', 'pa', 'north carolina', 'nc', 'georgia', 'ga', 'virginia', 'va', 'massachusetts', 'ma', 'new jersey', 'nj', 'maryland', 'md', 'south carolina', 'sc', 'connecticut', 'ct', 'kentucky', 'ky', 'maine', 'me', 'new hampshire', 'nh', 'rhode island', 'ri', 'delaware', 'de', 'district of columbia', 'dc', 'vermont', 'vt', 'west virginia', 'wv'].includes(normState)) {
-				return 'America/New_York';
-			}
-		}
+	/** Countries on a single zone (as far as GHL's list goes), written as zone: 'ISO codes' */
+	const COUNTRY_ZONES = Object.entries({
+		'Pacific/Midway': 'AS UM',
+		'Pacific/Honolulu': 'CK PF',
+		'America/Bogota': 'CO PE EC PA JM KY',
+		'America/Guatemala': 'GT SV HN CR',
+		'America/Managua': 'NI',
+		'America/Belize': 'BZ',
+		'America/New_York': 'BS HT TC',
+		'America/Caracas': 'VE GY',
+		'America/Manaus': 'BO',
+		'America/Santo_Domingo': 'DO PR VI VG AI AG DM GD KN LC VC MS BB TT AW CW BQ SX MF BL GP MQ',
+		'Canada/Atlantic': 'BM',
+		'America/Argentina/Buenos_Aires': 'AR',
+		'America/Asuncion': 'PY',
+		'America/Montevideo': 'UY',
+		'America/Santiago': 'CL',
+		'America/Godthab': 'GL',
+		'Atlantic/Cape_Verde': 'CV',
+		'Africa/Casablanca': 'MA EH',
+		UTC: 'IS GH SN CI ML BF GM GN GW LR SL TG MR SH ST',
+		'Europe/London': 'GB IE IM JE GG FO',
+		'Africa/Algiers': 'DZ TN',
+		'Africa/Lagos': 'NG CM BJ NE TD CF CG CD GA GQ AO',
+		'Europe/Amsterdam': 'NL',
+		'Europe/Brussels': 'BE FR MC LU DE CH LI AT IT SM VA MT AD',
+		'Europe/Oslo': 'NO DK SE SJ',
+		'Europe/Belgrade': 'RS PL CZ SK HU HR SI ME MK AL XK',
+		'Europe/Sarajevo': 'BA',
+		'Africa/Harare': 'ZW ZM MW MZ BW ZA NA LS SZ RW BI LY SD SS',
+		'Africa/Cairo': 'EG',
+		'Africa/Nairobi': 'KE TZ UG ET SO DJ ER KM MG YT',
+		'Asia/Amman': 'JO SY',
+		'Asia/Baghdad': 'IQ TR',
+		'Asia/Jerusalem': 'IL PS',
+		'Asia/Kuwait': 'KW SA YE',
+		'Asia/Qatar': 'QA BH',
+		'Europe/Athens': 'GR CY LB',
+		'Europe/Bucharest': 'RO MD BG UA',
+		'Europe/Helsinki': 'FI EE LV LT AX',
+		'Europe/Moscow': 'BY',
+		'Asia/Tehran': 'IR',
+		'Asia/Baku': 'AZ GE AM',
+		'Asia/Dubai': 'AE OM SC MU RE',
+		'Asia/Kabul': 'AF',
+		'Asia/Almaty': 'KZ',
+		'Asia/Karachi': 'PK UZ TJ TM MV',
+		'Asia/Kolkata': 'IN',
+		'Asia/Colombo': 'LK',
+		'Asia/Kathmandu': 'NP',
+		'Asia/Dhaka': 'BD BT KG IO',
+		'Asia/Rangoon': 'MM CC',
+		'Asia/Bangkok': 'TH VN KH LA CX',
+		'Asia/Kuala_Lumpur': 'MY SG BN PH',
+		'Asia/Shanghai': 'CN HK MO MN',
+		'Asia/Taipei': 'TW',
+		'Asia/Seoul': 'KR KP',
+		'Asia/Tokyo': 'JP PW TL',
+		'Pacific/Guam': 'GU MP PG',
+		'Asia/Magadan': 'SB NC VU',
+		'Pacific/Fiji': 'FJ MH KI TV NR WF',
+		'Pacific/Auckland': 'NZ',
+		'Pacific/Tongatapu': 'TO WS'
+	}).reduce((map, [zone, codes]) => {
+		codes.split(' ').forEach(code => { map[code] = [zone]; });
+		return map;
+	}, {});
 
-		const lat = parseFloat(latitude);
-		const lng = parseFloat(longitude);
-		if (isNaN(lat) || isNaN(lng)) return '';
+	/**
+	 * Time zones for an address, best first (empty if we can't tell, so the field is left alone)
+	 * @param {{countryCode: string, state: string, stateCode: string, county: string, latitude: (number|string), longitude: (number|string)}} address
+	 * @returns {string[]} IANA IDs from GHL's Time zone list
+	 */
+	function getTimeZoneCandidates(address) {
+		const cc = (address.countryCode || '').toUpperCase();
+		const lat = parseFloat(address.latitude);
+		const lng = parseFloat(address.longitude);
+		const regions = REGION_ZONES[cc];
+		if (!regions) return COUNTRY_ZONES[cc] || [];
 
-		// United States & Territories (coordinate fallback)
-		if (lat >= 24 && lat <= 50 && lng >= -125 && lng <= -66) {
-			if (lng < -114) {
-				return 'America/Los_Angeles'; // Pacific
-			} else if (lng < -102) {
-				if (lat >= 31.3 && lat <= 37.0 && lng >= -114.8 && lng <= -109.0) {
-					return 'America/Phoenix';
-				}
-				return 'America/Denver'; // Mountain
-			} else if (lng < -85.5) {
-				return 'America/Chicago'; // Central
-			} else {
-				return 'America/New_York'; // Eastern
-			}
-		}
-		if (lat >= 51 && lat <= 72 && lng >= -170 && lng <= -130) {
-			return 'America/Anchorage'; // Alaska
-		}
-		if (lat >= 18 && lat <= 23 && lng >= -161 && lng <= -154) {
-			return 'Pacific/Honolulu'; // Hawaii
-		}
-		if (lat >= 17.8 && lat <= 18.6 && lng >= -67.4 && lng <= -65.2) {
-			return 'America/Puerto_Rico'; // Puerto Rico
-		}
+		const keys = [(address.stateCode || '').toUpperCase(), normalizeName(address.state)].filter(Boolean);
+		const entry = keys.map(key => (Object.prototype.hasOwnProperty.call(regions, key) ? regions[key] : null)).find(Boolean) || regions;
+		const spec = Array.isArray(entry) ? { zones: entry } : entry;
 
-		// Canada
-		if (lat > 48 && lat <= 70 && lng >= -141 && lng <= -52) {
-			if (lng < -120) return 'America/Vancouver';
-			if (lng < -110) return 'America/Edmonton';
-			if (lng < -95) return 'America/Winnipeg';
-			if (lng < -75) return 'America/Toronto';
-			if (lng < -60) return 'America/Halifax';
-			return 'America/St_Johns';
-		}
-
-		// Europe (major zones)
-		if (lat >= 35 && lat <= 71 && lng >= -25 && lng <= 45) {
-			if (lng < -5) return 'Europe/London'; // UK, Ireland, Portugal
-			if (lng < 20) return 'Europe/Paris'; // Central European (France, Germany, Italy, Spain, etc.)
-			return 'Europe/Athens'; // Eastern European (Greece, Finland, Romania, etc.)
-		}
-
-		// Australia
-		if (lat >= -44 && lat <= -10 && lng >= 112 && lng <= 154) {
-			if (lng < 129) return 'Australia/Perth';
-			if (lng < 138) return 'Australia/Adelaide';
-			if (lat < -30) return 'Australia/Sydney';
-			return 'Australia/Brisbane';
-		}
-
-		// New Zealand
-		if (lat >= -48 && lat <= -34 && lng >= 166 && lng <= 179) {
-			return 'Pacific/Auckland';
-		}
-
-		// Default fallback using standard longitude time offset zones
-		const utcOffsetHours = Math.round(lng / 15);
-		const timezoneByOffset = {
-			'-12': 'Etc/GMT+12', '-11': 'Pacific/Midway', '-10': 'Pacific/Honolulu',
-			'-9': 'America/Anchorage', '-8': 'America/Los_Angeles', '-7': 'America/Denver',
-			'-6': 'America/Chicago', '-5': 'America/New_York', '-4': 'America/Halifax',
-			'-3': 'America/Sao_Paulo', '-2': 'Atlantic/South_Georgia', '-1': 'Atlantic/Azores',
-			'0': 'Europe/London', '1': 'Europe/Paris', '2': 'Europe/Athens',
-			'3': 'Europe/Moscow', '4': 'Asia/Dubai', '5': 'Asia/Karachi',
-			'6': 'Asia/Dhaka', '7': 'Asia/Bangkok', '8': 'Asia/Singapore',
-			'9': 'Asia/Tokyo', '10': 'Australia/Sydney', '11': 'Pacific/Guadalcanal',
-			'12': 'Pacific/Auckland'
-		};
-		return timezoneByOffset[String(utcOffsetHours)] || '';
+		const county = normalizeCounty(address.county);
+		const exception = county && spec.counties?.find(([, names]) => names.has(county));
+		if (exception) return exception[0];
+		const byCoordinates = !isNaN(lat) && !isNaN(lng) && spec.byCoordinates?.(lat, lng);
+		if (byCoordinates?.length) return byCoordinates;
+		return spec.zones || regions.default || [];
 	}
 
 	/**
@@ -1203,14 +1264,18 @@
 	}
 
 	/**
-	 * Look up the time zone for coordinates and select it in the Contact "Time zone" field.
-	 * Leaves the field alone if it already holds the same or an equivalent zone.
-	 * Like other fields, the user still has to click Save.
+	 * Select the best time zone for the address in the Contact "Time zone" field.
+	 * Changes the field unless it already holds the best zone (e.g. a Michigan contact on
+	 * America/New_York becomes America/Detroit). Like other fields, the user still has to click Save.
+	 * @param {Object} address - From parsePlace()
 	 */
-	async function setTimeZoneFromCoordinates(latitude, longitude, state, countryCode) {
+	async function setTimeZone(address) {
 		try {
-			const timeZoneId = getTimeZoneIdFromCoordinates(latitude, longitude, state, countryCode);
-			if (!timeZoneId) return;
+			const candidates = getTimeZoneCandidates(address);
+			if (!candidates.length) {
+				log(`No time zone mapping for ${address.countryCode} / ${address.state}; leaving Time zone unchanged.`);
+				return;
+			}
 
 			// Prefer the stable id (label text may be translated per GHL user language)
 			const selection =
@@ -1218,15 +1283,17 @@
 				getHighRiseSelectByLabel('Time zone', '#record-details-lhs, #field-container');
 			if (!selection) return; // No Time zone field on this screen
 
-			const currentText = getSelectionText(selection);
-			if (getEquivalentTimeZoneIds(timeZoneId).some(id => textHasTimeZoneId(currentText, id))) {
-				return; // Already correct; don't touch the dropdown
+			if (textHasTimeZoneId(getSelectionText(selection), candidates[0])) {
+				return; // Already the best zone; don't touch the dropdown
 			}
 
-			const selected = await selectHighRiseOption(selection, text => textHasTimeZoneId(text, timeZoneId), timeZoneId);
-			if (!selected) {
-				console.warn(`Time zone "${timeZoneId}" not found in the Time zone dropdown.`);
+			for (const timeZoneId of candidates) {
+				if (await selectHighRiseOption(selection, text => textHasTimeZoneId(text, timeZoneId), timeZoneId)) {
+					log(`Time zone set to ${timeZoneId}`);
+					return;
+				}
 			}
+			console.warn(`None of these time zones are in GHL's Time zone dropdown: ${candidates.join(', ')}`);
 		} catch (error) {
 			console.error('Error setting time zone:', error);
 		}
