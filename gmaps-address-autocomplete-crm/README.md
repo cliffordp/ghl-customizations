@@ -13,6 +13,7 @@ Adds **Google Maps Places Address Autocomplete** and an **interactive embedded G
      - **City**
      - **State** (full state name, e.g., `Oklahoma`, as required for GHL automated tax calculation)
      - **Postal code**
+     - **Country** *(matched by ISO country code, so naming differences like Google's "Czechia" vs GHL's "Czech Republic" don't matter, nor does GHL user's language setting)*
      - **Latitude** & **Longitude** *(if you have created custom fields with those exact names)*
      - **Time zone** *(looked up from the address's coordinates; see [Time zone auto-select](#time-zone-auto-select))*
    - Fires the input events GHL needs to register each new value, so the fields keep their values and are saved when you click **Save**.
@@ -20,7 +21,7 @@ Adds **Google Maps Places Address Autocomplete** and an **interactive embedded G
 
 2. **Company / Business Detail Screen** (`/businesses`, `/companies`, `/objects`)
    - Attaches Google Places Autocomplete to the Company **Address** field in the details panel.
-   - Populates **Address**, **City**, **State**, **Postal Code**, **Latitude**, and **Longitude**, and embeds a Google Map above the Address field.
+   - Populates **Address**, **City**, **State**, **Postal Code**, **Country**, **Latitude**, and **Longitude**, and embeds a Google Map above the Address field.
 
 3. **Book / Edit Appointment Modal** (Calendars, Contacts, Conversations, Opportunities)
    - Whenever **Meeting location** is set to **Custom** (`Custom` radio + `Custom` dropdown), attaches Google Places Autocomplete to the **Enter meeting location** input field and embeds a Google Map once an address is selected.
@@ -46,7 +47,7 @@ Because users may type an address without clicking an autocomplete suggestion—
    - **Places API (New)**
    - **Maps Embed API**
    - **Time Zone API** *(optional; only needed for [Time zone auto-select](#time-zone-auto-select) on Contact Details)*
-3. Restrict the API key by **HTTP referrers** to your GHL domains (e.g., `*.gohighlevel.com/*` and your white-label domain `app.yourdomain.com/*`), and restrict it to the APIs above.
+3. Restrict the API key by **HTTP referrers** to your GHL domains (e.g., `app.gohighlevel.com/*` and your white-label domain `app.YOURDOMAIN.com/*`), and restrict it to the APIs above.
 
 > **Upgrading from an older version?** This script previously used the legacy **Places API**, which Google no longer offers to new projects. It now uses **Places API (New)**; enable that on your key or autocomplete suggestions won't load (check the browser console for an error).
 

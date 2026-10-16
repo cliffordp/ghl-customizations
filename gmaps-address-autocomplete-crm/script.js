@@ -863,6 +863,7 @@
 					let latitude = '';
 					let longitude = '';
 					let country = '';
+					let countryCode = '';
 					
 					// Extract address components
 					place.address_components.forEach(component => {
@@ -890,6 +891,7 @@
 								break;
 							case 'country':
 								country = component.long_name;
+								countryCode = component.short_name; // ISO 3166-1 alpha-2, e.g. 'CZ'
 								break;
 						}
 					});
@@ -937,7 +939,7 @@
 						setFieldValue(type, 'Postal Code', postal_code);
 						setFieldValue(type, 'Latitude', latitude); // Custom Field name
 						setFieldValue(type, 'Longitude', longitude); // Custom Field name
-						//setFieldValue(type, 'Country', country); // Gets set totally differently
+						// Country is a dropdown, set below via setCountry()
 						
 						// Force close the autocomplete dropdown
 						closeAutocompleteDropdown();
@@ -945,10 +947,17 @@
 						// Embed map for non-appointment types
 						embedGoogleMap(type, place.formatted_address);
 						
-						// Time zone only exists on Contact Details. Runs after closeAutocompleteDropdown() so its body click can't close the menu we open.
-						if (type === 'contact' && setTimeZoneEnabled && latitude !== '' && longitude !== '') {
-							setTimeZoneFromCoordinates(latitude, longitude);
-						}
+						// Dropdowns are set one at a time so two menus are never open at once.
+						// Runs after closeAutocompleteDropdown() so its body click can't close the menus we open.
+						(async () => {
+							if (countryCode) {
+								await setCountry(type, countryCode, country);
+							}
+							// Time zone only exists on Contact Details
+							if (type === 'contact' && setTimeZoneEnabled && latitude !== '' && longitude !== '') {
+								await setTimeZoneFromCoordinates(latitude, longitude);
+							}
+						})();
 						
 						// For business type, reattach autocomplete after a delay
 						if (type === 'business') {
@@ -988,13 +997,16 @@
 		}
 
 		/**
-		 * Find the Contact Details "Time zone" HighRise select (a custom component, not a native <select>)
+		 * Find a HighRise select (a custom component, not a native <select>) by its label text
+		 * @param {string} labelText - e.g. 'Time zone' or 'Country'
+		 * @param {string} scope - Selector the label must be inside (keeps Contact vs Company fields apart)
 		 * @returns {HTMLElement|null} The .hr-base-selection element
 		 */
-		function getTimeZoneSelection() {
-			const labels = document.querySelectorAll('#field-container .hr-form-item-label__text, #field-container .n-form-item-label__text');
+		function getHighRiseSelectByLabel(labelText, scope) {
+			const wanted = labelText.toLowerCase().replace(/\s+/g, '');
+			const labels = document.querySelectorAll('.hr-form-item-label__text, .n-form-item-label__text');
 			for (const label of labels) {
-				if (label.textContent.trim().toLowerCase().replace(/\s+/g, '') !== 'timezone') {
+				if (label.textContent.trim().toLowerCase().replace(/\s+/g, '') !== wanted || !label.closest(scope)) {
 					continue;
 				}
 				const selection = label.closest('.hr-form-item, .n-form-item')?.querySelector('.hr-base-selection, .n-base-selection');
@@ -1014,9 +1026,72 @@
 			return new RegExp(`(^|\\s)${escaped}(\\s|\\(|$)`).test((text || '').trim());
 		}
 
-		function findOpenTimeZoneOption(timeZoneId) {
-			const options = document.querySelectorAll('.hr-base-select-option, .n-base-select-option');
-			return Array.from(options).find(option => textMatchesTimeZone(option.textContent, timeZoneId)) || null;
+		/**
+		 * Normalize names for comparison: case, accents, and punctuation-insensitive
+		 * (GHL's list has entries like 'AndorrA' and 'Aland Islands', Google returns 'Andorra' and 'Åland Islands')
+		 */
+		function normalizeName(text) {
+			return (text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+		}
+
+		/**
+		 * Open a HighRise select and click the first option that matches.
+		 * Handles filterable selects (types filterText) and virtualized lists (scrolls to render options).
+		 * @param {HTMLElement} selection - The .hr-base-selection element
+		 * @param {Function} matches - (optionText) => boolean
+		 * @param {string} filterText - Text to type if the select is filterable
+		 * @returns {Promise<boolean>} Whether an option was selected (or already selected)
+		 */
+		async function selectHighRiseOption(selection, matches, filterText) {
+			const currentText = selection.querySelector('.hr-base-selection-overlay__wrapper, .n-base-selection-overlay__wrapper')?.textContent;
+			if (matches(currentText || '')) return true; // Already correct
+
+			const findOption = () => {
+				const options = document.querySelectorAll('.hr-base-select-option, .n-base-select-option');
+				return Array.from(options).find(option => matches(option.textContent || '')) || null;
+			};
+
+			// Open the dropdown
+			const trigger = selection.querySelector('.hr-base-selection-label, .n-base-selection-label') || selection;
+			trigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+			trigger.click();
+			await wait(250);
+
+			let option = findOption();
+
+			// If the select is filterable, type to narrow the list
+			if (!option && filterText) {
+				const filterInput = selection.querySelector('input.hr-base-selection-input, input.n-base-selection-input');
+				if (filterInput) {
+					filterInput.focus();
+					setNativeInputValue(filterInput, filterText);
+					filterInput.dispatchEvent(new Event('input', { bubbles: true }));
+					await wait(250);
+					option = findOption();
+				}
+			}
+
+			// Long lists are virtualized (only visible options exist in the DOM), so scroll through to render the rest
+			if (!option) {
+				const menu = document.querySelector('.hr-base-select-menu, .n-base-select-menu');
+				const scroller = menu?.querySelector('.v-vl, .hr-virtual-list, .n-virtual-list, .hr-scrollbar-container, .n-scrollbar-container');
+				if (scroller) {
+					const step = Math.max(scroller.clientHeight * 0.8, 100);
+					for (let top = 0; top <= scroller.scrollHeight && !option; top += step) {
+						scroller.scrollTop = top;
+						scroller.dispatchEvent(new Event('scroll'));
+						await wait(60);
+						option = findOption();
+					}
+				}
+			}
+
+			if (option) {
+				option.click();
+				return true;
+			}
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+			return false;
 		}
 
 		/**
@@ -1028,55 +1103,109 @@
 				const timeZoneId = await fetchTimeZoneId(latitude, longitude);
 				if (!timeZoneId) return;
 
-				const selection = getTimeZoneSelection();
+				// Prefer the stable id (label text may be translated per GHL user language)
+				const selection =
+					document.getElementById('contact.timezone')?.querySelector('.hr-base-selection, .n-base-selection') ||
+					getHighRiseSelectByLabel('Time zone', '#field-container');
 				if (!selection) return; // No Time zone field on this screen
 
-				const currentText = selection.querySelector('.hr-base-selection-overlay__wrapper, .n-base-selection-overlay__wrapper')?.textContent;
-				if (textMatchesTimeZone(currentText, timeZoneId)) return; // Already correct
-
-				// Open the dropdown
-				const trigger = selection.querySelector('.hr-base-selection-label, .n-base-selection-label') || selection;
-				trigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-				trigger.click();
-				await wait(250);
-
-				let option = findOpenTimeZoneOption(timeZoneId);
-
-				// If the select is filterable, type the ID to narrow the list
-				if (!option) {
-					const filterInput = selection.querySelector('input.hr-base-selection-input, input.n-base-selection-input');
-					if (filterInput) {
-						filterInput.focus();
-						setNativeInputValue(filterInput, timeZoneId);
-						filterInput.dispatchEvent(new Event('input', { bubbles: true }));
-						await wait(250);
-						option = findOpenTimeZoneOption(timeZoneId);
-					}
-				}
-
-				// Long lists are virtualized (only visible options exist in the DOM), so scroll through to render the rest
-				if (!option) {
-					const menu = document.querySelector('.hr-base-select-menu, .n-base-select-menu');
-					const scroller = menu?.querySelector('.v-vl, .hr-virtual-list, .n-virtual-list, .hr-scrollbar-container, .n-scrollbar-container');
-					if (scroller) {
-						const step = Math.max(scroller.clientHeight * 0.8, 100);
-						for (let top = 0; top <= scroller.scrollHeight && !option; top += step) {
-							scroller.scrollTop = top;
-							scroller.dispatchEvent(new Event('scroll'));
-							await wait(60);
-							option = findOpenTimeZoneOption(timeZoneId);
-						}
-					}
-				}
-
-				if (option) {
-					option.click();
-				} else {
-					document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+				const selected = await selectHighRiseOption(selection, text => textMatchesTimeZone(text, timeZoneId), timeZoneId);
+				if (!selected) {
 					console.warn(`Time zone "${timeZoneId}" not found in the Time zone dropdown.`);
 				}
 			} catch (error) {
 				console.error('Error setting time zone:', error);
+			}
+		}
+
+		/**
+		 * GHL Country dropdown labels keyed by ISO 3166-1 alpha-2 code (same list on Contact and Company).
+		 * Matching by code avoids naming differences (Google 'Czechia' vs GHL 'Czech Republic') and
+		 * doesn't depend on the language Google returns names in. Labels are copied verbatim from GHL,
+		 * including its quirks ('AndorrA', 'Cote D"Ivoire'). Codes GHL lacks (e.g. SS, CW, BQ, BL) log a warning.
+		 */
+		const GHL_COUNTRY_BY_ISO = {
+			AF: 'Afghanistan', AX: 'Aland Islands', AL: 'Albania', DZ: 'Algeria', AS: 'American Samoa',
+			AD: 'AndorrA', AO: 'Angola', AI: 'Anguilla', AQ: 'Antarctica', AG: 'Antigua and Barbuda',
+			AR: 'Argentina', AM: 'Armenia', AW: 'Aruba', AU: 'Australia', AT: 'Austria',
+			AZ: 'Azerbaijan', BS: 'Bahamas', BH: 'Bahrain', BD: 'Bangladesh', BB: 'Barbados',
+			BY: 'Belarus', BE: 'Belgium', BZ: 'Belize', BJ: 'Benin', BM: 'Bermuda',
+			BT: 'Bhutan', BO: 'Bolivia', BA: 'Bosnia and Herzegovina', BW: 'Botswana', BV: 'Bouvet Island',
+			BR: 'Brazil', IO: 'British Indian Ocean Territory', BN: 'Brunei Darussalam', BG: 'Bulgaria', BF: 'Burkina Faso',
+			BI: 'Burundi', KH: 'Cambodia', CM: 'Cameroon', CA: 'Canada', CV: 'Cape Verde',
+			KY: 'Cayman Islands', CF: 'Central African Republic', TD: 'Chad', CL: 'Chile', CN: 'China',
+			CX: 'Christmas Island', CC: 'Cocos (Keeling) Islands', CO: 'Colombia', KM: 'Comoros', CG: 'Congo',
+			CD: 'Congo, The Democratic Republic of the', CK: 'Cook Islands', CR: 'Costa Rica', CI: 'Cote D"Ivoire', HR: 'Croatia',
+			CU: 'Cuba', CY: 'Cyprus', CZ: 'Czech Republic', DK: 'Denmark', DJ: 'Djibouti',
+			DM: 'Dominica', DO: 'Dominican Republic', EC: 'Ecuador', EG: 'Egypt', SV: 'El Salvador',
+			GQ: 'Equatorial Guinea', ER: 'Eritrea', EE: 'Estonia', ET: 'Ethiopia', FK: 'Falkland Islands (Malvinas)',
+			FO: 'Faroe Islands', FJ: 'Fiji', FI: 'Finland', FR: 'France', GF: 'French Guiana',
+			PF: 'French Polynesia', TF: 'French Southern Territories', GA: 'Gabon', GM: 'Gambia', GE: 'Georgia',
+			DE: 'Germany', GH: 'Ghana', GI: 'Gibraltar', GR: 'Greece', GL: 'Greenland',
+			GD: 'Grenada', GP: 'Guadeloupe', GU: 'Guam', GT: 'Guatemala', GG: 'Guernsey',
+			GN: 'Guinea', GW: 'Guinea-Bissau', GY: 'Guyana', HT: 'Haiti', HM: 'Heard Island and Mcdonald Islands',
+			VA: 'Holy See (Vatican City State)', HN: 'Honduras', HK: 'Hong Kong', HU: 'Hungary', IS: 'Iceland',
+			IN: 'India', ID: 'Indonesia', IR: 'Iran, Islamic Republic Of', IQ: 'Iraq', IE: 'Ireland',
+			IM: 'Isle of Man', IL: 'Israel', IT: 'Italy', JM: 'Jamaica', JP: 'Japan',
+			JE: 'Jersey', JO: 'Jordan', KZ: 'Kazakhstan', KE: 'Kenya', KI: 'Kiribati',
+			KP: 'Korea, Democratic People"S Republic', KR: 'Korea, Republic of', XK: 'Kosovo', KW: 'Kuwait', KG: 'Kyrgyzstan',
+			LA: 'Lao People\'s Democratic Republic', LV: 'Latvia', LB: 'Lebanon', LS: 'Lesotho', LR: 'Liberia',
+			LY: 'Libyan Arab Jamahiriya', LI: 'Liechtenstein', LT: 'Lithuania', LU: 'Luxembourg', MO: 'Macao',
+			MK: 'Macedonia, The Former Yugoslav Republic of', MG: 'Madagascar', MW: 'Malawi', MY: 'Malaysia', MV: 'Maldives',
+			ML: 'Mali', MT: 'Malta', MH: 'Marshall Islands', MQ: 'Martinique', MR: 'Mauritania',
+			MU: 'Mauritius', YT: 'Mayotte', MX: 'Mexico', FM: 'Micronesia, Federated States of', MD: 'Moldova, Republic of',
+			MC: 'Monaco', MN: 'Mongolia', ME: 'Montenegro', MS: 'Montserrat', MA: 'Morocco',
+			MZ: 'Mozambique', MM: 'Myanmar', NA: 'Namibia', NR: 'Nauru', NP: 'Nepal',
+			NL: 'Netherlands', AN: 'Netherlands Antilles', NC: 'New Caledonia', NZ: 'New Zealand', NI: 'Nicaragua',
+			NE: 'Niger', NG: 'Nigeria', NU: 'Niue', NF: 'Norfolk Island', MP: 'Northern Mariana Islands',
+			NO: 'Norway', OM: 'Oman', PK: 'Pakistan', PW: 'Palau', PS: 'Palestinian Territory, Occupied',
+			PA: 'Panama', PG: 'Papua New Guinea', PY: 'Paraguay', PE: 'Peru', PH: 'Philippines',
+			PN: 'Pitcairn', PL: 'Poland', PT: 'Portugal', PR: 'Puerto Rico', QA: 'Qatar',
+			RE: 'Reunion', RO: 'Romania', RU: 'Russian Federation', RW: 'Rwanda', SH: 'Saint Helena',
+			KN: 'Saint Kitts and Nevis', LC: 'Saint Lucia', MF: 'Saint Martin', PM: 'Saint Pierre and Miquelon', VC: 'Saint Vincent and the Grenadines',
+			WS: 'Samoa', SM: 'San Marino', ST: 'Sao Tome and Principe', SA: 'Saudi Arabia', SN: 'Senegal',
+			RS: 'Serbia', SC: 'Seychelles', SL: 'Sierra Leone', SG: 'Singapore', SX: 'Sint Maarten',
+			SK: 'Slovakia', SI: 'Slovenia', SB: 'Solomon Islands', SO: 'Somalia', ZA: 'South Africa',
+			GS: 'South Georgia and the South Sandwich Islands', ES: 'Spain', LK: 'Sri Lanka', SD: 'Sudan', SR: 'Suriname',
+			SJ: 'Svalbard and Jan Mayen', SZ: 'Swaziland', SE: 'Sweden', CH: 'Switzerland', SY: 'Syrian Arab Republic',
+			TW: 'Taiwan', TJ: 'Tajikistan', TZ: 'Tanzania, United Republic of', TH: 'Thailand', TL: 'Timor-Leste',
+			TG: 'Togo', TK: 'Tokelau', TO: 'Tonga', TT: 'Trinidad and Tobago', TN: 'Tunisia',
+			TR: 'Turkey', TM: 'Turkmenistan', TC: 'Turks and Caicos Islands', TV: 'Tuvalu', UG: 'Uganda',
+			GB: 'UK', UA: 'Ukraine', AE: 'United Arab Emirates', US: 'United States', UM: 'United States Minor Outlying Islands',
+			UY: 'Uruguay', UZ: 'Uzbekistan', VU: 'Vanuatu', VE: 'Venezuela', VN: 'Viet Nam',
+			VG: 'Virgin Islands, British', VI: 'Virgin Islands, U.S.', WF: 'Wallis and Futuna', EH: 'Western Sahara', YE: 'Yemen',
+			ZM: 'Zambia', ZW: 'Zimbabwe'
+		};
+
+		/**
+		 * Select the Country dropdown option for an ISO country code (Contact and Company).
+		 * Like other fields, the user still has to click Save.
+		 * @param {string} type - 'contact' or 'business'
+		 * @param {string} countryCode - ISO 3166-1 alpha-2 code from Google (e.g. 'CZ')
+		 * @param {string} countryName - Google's name, only used in warnings
+		 */
+		async function setCountry(type, countryCode, countryName) {
+			try {
+				const ghlLabel = GHL_COUNTRY_BY_ISO[(countryCode || '').toUpperCase()];
+				if (!ghlLabel) {
+					console.warn(`Country "${countryName}" (${countryCode}) has no matching option in GHL's Country list.`);
+					return;
+				}
+
+				// Prefer the stable id on Contact (label text may be translated per GHL user language)
+				const selection = type === 'contact'
+					? (document.getElementById('contact.country')?.querySelector('.hr-base-selection, .n-base-selection') ||
+						getHighRiseSelectByLabel('Country', '#field-container'))
+					: getHighRiseSelectByLabel('Country', '.fields, .details-view, #fields-form');
+				if (!selection) return;
+
+				const wanted = normalizeName(ghlLabel);
+				const selected = await selectHighRiseOption(selection, text => normalizeName(text) === wanted, ghlLabel);
+				if (!selected) {
+					console.warn(`Country "${ghlLabel}" not found in the Country dropdown.`);
+				}
+			} catch (error) {
+				console.error('Error setting country:', error);
 			}
 		}
 		
