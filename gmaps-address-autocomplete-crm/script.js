@@ -34,11 +34,23 @@
 		let missingKeyWarned = false;
 		let placesImportPromise = null;
 
-		// Ensure .pac-container z-index style exists even if loaded as an external .js file
+		// Inject dropdown styles. Max z-index + pointer-events so the dropdown works above GHL modals' focus/click traps.
 		if (!document.getElementById('tk-gmaps-pac-style')) {
+		// One Places (New) autocomplete instance per input element
+		const autocompleteByInput = new WeakMap();
+
 			const styleEl = document.createElement('style');
 			styleEl.id = 'tk-gmaps-pac-style';
-			styleEl.textContent = '.pac-container { z-index: 10000 !important; }';
+			styleEl.textContent = [
+				'.tk-pac-container { position: fixed; z-index: 2147483647 !important; pointer-events: auto !important; background: #fff; border: 1px solid #d1d5db; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,.15); font-family: inherit; font-size: 14px; overflow: hidden; }',
+				'.tk-pac-container[hidden] { display: none !important; }',
+				'.tk-pac-item { padding: 8px 12px; cursor: pointer; line-height: 1.3; border-top: 1px solid #f3f4f6; }',
+				'.tk-pac-item:first-child { border-top: 0; }',
+				'.tk-pac-item:hover, .tk-pac-item-selected { background: #f3f4f6; }',
+				'.tk-pac-item-query { color: #111827; }',
+				'.tk-pac-item-secondary { color: #6b7280; margin-left: 6px; font-size: 12px; }',
+				'.tk-pac-logo { padding: 4px 12px; text-align: right; color: #6b7280; font-size: 11px; border-top: 1px solid #f3f4f6; }'
+			].join('\n');
 			document.head.appendChild(styleEl);
 		}
 
@@ -62,6 +74,203 @@
 		 * @returns {boolean} Whether an API key is configured
 		 */
 		function loadGoogleMapsApi() {
+		/**
+		 * Convert a Places API (New) Place into the legacy shape the field-mapping code expects
+		 * @param {google.maps.places.Place} place
+		 * @returns {{address_components: Array, formatted_address: string, geometry: (Object|undefined)}}
+		 */
+		function toLegacyPlace(place) {
+			return {
+				address_components: (place.addressComponents || []).map(component => ({
+					long_name: component.longText || '',
+					short_name: component.shortText || '',
+					types: component.types || []
+				})),
+				formatted_address: place.formattedAddress || '',
+				geometry: place.location ? { location: place.location } : undefined
+			};
+		}
+
+		/**
+		 * Remove the Places autocomplete instance (dropdown + listeners) from an input
+		 * @param {HTMLElement} inputElement
+		 */
+		function destroyPlacesAutocomplete(inputElement) {
+			if (!inputElement) return;
+			const instance = autocompleteByInput.get(inputElement);
+			if (instance) {
+				instance.destroy();
+			}
+		}
+
+		/**
+		 * Attach Places API (New) autocomplete to an existing input.
+		 * Keeps GHL's own <input> (instead of PlaceAutocompleteElement, which replaces it) so Vue bindings keep working.
+		 * @param {HTMLElement} inputElement - The input to attach to
+		 * @param {Function} onPlaceSelected - Called with a legacy-shaped place object
+		 * @returns {{destroy: Function}} The instance
+		 */
+		function createPlacesAutocomplete(inputElement, onPlaceSelected) {
+			destroyPlacesAutocomplete(inputElement);
+
+			const { AutocompleteSuggestion, AutocompleteSessionToken } = google.maps.places;
+			const container = document.createElement('div');
+			container.className = 'tk-pac-container';
+			container.setAttribute('role', 'listbox');
+			container.hidden = true;
+			document.body.appendChild(container);
+
+			let sessionToken = null;
+			let suggestions = [];
+			let activeIndex = -1;
+			let requestId = 0;
+			let inputTimer = null;
+
+			const position = () => {
+				if (container.hidden) return;
+				const rect = inputElement.getBoundingClientRect();
+				container.style.top = `${rect.bottom + 2}px`;
+				container.style.left = `${rect.left}px`;
+				container.style.width = `${Math.max(rect.width, 280)}px`;
+			};
+
+			const hide = () => {
+				container.hidden = true;
+				activeIndex = -1;
+			};
+
+			const select = async (index) => {
+				const suggestion = suggestions[index];
+				if (!suggestion) return;
+				hide();
+				suggestions = [];
+				requestId++; // Discard any in-flight suggestion requests
+				try {
+					const place = suggestion.placePrediction.toPlace();
+					await place.fetchFields({ fields: ['addressComponents', 'location', 'formattedAddress'] });
+					sessionToken = null; // Session ends after fetchFields (billing)
+					onPlaceSelected(toLegacyPlace(place));
+				} catch (error) {
+					console.error('Error fetching place details:', error);
+				}
+			};
+
+			const render = () => {
+				container.replaceChildren();
+				if (!suggestions.length) {
+					hide();
+					return;
+				}
+				suggestions.forEach((suggestion, index) => {
+					const prediction = suggestion.placePrediction;
+					const item = document.createElement('div');
+					item.className = 'tk-pac-item' + (index === activeIndex ? ' tk-pac-item-selected' : '');
+					item.setAttribute('role', 'option');
+					const main = document.createElement('span');
+					main.className = 'tk-pac-item-query';
+					main.textContent = String(prediction.mainText || prediction.text || '');
+					item.appendChild(main);
+					if (prediction.secondaryText) {
+						const secondary = document.createElement('span');
+						secondary.className = 'tk-pac-item-secondary';
+						secondary.textContent = String(prediction.secondaryText);
+						item.appendChild(secondary);
+					}
+					item.addEventListener('click', () => select(index));
+					container.appendChild(item);
+				});
+				// Google requires attribution when predictions aren't shown on a Google map
+				const logo = document.createElement('div');
+				logo.className = 'tk-pac-logo';
+				logo.textContent = 'powered by Google';
+				container.appendChild(logo);
+				container.hidden = false;
+				position();
+			};
+
+			const fetchSuggestions = async (value) => {
+				const thisRequest = ++requestId;
+				if (!value.trim()) {
+					suggestions = [];
+					hide();
+					return;
+				}
+				if (!sessionToken) {
+					sessionToken = new AutocompleteSessionToken();
+				}
+				try {
+					const response = await AutocompleteSuggestion.fetchAutocompleteSuggestions({ input: value, sessionToken });
+					if (thisRequest !== requestId) return; // A newer keystroke superseded this request
+					suggestions = (response.suggestions || []).filter(suggestion => suggestion.placePrediction);
+					activeIndex = -1;
+					render();
+				} catch (error) {
+					console.error('Error fetching autocomplete suggestions (is Places API (New) enabled?):', error);
+				}
+			};
+
+			const onInput = (event) => {
+				// Ignore synthetic input events (e.g. our own setNativeInputValue/triggerInputEvents)
+				if (!event.isTrusted) return;
+				clearTimeout(inputTimer);
+				inputTimer = setTimeout(() => fetchSuggestions(inputElement.value || ''), 200);
+			};
+
+			const onKeydown = (event) => {
+				if (container.hidden || !suggestions.length) return;
+				if (event.key === 'ArrowDown') {
+					event.preventDefault();
+					activeIndex = (activeIndex + 1) % suggestions.length;
+					render();
+				} else if (event.key === 'ArrowUp') {
+					event.preventDefault();
+					activeIndex = activeIndex <= 0 ? suggestions.length - 1 : activeIndex - 1;
+					render();
+				} else if (event.key === 'Enter' && activeIndex >= 0) {
+					event.preventDefault();
+					event.stopPropagation();
+					select(activeIndex);
+				} else if (event.key === 'Escape') {
+					hide();
+				}
+			};
+
+			const onBlur = () => setTimeout(hide, 150);
+
+			// preventDefault keeps focus in the input; stopPropagation stops GHL modals' outside-click handlers
+			const onContainerMousedown = (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+			};
+			const onContainerClick = (event) => event.stopPropagation();
+
+			inputElement.setAttribute('autocomplete', 'off');
+			inputElement.addEventListener('input', onInput);
+			inputElement.addEventListener('keydown', onKeydown, true);
+			inputElement.addEventListener('blur', onBlur);
+			container.addEventListener('mousedown', onContainerMousedown);
+			container.addEventListener('click', onContainerClick);
+			window.addEventListener('scroll', position, true);
+			window.addEventListener('resize', position);
+
+			const instance = {
+				hide,
+				destroy() {
+					clearTimeout(inputTimer);
+					requestId++;
+					inputElement.removeEventListener('input', onInput);
+					inputElement.removeEventListener('keydown', onKeydown, true);
+					inputElement.removeEventListener('blur', onBlur);
+					window.removeEventListener('scroll', position, true);
+					window.removeEventListener('resize', position);
+					container.remove();
+					autocompleteByInput.delete(inputElement);
+				}
+			};
+			autocompleteByInput.set(inputElement, instance);
+			return instance;
+		}
+
 			if (!resolvedApiKey) {
 				if (!missingKeyWarned) {
 					console.error(`Google Maps API key is missing from Agency's Company settings (set googleMapsApiKey or data-api-key).`);
@@ -95,7 +304,7 @@
 				typeof google !== 'undefined' &&
 				typeof google.maps !== 'undefined' &&
 				typeof google.maps.places !== 'undefined' &&
-				typeof google.maps.places.Autocomplete === 'function'
+				typeof google.maps.places.AutocompleteSuggestion === 'function'
 			) {
 				return true;
 			}
@@ -293,12 +502,12 @@
 			}
 			
 			// Clear any existing autocomplete instances for appointment
-			if (cache.autocompleteInstances['appt'] && typeof google !== 'undefined' && google.maps?.event) {
+			if (cache.autocompleteInstances['appt']) {
 				try {
 					const apptInput = document.querySelector('.bookAppointmentFormContainer #meeting-location-text-input input');
 					if (apptInput) {
 						console.log('Clearing existing autocomplete listeners');
-						google.maps.event.clearInstanceListeners(apptInput);
+						destroyPlacesAutocomplete(apptInput);
 						delete apptInput.dataset.tkAutocompleteAttached;
 					}
 					delete cache.autocompleteInstances['appt'];
@@ -333,22 +542,9 @@
 			
 			try {
 				// Create new autocomplete instance directly
-				let autocomplete = new google.maps.places.Autocomplete(apptAddressInput, {
-					types: ['geocode'],
-				});
-				
-				// Store the autocomplete instance for future reference
-				cache.autocompleteInstances['appt'] = autocomplete;
-				apptAddressInput.dataset.tkAutocompleteAttached = 'true';
-				
-				autocomplete.setFields(['address_components', 'geometry', 'formatted_address']);
-				
-				// Add place_changed event listener
-				google.maps.event.addListener(autocomplete, 'place_changed', function() {
-					console.log('Appointment autocomplete place changed event fired');
+				const autocomplete = createPlacesAutocomplete(apptAddressInput, function(place) {
+					console.log('Appointment autocomplete place selected');
 					
-					// Get the place details
-					let place = autocomplete.getPlace();
 					if (!place || !place.geometry) {
 						console.error('Invalid place selected or no geometry');
 						return;
@@ -383,6 +579,10 @@
 				console.error('Error attaching appointment autocomplete:', error);
 			}
 			
+				// Store the autocomplete instance for future reference
+				cache.autocompleteInstances['appt'] = autocomplete;
+				apptAddressInput.dataset.tkAutocompleteAttached = 'true';
+				
 			// Do NOT embed the map here - only embed after a place is selected
 			// This prevents the map from showing up prematurely
 		}
@@ -428,13 +628,10 @@
 			try {
 				// First, clear any existing autocomplete instances
 				const apptInput = document.querySelector('.bookAppointmentFormContainer #meeting-location-text-input input');
-				if (apptInput && typeof google !== 'undefined') {
+				if (apptInput) {
 					console.log('Clearing autocomplete listeners');
 					
-					// Clear Google Maps event listeners
-					if (google && google.maps && google.maps.event) {
-						google.maps.event.clearInstanceListeners(apptInput);
-					}
+					destroyPlacesAutocomplete(apptInput);
 					delete apptInput.dataset.tkAutocompleteAttached;
 					
 					// Clear from cache
@@ -640,23 +837,13 @@
 			
 			try {
 				// If there's already an autocomplete instance for this input, remove it
-				if (cache.autocompleteInstances[type] && google.maps?.event) {
-					google.maps.event.clearInstanceListeners(inputElement);
+				if (cache.autocompleteInstances[type]) {
+					cache.autocompleteInstances[type].destroy();
 					delete cache.autocompleteInstances[type];
 				}
 				
-				// Create new autocomplete instance
-				let autocomplete = new google.maps.places.Autocomplete(inputElement, {
-					types: ['geocode'],
-				});
-				
-				// Store the autocomplete instance for future reference
-				cache.autocompleteInstances[type] = autocomplete;
-				inputElement.dataset.tkAutocompleteAttached = 'true';
-				
-				autocomplete.setFields(['address_components', 'geometry', 'formatted_address']);
-				autocomplete.addListener('place_changed', function() {
-					let place = autocomplete.getPlace();
+				// Create new autocomplete instance (also destroys any instance already on this input)
+				const autocomplete = createPlacesAutocomplete(inputElement, function(place) {
 					if (!place || !place.geometry) {
 						return; // Invalid place selected
 					}
@@ -771,15 +958,19 @@
 		 */
 		function closeAutocompleteDropdown() {
 			try {
+				
+				// Store the autocomplete instance for future reference
+				cache.autocompleteInstances[type] = autocomplete;
+				inputElement.dataset.tkAutocompleteAttached = 'true';
 				// Force close any open autocomplete dropdowns
 				if (document.activeElement && typeof document.activeElement.blur === 'function') {
 					document.activeElement.blur();
 				}
 				
-				// Remove any pac-container elements that might be lingering
-				const pacContainers = document.querySelectorAll('.pac-container');
+				// Hide any autocomplete dropdowns that might be lingering
+				const pacContainers = document.querySelectorAll('.tk-pac-container');
 				pacContainers.forEach(container => {
-					container.style.display = 'none';
+					container.hidden = true;
 				});
 				
 				// Click elsewhere on the page to force close dropdowns
@@ -1288,7 +1479,7 @@
 							if (existingBusinessInput) {
 								delete existingBusinessInput.dataset.tkAutocompleteAttached;
 							}
-							if (cache.autocompleteInstances['business'] && typeof google !== 'undefined') {
+							if (cache.autocompleteInstances['business']) {
 								try {
 									delete cache.autocompleteInstances['business'];
 								} catch (error) {
@@ -1413,5 +1604,6 @@
 		loadGoogleMapsApi();
 
 		// Check URL on initial load
+									cache.autocompleteInstances['business'].destroy();
 		isRelevantScreen();
 	})();

@@ -40,10 +40,13 @@ Because users may type an address without clicking an autocomplete suggestion—
 ## Prerequisites (Google Cloud Console)
 
 1. Create a Google Maps API key in the [Google Cloud Console](https://console.cloud.google.com/).
-2. Enable both of these APIs on your project:
-   - **Places API**
+2. Enable these APIs on your project:
+   - **Maps JavaScript API**
+   - **Places API (New)**
    - **Maps Embed API**
-3. Restrict the API key by **HTTP referrers** to your GHL domains (e.g., `*.gohighlevel.com/*` and your white-label domain `app.yourdomain.com/*`).
+3. Restrict the API key by **HTTP referrers** to your GHL domains (e.g., `*.gohighlevel.com/*` and your white-label domain `app.yourdomain.com/*`), and restrict it to the three APIs above.
+
+> **Upgrading from an older version?** This script previously used the legacy **Places API**, which Google no longer offers to new projects. It now uses **Places API (New)**; enable that on your key or autocomplete suggestions won't load (check the browser console for an error).
 
 ---
 
@@ -58,7 +61,7 @@ Copy and paste this single line (see [`put-in-agency-company-white-label-setting
 <script defer id="crm-gmaps-address-autocomplete" data-api-key="YOUR_GOOGLE_MAPS_API_KEY" src="https://cdn.jsdelivr.net/gh/cliffordp/ghl-customizations@main/gmaps-address-autocomplete-crm/script.js"></script>
 ```
 
-*(The script automatically injects the `.pac-container { z-index: 10000 !important; }` CSS rule so the autocomplete dropdown renders above GHL modals.)*
+*(The script injects its own dropdown CSS—including a max `z-index`—so suggestions render above GHL modals.)*
 
 ### Option B: Inline Embed
 If you prefer pasting the full code directly into **Custom JS** without loading an external file:
