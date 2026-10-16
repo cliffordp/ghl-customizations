@@ -1,6 +1,6 @@
 # Google Maps Address Autocomplete & Map Embed for GoHighLevel CRM
 
-Adds **Google Maps Places Address Autocomplete** and an **interactive embedded Google Map** directly inside the GoHighLevel (GHL) desktop web application via **Agency Settings → Company → Custom JS**.
+Adds **Google Maps Places Address Autocomplete** and an **interactive embedded Google Map** directly inside the GoHighLevel (GHL) desktop web application via **Agency Settings → Company → White Label tab → Custom JS**.
 
 ## Where It Works
 
@@ -46,7 +46,7 @@ Because users may type an address without clicking an autocomplete suggestion—
 
 ## Installation
 
-Go to **Agency View → Settings → Company → Custom JS** and use either option below:
+Go to **Agency View → Settings → Company → White Label tab → Custom JS** and use either option below:
 
 ### Option A: One-Line CDN Embed (Recommended)
 Copy and paste this single line into **Custom JS**, replacing `YOUR_GOOGLE_MAPS_API_KEY` with your actual key:
