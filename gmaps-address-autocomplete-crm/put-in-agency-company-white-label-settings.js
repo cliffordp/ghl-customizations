@@ -1,0 +1,1 @@
+<script defer id="crm-gmaps-address-autocomplete" data-api-key="YOUR_GOOGLE_MAPS_API_KEY" src="https://cdn.jsdelivr.net/gh/cliffordp/ghl-customizations@main/gmaps-address-autocomplete-crm/script.js"></script>
