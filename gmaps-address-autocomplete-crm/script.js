@@ -950,13 +950,17 @@
 					// Dropdowns are set one at a time so two menus are never open at once.
 					// Runs after closeAutocompleteDropdown() so its body click can't close the menus we open.
 					(async () => {
+						const savedScroll = captureScrollState(streetInput || inputElement);
 						if (countryCode) {
 							await setCountry(type, countryCode, country);
 						}
 						// Time zone only exists on Contact Details
 						if (type === 'contact' && setTimeZoneEnabled && latitude !== '' && longitude !== '') {
-							await setTimeZoneFromCoordinates(latitude, longitude);
+							await setTimeZoneFromCoordinates(latitude, longitude, state, countryCode);
 						}
+						restoreScrollState(savedScroll);
+						requestAnimationFrame(() => restoreScrollState(savedScroll));
+						setTimeout(() => restoreScrollState(savedScroll), 100);
 					})();
 
 					// For business type, reattach autocomplete after a delay
@@ -979,26 +983,94 @@
 	const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 	/**
-	 * Client-side lookup of IANA time zone ID (e.g. 'America/Detroit') from coordinates.
+	 * Equivalent IANA timezone groups.
+	 * If the contact's Time zone field is already set to an equivalent zone in the same group,
+	 * we keep it to avoid unnecessary UI changes and dropdown interactions.
+	 */
+	const TIMEZONE_GROUPS = {
+		eastern: [
+			'America/New_York', 'America/Detroit', 'America/Kentucky/Louisville',
+			'America/Kentucky/Monticello', 'America/Indiana/Indianapolis',
+			'America/Indiana/Vincennes', 'America/Indiana/Winamac',
+			'America/Indiana/Marengo', 'America/Indiana/Petersburg',
+			'America/Indiana/Vevay', 'America/Toronto', 'America/Montreal',
+			'US/Eastern', 'EST5EDT', 'EDT', 'EST', 'Eastern Time'
+		],
+		central: [
+			'America/Chicago', 'America/Indiana/Knox', 'America/Indiana/Tell_City',
+			'America/Menominee', 'America/North_Dakota/Center',
+			'America/North_Dakota/New_Salem', 'America/North_Dakota/Beulah',
+			'America/Winnipeg', 'US/Central', 'CST6CDT', 'CDT', 'CST', 'Central Time'
+		],
+		mountain: [
+			'America/Denver', 'America/Boise', 'America/Edmonton',
+			'US/Mountain', 'MST7MDT', 'MDT', 'MST', 'Mountain Time'
+		],
+		arizona: [
+			'America/Phoenix', 'America/Hermosillo', 'US/Arizona', 'Arizona'
+		],
+		pacific: [
+			'America/Los_Angeles', 'America/Vancouver', 'US/Pacific',
+			'PST8PDT', 'PDT', 'PST', 'Pacific Time'
+		],
+		alaska: [
+			'America/Anchorage', 'America/Juneau', 'America/Sitka',
+			'America/Nome', 'America/Yakutat', 'America/Metlakatla',
+			'US/Alaska', 'AKST', 'AKDT', 'Alaska'
+		],
+		hawaii: [
+			'Pacific/Honolulu', 'US/Hawaii', 'HST', 'Hawaii'
+		]
+	};
+
+	/**
+	 * Client-side lookup of IANA time zone ID from coordinates and optional state/country.
 	 * Resolves directly in the browser so no Google Time Zone API or server-side calls are needed,
 	 * keeping the implementation 100% compatible with HTTP-referrer-restricted API keys.
 	 *
 	 * @param {number|string} latitude
 	 * @param {number|string} longitude
+	 * @param {string} [state] - Region / state name or 2-letter abbreviation if available
+	 * @param {string} [countryCode] - ISO 3166-1 alpha-2 country code
 	 * @returns {string} The IANA time zone ID, or '' if undetermined
 	 */
-	function getTimeZoneIdFromCoordinates(latitude, longitude) {
+	function getTimeZoneIdFromCoordinates(latitude, longitude, state, countryCode) {
+		const normState = normalizeName(state || '');
+		const cc = (countryCode || '').toUpperCase();
+
+		// State-specific US mappings for canonical IANA zone (supports full name or 2-letter postal code)
+		if (cc === 'US' || !cc) {
+			if (normState === 'michigan' || normState === 'mi') return 'America/Detroit';
+			if (normState === 'indiana' || normState === 'in') return 'America/Indiana/Indianapolis';
+			if (normState === 'arizona' || normState === 'az') return 'America/Phoenix';
+			if (normState === 'hawaii' || normState === 'hi') return 'Pacific/Honolulu';
+			if (normState === 'alaska' || normState === 'ak') return 'America/Anchorage';
+			if (['california', 'ca', 'washington', 'wa', 'oregon', 'or', 'nevada', 'nv'].includes(normState)) {
+				return 'America/Los_Angeles';
+			}
+			if (['texas', 'tx', 'illinois', 'il', 'wisconsin', 'wi', 'minnesota', 'mn', 'iowa', 'ia', 'missouri', 'mo', 'arkansas', 'ar', 'louisiana', 'la', 'oklahoma', 'ok', 'kansas', 'ks', 'nebraska', 'ne', 'alabama', 'al', 'mississippi', 'ms', 'tennessee', 'tn'].includes(normState)) {
+				return 'America/Chicago';
+			}
+			if (['colorado', 'co', 'utah', 'ut', 'new mexico', 'nm', 'wyoming', 'wy', 'montana', 'mt'].includes(normState)) {
+				return 'America/Denver';
+			}
+			if (normState === 'idaho' || normState === 'id') {
+				return 'America/Boise';
+			}
+			if (['new york', 'ny', 'florida', 'fl', 'ohio', 'oh', 'pennsylvania', 'pa', 'north carolina', 'nc', 'georgia', 'ga', 'virginia', 'va', 'massachusetts', 'ma', 'new jersey', 'nj', 'maryland', 'md', 'south carolina', 'sc', 'connecticut', 'ct', 'kentucky', 'ky', 'maine', 'me', 'new hampshire', 'nh', 'rhode island', 'ri', 'delaware', 'de', 'district of columbia', 'dc', 'vermont', 'vt', 'west virginia', 'wv'].includes(normState)) {
+				return 'America/New_York';
+			}
+		}
+
 		const lat = parseFloat(latitude);
 		const lng = parseFloat(longitude);
 		if (isNaN(lat) || isNaN(lng)) return '';
 
-		// United States & Territories
+		// United States & Territories (coordinate fallback)
 		if (lat >= 24 && lat <= 50 && lng >= -125 && lng <= -66) {
-			// Alaska / Hawaii handled below, this covers contiguous US
 			if (lng < -114) {
 				return 'America/Los_Angeles'; // Pacific
 			} else if (lng < -102) {
-				// Mountain: Arizona does not observe DST
 				if (lat >= 31.3 && lat <= 37.0 && lng >= -114.8 && lng <= -109.0) {
 					return 'America/Phoenix';
 				}
@@ -1066,6 +1138,59 @@
 	}
 
 	/**
+	 * Capture scroll positions of an element, all its ancestors, window, and CRM scrollable panels.
+	 */
+	function captureScrollState(element) {
+		const states = [];
+		const seen = new Set();
+
+		const add = (el) => {
+			if (el && !seen.has(el)) {
+				seen.add(el);
+				states.push({ el, top: el.scrollTop, left: el.scrollLeft });
+			}
+		};
+
+		let el = element;
+		while (el && el !== document.body && el !== document.documentElement) {
+			add(el);
+			el = el.parentElement;
+		}
+
+		// Also capture common scroll containers in GHL CRM
+		const crmContainers = document.querySelectorAll(
+			'#field-container, .contact-details, .hl-card-content, .n-layout-sider, .n-layout-content, [class*="overflow-y-auto"], [class*="overflow-auto"], [class*="scrollbar"]'
+		);
+		crmContainers.forEach(add);
+
+		return {
+			states,
+			bodyTop: document.body ? document.body.scrollTop : 0,
+			docTop: document.documentElement ? document.documentElement.scrollTop : 0,
+			windowX: window.scrollX || window.pageXOffset || 0,
+			windowY: window.scrollY || window.pageYOffset || 0
+		};
+	}
+
+	/**
+	 * Restore previously captured scroll positions.
+	 */
+	function restoreScrollState(saved) {
+		if (!saved) return;
+		for (const { el, top, left } of saved.states) {
+			if (el.scrollTop !== top) el.scrollTop = top;
+			if (el.scrollLeft !== left) el.scrollLeft = left;
+		}
+		if (document.body && document.body.scrollTop !== saved.bodyTop) {
+			document.body.scrollTop = saved.bodyTop;
+		}
+		if (document.documentElement && document.documentElement.scrollTop !== saved.docTop) {
+			document.documentElement.scrollTop = saved.docTop;
+		}
+		window.scrollTo(saved.windowX, saved.windowY);
+	}
+
+	/**
 	 * Find a HighRise select (a custom component, not a native <select>) by its label text
 	 * @param {string} labelText - e.g. 'Time zone' or 'Country'
 	 * @param {string} scope - Selector the label must be inside (keeps Contact vs Company fields apart)
@@ -1088,11 +1213,34 @@
 
 	/**
 	 * Whether option/label text matches a time zone ID as a whole token,
-	 * e.g. 'GMT-04:00 America/Detroit (EDT)' matches 'America/Detroit' but 'America/Indiana/Indianapolis' doesn't match 'America/Indiana'
+	 * or matches any equivalent time zone in the same geographic time zone group.
+	 * e.g. 'GMT-04:00 America/Detroit (EDT)' matches 'America/Detroit' and also matches
+	 * 'America/New_York' since both belong to the same Eastern Time group.
 	 */
 	function textMatchesTimeZone(text, timeZoneId) {
+		if (!text || !timeZoneId) return false;
+		const cleanText = text.trim();
+
+		// Exact match on timeZoneId token (delimited by boundary, whitespace, slashes, or parens)
 		const escaped = timeZoneId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-		return new RegExp(`(^|\\s)${escaped}(\\s|\\(|$)`).test((text || '').trim());
+		if (new RegExp(`(^|[/\\s(])${escaped}([/\\s)]|$)`, 'i').test(cleanText)) {
+			return true;
+		}
+
+		// Equivalent timezone group match (e.g. America/Detroit and America/New_York are both Eastern)
+		for (const group of Object.values(TIMEZONE_GROUPS)) {
+			if (group.some(id => id.toLowerCase() === timeZoneId.toLowerCase())) {
+				for (const altId of group) {
+					const altEscaped = altId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+					if (new RegExp(`(^|[/\\s(])${altEscaped}([/\\s)]|$)`, 'i').test(cleanText)) {
+						return true;
+					}
+				}
+				break;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1112,8 +1260,16 @@
 	 * @returns {Promise<boolean>} Whether an option was selected (or already selected)
 	 */
 	async function selectHighRiseOption(selection, matches, filterText) {
-		const currentText = selection.querySelector('.hr-base-selection-overlay__wrapper, .n-base-selection-overlay__wrapper')?.textContent;
-		if (matches(currentText || '')) return true; // Already correct
+		const currentText = (
+			selection.querySelector(
+				'.hr-base-selection-input__content, .n-base-selection-input__content, .hr-base-selection-label, .n-base-selection-label, .hr-base-selection-overlay__wrapper, .n-base-selection-overlay__wrapper, .hr-base-selection-tags, .n-base-selection-tags, .hr-base-selection-value, .n-base-selection-value'
+			)?.textContent ||
+			selection.textContent ||
+			''
+		).replace(/\s+/g, ' ').trim();
+		if (matches(currentText)) return true; // Already correct
+
+		const savedScroll = captureScrollState(selection);
 
 		const findOption = () => {
 			const options = document.querySelectorAll('.hr-base-select-option, .n-base-select-option');
@@ -1132,7 +1288,7 @@
 		if (!option && filterText) {
 			const filterInput = selection.querySelector('input.hr-base-selection-input, input.n-base-selection-input');
 			if (filterInput) {
-				filterInput.focus();
+				filterInput.focus({ preventScroll: true });
 				setNativeInputValue(filterInput, filterText);
 				filterInput.dispatchEvent(new Event('input', { bubbles: true }));
 				await wait(250);
@@ -1157,9 +1313,15 @@
 
 		if (option) {
 			option.click();
+			restoreScrollState(savedScroll);
+			requestAnimationFrame(() => restoreScrollState(savedScroll));
+			setTimeout(() => restoreScrollState(savedScroll), 100);
 			return true;
 		}
 		document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+		restoreScrollState(savedScroll);
+		requestAnimationFrame(() => restoreScrollState(savedScroll));
+		setTimeout(() => restoreScrollState(savedScroll), 100);
 		return false;
 	}
 
@@ -1167,9 +1329,9 @@
 	 * Look up the time zone for coordinates and select it in the Contact "Time zone" field.
 	 * Like other fields, the user still has to click Save.
 	 */
-	async function setTimeZoneFromCoordinates(latitude, longitude) {
+	async function setTimeZoneFromCoordinates(latitude, longitude, state, countryCode) {
 		try {
-			const timeZoneId = getTimeZoneIdFromCoordinates(latitude, longitude);
+			const timeZoneId = getTimeZoneIdFromCoordinates(latitude, longitude, state, countryCode);
 			if (!timeZoneId) return;
 
 			// Prefer the stable id (label text may be translated per GHL user language)
@@ -1186,6 +1348,7 @@
 			console.error('Error setting time zone:', error);
 		}
 	}
+
 
 	/**
 	 * GHL Country dropdown labels keyed by ISO 3166-1 alpha-2 code (same list on Contact and Company).
