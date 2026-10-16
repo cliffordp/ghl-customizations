@@ -1237,6 +1237,7 @@
 	 * Matching by code avoids naming differences (Google 'Czechia' vs GHL 'Czech Republic') and
 	 * doesn't depend on the language Google returns names in. Labels are copied verbatim from GHL,
 	 * including its quirks ('AndorrA', 'Cote D"Ivoire'). Codes GHL lacks (e.g. SS, CW, BQ, BL) log a warning.
+	 * Source of truth: ghl-dom-reference/select-options-country-timezone.json (re-export it when GHL changes the list).
 	 */
 	const GHL_COUNTRY_BY_ISO = {
 		AF: 'Afghanistan', AX: 'Aland Islands', AL: 'Albania', DZ: 'Algeria', AS: 'American Samoa',
@@ -1257,17 +1258,17 @@
 		PF: 'French Polynesia', TF: 'French Southern Territories', GA: 'Gabon', GM: 'Gambia', GE: 'Georgia',
 		DE: 'Germany', GH: 'Ghana', GI: 'Gibraltar', GR: 'Greece', GL: 'Greenland',
 		GD: 'Grenada', GP: 'Guadeloupe', GU: 'Guam', GT: 'Guatemala', GG: 'Guernsey',
-		GN: 'Guinea', GW: 'Guinea-Bissau', GY: 'Guyana', HT: 'Haiti', HM: 'Heard Island and Mcdonald Islands',
+		GN: 'Guinea', GW: 'Guinea-Bissau', GY: 'Guyana', HT: 'Haiti', HM: 'Heard Island and McDonald Islands',
 		VA: 'Holy See (Vatican City State)', HN: 'Honduras', HK: 'Hong Kong', HU: 'Hungary', IS: 'Iceland',
 		IN: 'India', ID: 'Indonesia', IR: 'Iran, Islamic Republic Of', IQ: 'Iraq', IE: 'Ireland',
 		IM: 'Isle of Man', IL: 'Israel', IT: 'Italy', JM: 'Jamaica', JP: 'Japan',
 		JE: 'Jersey', JO: 'Jordan', KZ: 'Kazakhstan', KE: 'Kenya', KI: 'Kiribati',
-		KP: 'Korea, Democratic People"S Republic', KR: 'Korea, Republic of', XK: 'Kosovo', KW: 'Kuwait', KG: 'Kyrgyzstan',
+		KP: 'Korea People\'s Democratic Republic', KR: 'Republic of Korea', XK: 'Kosovo', KW: 'Kuwait', KG: 'Kyrgyzstan',
 		LA: 'Lao People\'s Democratic Republic', LV: 'Latvia', LB: 'Lebanon', LS: 'Lesotho', LR: 'Liberia',
 		LY: 'Libyan Arab Jamahiriya', LI: 'Liechtenstein', LT: 'Lithuania', LU: 'Luxembourg', MO: 'Macao',
-		MK: 'Macedonia, The Former Yugoslav Republic of', MG: 'Madagascar', MW: 'Malawi', MY: 'Malaysia', MV: 'Maldives',
+		MK: 'North Macedonia', MG: 'Madagascar', MW: 'Malawi', MY: 'Malaysia', MV: 'Maldives',
 		ML: 'Mali', MT: 'Malta', MH: 'Marshall Islands', MQ: 'Martinique', MR: 'Mauritania',
-		MU: 'Mauritius', YT: 'Mayotte', MX: 'Mexico', FM: 'Micronesia, Federated States of', MD: 'Moldova, Republic of',
+		MU: 'Mauritius', YT: 'Mayotte', MX: 'Mexico', FM: 'Federated States of Micronesia', MD: 'Moldova, Republic of',
 		MC: 'Monaco', MN: 'Mongolia', ME: 'Montenegro', MS: 'Montserrat', MA: 'Morocco',
 		MZ: 'Mozambique', MM: 'Myanmar', NA: 'Namibia', NR: 'Nauru', NP: 'Nepal',
 		NL: 'Netherlands', AN: 'Netherlands Antilles', NC: 'New Caledonia', NZ: 'New Zealand', NI: 'Nicaragua',
@@ -1281,12 +1282,12 @@
 		RS: 'Serbia', SC: 'Seychelles', SL: 'Sierra Leone', SG: 'Singapore', SX: 'Sint Maarten',
 		SK: 'Slovakia', SI: 'Slovenia', SB: 'Solomon Islands', SO: 'Somalia', ZA: 'South Africa',
 		GS: 'South Georgia and the South Sandwich Islands', ES: 'Spain', LK: 'Sri Lanka', SD: 'Sudan', SR: 'Suriname',
-		SJ: 'Svalbard and Jan Mayen', SZ: 'Swaziland', SE: 'Sweden', CH: 'Switzerland', SY: 'Syrian Arab Republic',
+		SJ: 'Svalbard and Jan Mayen', SZ: 'Eswatini', SE: 'Sweden', CH: 'Switzerland', SY: 'Syrian Arab Republic',
 		TW: 'Taiwan', TJ: 'Tajikistan', TZ: 'Tanzania, United Republic of', TH: 'Thailand', TL: 'Timor-Leste',
 		TG: 'Togo', TK: 'Tokelau', TO: 'Tonga', TT: 'Trinidad and Tobago', TN: 'Tunisia',
 		TR: 'Turkey', TM: 'Turkmenistan', TC: 'Turks and Caicos Islands', TV: 'Tuvalu', UG: 'Uganda',
 		GB: 'UK', UA: 'Ukraine', AE: 'United Arab Emirates', US: 'United States', UM: 'United States Minor Outlying Islands',
-		UY: 'Uruguay', UZ: 'Uzbekistan', VU: 'Vanuatu', VE: 'Venezuela', VN: 'Viet Nam',
+		UY: 'Uruguay', UZ: 'Uzbekistan', VU: 'Vanuatu', VE: 'Venezuela', VN: 'Vietnam',
 		VG: 'Virgin Islands, British', VI: 'Virgin Islands, U.S.', WF: 'Wallis and Futuna', EH: 'Western Sahara', YE: 'Yemen',
 		ZM: 'Zambia', ZW: 'Zimbabwe'
 	};
