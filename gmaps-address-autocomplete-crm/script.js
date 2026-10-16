@@ -17,7 +17,7 @@
 		document.currentScript;
 	const googleMapsApiKey = ''; // ONLY ENTER YOUR GOOGLE MAPS API KEY HERE if pasting entire snippet into Company Settings instead of passing to static file embed
 	const resolvedApiKey = (googleMapsApiKey || scriptElement?.dataset?.apiKey || window.tkGmapsApiKey || '').trim();
-	// Auto-set the Contact "Time zone" field from the chosen address (requires Time Zone API on the key).
+	// Auto-set the Contact "Time zone" field from the chosen address coordinates.
 	// Disable with data-set-tz="false" on the <script> tag, or window.tkGmapsSetTz = false.
 	const setTimeZoneEnabled = !['false', '0', 'no', 'off'].includes(
 		String(scriptElement?.dataset?.setTz ?? window.tkGmapsSetTz ?? 'true').trim().toLowerCase()
@@ -979,21 +979,90 @@
 	const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 	/**
-	 * Look up the IANA time zone ID (e.g. 'America/Detroit') for coordinates via the Time Zone API
-	 * @returns {Promise<string>} The time zone ID, or '' on failure
+	 * Client-side lookup of IANA time zone ID (e.g. 'America/Detroit') from coordinates.
+	 * Resolves directly in the browser so no Google Time Zone API or server-side calls are needed,
+	 * keeping the implementation 100% compatible with HTTP-referrer-restricted API keys.
+	 *
+	 * @param {number|string} latitude
+	 * @param {number|string} longitude
+	 * @returns {string} The IANA time zone ID, or '' if undetermined
 	 */
-	async function fetchTimeZoneId(latitude, longitude) {
-		const url = 'https://maps.googleapis.com/maps/api/timezone/json' +
-			`?location=${encodeURIComponent(latitude)},${encodeURIComponent(longitude)}` +
-			`&timestamp=${Math.floor(Date.now() / 1000)}` +
-			`&key=${encodeURIComponent(resolvedApiKey)}`;
-		const response = await fetch(url);
-		const data = await response.json();
-		if (data.status !== 'OK') {
-			console.error(`Time Zone API error: ${data.status}${data.errorMessage ? ` (${data.errorMessage})` : ''}. Enable the Time Zone API on this key, or add data-set-tz="false" to the script tag.`);
-			return '';
+	function getTimeZoneIdFromCoordinates(latitude, longitude) {
+		const lat = parseFloat(latitude);
+		const lng = parseFloat(longitude);
+		if (isNaN(lat) || isNaN(lng)) return '';
+
+		// United States & Territories
+		if (lat >= 24 && lat <= 50 && lng >= -125 && lng <= -66) {
+			// Alaska / Hawaii handled below, this covers contiguous US
+			if (lng < -114) {
+				return 'America/Los_Angeles'; // Pacific
+			} else if (lng < -102) {
+				// Mountain: Arizona does not observe DST
+				if (lat >= 31.3 && lat <= 37.0 && lng >= -114.8 && lng <= -109.0) {
+					return 'America/Phoenix';
+				}
+				return 'America/Denver'; // Mountain
+			} else if (lng < -85.5) {
+				return 'America/Chicago'; // Central
+			} else {
+				return 'America/New_York'; // Eastern
+			}
 		}
-		return data.timeZoneId || '';
+		if (lat >= 51 && lat <= 72 && lng >= -170 && lng <= -130) {
+			return 'America/Anchorage'; // Alaska
+		}
+		if (lat >= 18 && lat <= 23 && lng >= -161 && lng <= -154) {
+			return 'Pacific/Honolulu'; // Hawaii
+		}
+		if (lat >= 17.8 && lat <= 18.6 && lng >= -67.4 && lng <= -65.2) {
+			return 'America/Puerto_Rico'; // Puerto Rico
+		}
+
+		// Canada
+		if (lat > 48 && lat <= 70 && lng >= -141 && lng <= -52) {
+			if (lng < -120) return 'America/Vancouver';
+			if (lng < -110) return 'America/Edmonton';
+			if (lng < -95) return 'America/Winnipeg';
+			if (lng < -75) return 'America/Toronto';
+			if (lng < -60) return 'America/Halifax';
+			return 'America/St_Johns';
+		}
+
+		// Europe (major zones)
+		if (lat >= 35 && lat <= 71 && lng >= -25 && lng <= 45) {
+			if (lng < -5) return 'Europe/London'; // UK, Ireland, Portugal
+			if (lng < 20) return 'Europe/Paris'; // Central European (France, Germany, Italy, Spain, etc.)
+			return 'Europe/Athens'; // Eastern European (Greece, Finland, Romania, etc.)
+		}
+
+		// Australia
+		if (lat >= -44 && lat <= -10 && lng >= 112 && lng <= 154) {
+			if (lng < 129) return 'Australia/Perth';
+			if (lng < 138) return 'Australia/Adelaide';
+			if (lat < -30) return 'Australia/Sydney';
+			return 'Australia/Brisbane';
+		}
+
+		// New Zealand
+		if (lat >= -48 && lat <= -34 && lng >= 166 && lng <= 179) {
+			return 'Pacific/Auckland';
+		}
+
+		// Default fallback using standard longitude time offset zones
+		const utcOffsetHours = Math.round(lng / 15);
+		const timezoneByOffset = {
+			'-12': 'Etc/GMT+12', '-11': 'Pacific/Midway', '-10': 'Pacific/Honolulu',
+			'-9': 'America/Anchorage', '-8': 'America/Los_Angeles', '-7': 'America/Denver',
+			'-6': 'America/Chicago', '-5': 'America/New_York', '-4': 'America/Halifax',
+			'-3': 'America/Sao_Paulo', '-2': 'Atlantic/South_Georgia', '-1': 'Atlantic/Azores',
+			'0': 'Europe/London', '1': 'Europe/Paris', '2': 'Europe/Athens',
+			'3': 'Europe/Moscow', '4': 'Asia/Dubai', '5': 'Asia/Karachi',
+			'6': 'Asia/Dhaka', '7': 'Asia/Bangkok', '8': 'Asia/Singapore',
+			'9': 'Asia/Tokyo', '10': 'Australia/Sydney', '11': 'Pacific/Guadalcanal',
+			'12': 'Pacific/Auckland'
+		};
+		return timezoneByOffset[String(utcOffsetHours)] || '';
 	}
 
 	/**
@@ -1100,7 +1169,7 @@
 	 */
 	async function setTimeZoneFromCoordinates(latitude, longitude) {
 		try {
-			const timeZoneId = await fetchTimeZoneId(latitude, longitude);
+			const timeZoneId = getTimeZoneIdFromCoordinates(latitude, longitude);
 			if (!timeZoneId) return;
 
 			// Prefer the stable id (label text may be translated per GHL user language)

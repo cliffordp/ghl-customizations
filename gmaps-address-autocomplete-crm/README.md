@@ -40,7 +40,6 @@ Because users may type an address without clicking an autocomplete suggestion—
    - **Maps JavaScript API**
    - **Places API (New)**
    - **Maps Embed API**
-   - **Time Zone API** *(optional; only needed for [Time zone auto-select](#time-zone-auto-select) on Contact Details)*
 3. Restrict the API key by **HTTP referrers** to your GHL domains (e.g., `app.gohighlevel.com/*` and your white-label domain `app.YOURDOMAIN.com/*`), and restrict it to the APIs above.
 
 <img width="910" height="1404" alt="image" src="https://github.com/user-attachments/assets/90afc5c5-7c7a-42dc-96ec-8408be440761" />
@@ -65,9 +64,9 @@ If you prefer pasting the full code directly into **Custom JS** without loading 
 
 ## Time Zone Auto-Select
 
-When an address is chosen on the **Contact Detail** screen, the script looks up its time zone with Google's **Time Zone API** and selects it in the **Time zone** field (e.g., `America/Detroit`). As with every other field, click **Save** to keep it. *(Company and Appointment screens don't have a Time zone field, so this doesn't apply there.)*
+When an address is chosen on the **Contact Detail** screen, the script determines its IANA time zone from the address's coordinates client-side (e.g., `America/Detroit`) and selects it in the **Time zone** field. Because this resolves directly in the browser, no Google Time Zone API or server calls are needed, keeping it 100% compatible with HTTP-referrer-restricted API keys. As with every other field, click **Save** to keep it. *(Company and Appointment screens don't have a Time zone field, so this doesn't apply there.)*
 
-This is **on by default**. If the Time Zone API isn't enabled for your key, turn it off by adding `data-set-tz="false"` to the script tag:
+This is **on by default**. If you do not want the script to touch the Time zone field, turn it off by adding `data-set-tz="false"` to the script tag:
 
 ```html
 <script defer id="crm-gmaps-address-autocomplete" data-api-key="YOUR_GOOGLE_MAPS_API_KEY" data-set-tz="false" src="https://cdn.jsdelivr.net/gh/cliffordp/ghl-customizations@main/gmaps-address-autocomplete-crm/script.js"></script>
