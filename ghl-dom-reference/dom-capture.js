@@ -22,7 +22,7 @@
 	const SCREENS = [
 		{
 			key: 'appointment',
-			file: 'appointment-modal.html',
+			file: 'dom-appointment-modal.html',
 			name: 'Book / Edit Appointment modal (Meeting location: Custom)',
 			when: true,
 			root: '.bookAppointmentFormContainer',
@@ -35,7 +35,7 @@
 		},
 		{
 			key: 'company',
-			file: 'company-panel.html',
+			file: 'dom-company-panel.html',
 			name: 'Company / Business details side panel',
 			when: /\/(businesses|companies|objects)/.test(path),
 			root: '.details-wrapper, .details-view, #fields-form',
@@ -48,7 +48,7 @@
 		},
 		{
 			key: 'contact',
-			file: 'contact-detail.html',
+			file: 'dom-contact-detail.html',
 			name: 'Contact detail (left panel)',
 			when: path.includes('/contacts/detail/'),
 			root: '#record-details-lhs, #field-container',
@@ -273,7 +273,7 @@
 		`\tGHL DOM snapshot: ${screen.name}`,
 		`\tCaptured: ${new Date().toISOString().slice(0, 10)}`,
 		`\tRoot: ${screen.root}`,
-		'\tAnonymized by ghl-dom-reference/capture.js:',
+		'\tAnonymized by ghl-dom-reference/dom-capture.js:',
 		'\t\t[value]/[redacted] = record data, [custom] / "Custom field N" / "Custom folder N" = agency-defined names,',
 		'\t\t[text] = other text, [option] = non-time-zone menu options, [id] = generated IDs. Non-structural attributes, inline styles, and SVG paths are removed.',
 		'\tStill review for personal data before committing.',
