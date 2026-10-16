@@ -64,7 +64,7 @@ If you prefer pasting the full code directly into **Custom JS** without loading 
 
 ## Time Zone Auto-Select
 
-When an address is chosen on the **Contact Detail** screen, the script determines its IANA time zone from the address's coordinates client-side (e.g., `America/Detroit`) and selects it in the **Time zone** field. Because this resolves directly in the browser, no Google Time Zone API or server calls are needed, keeping it 100% compatible with HTTP-referrer-restricted API keys. As with every other field, click **Save** to keep it. *(Company and Appointment screens don't have a Time zone field, so this doesn't apply there.)*
+When an address is chosen on the **Contact Detail** screen, the script determines its IANA time zone from the address's coordinates client-side (e.g., `America/Detroit`) and selects it in the **Time zone** field. Because this resolves directly in the browser, no Google Time Zone API or server calls are needed, keeping it 100% compatible with HTTP-referrer-restricted API keys. If the contact already has a matching or equivalent time zone selected (e.g., `America/Detroit` and `America/New_York` both being Eastern Time), it leaves the field untouched to avoid unnecessary changes and prevent UI jumping. As with every other field, click **Save** to keep it. *(Company and Appointment screens don't have a Time zone field, so this doesn't apply there.)*
 
 This is **on by default**. If you do not want the script to touch the Time zone field, turn it off by adding `data-set-tz="false"` to the script tag:
 
