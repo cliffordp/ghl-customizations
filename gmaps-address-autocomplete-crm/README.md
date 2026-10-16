@@ -49,7 +49,7 @@ Because users may type an address without clicking an autocomplete suggestion—
 Go to **Agency View → Settings → Company → Custom JS** and use either option below:
 
 ### Option A: One-Line CDN Embed (Recommended)
-Copy and paste this single line (see [`put-in-agency-company-white-label-settings.js`](./put-in-agency-company-white-label-settings.js)), replacing `YOUR_GOOGLE_MAPS_API_KEY` with your actual key:
+Copy and paste this single line into **Custom JS**, replacing `YOUR_GOOGLE_MAPS_API_KEY` with your actual key:
 
 ```html
 <script defer id="crm-gmaps-address-autocomplete" data-api-key="YOUR_GOOGLE_MAPS_API_KEY" src="https://cdn.jsdelivr.net/gh/cliffordp/ghl-customizations@main/gmaps-address-autocomplete-crm/script.js"></script>
