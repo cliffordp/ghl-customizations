@@ -45,7 +45,7 @@ Instructions and technical context for AI coding agents working in this reposito
 
 GHL's desktop web application is a **Vue 3 + Naive UI + Tailwind CSS Single Page Application (SPA)**. Keep these architectural realities in mind whenever writing or debugging CRM scripts:
 
-> **Real markup:** Sanitized DOM snapshots of the Contact detail page, Appointment modal, and Company side panel live in [`ghl-dom-reference/`](./ghl-dom-reference/). Read the relevant snapshot before writing selectors, and check its `Captured:` date. If GHL has changed since, ask the user to re-run [`ghl-dom-reference/dom-capture.js`](./ghl-dom-reference/dom-capture.js). GHL's exact Country and Time zone dropdown options are in [`select-options-country-timezone.json`](./ghl-dom-reference/select-options-country-timezone.json): only select values that exist there.
+> **Real markup:** Sanitized DOM snapshots of the Contact detail page, Appointment modal, and Company side panel live in [`ghl-dom-reference/`](./ghl-dom-reference/). Read the relevant snapshot before writing selectors, and check its `Captured:` date. If GHL has changed since, ask the user to re-run [`ghl-dom-reference/dom-capture.js`](./ghl-dom-reference/dom-capture.js). GHL's exact Country and Time zone dropdown options are in [`select-options-country-timezone.json`](./ghl-dom-reference/select-options-country-timezone.json): only select values that exist there. After changing `gmaps-address-autocomplete-crm/script.js`, run its tests: `node gmaps-address-autocomplete-crm/tests/script.test.js` (or `osascript -l JavaScript …` on macOS without Node).
 
 ### 1. SPA Lifecycle & Navigation
 - Agency Custom JS loads once when the browser tab initializes and persists across client-side route changes.
