@@ -1,0 +1,3205 @@
+<!--
+	GHL DOM snapshot: Contact detail (left panel)
+	Captured: 2026-10-16
+	Root: #record-details-lhs, #field-container
+	Anonymized by ghl-dom-reference/capture.js:
+		[value]/[redacted] = record data, [custom] / "Custom field N" / "Custom folder N" = agency-defined names,
+		[text] = other text, [option] = non-time-zone menu options, [id] = generated IDs. Non-structural attributes, inline styles, and SVG paths are removed.
+	Still review for personal data before committing.
+
+	Selectors used by gmaps-address-autocomplete-crm/script.js:
+		✓  #record-details-lhs
+		✓  #field-container
+		✓  #field-container .hr-form-item-label__text
+		✓  #field-container input.hr-input__input-el
+		✓  #contact\.country .hr-base-selection
+		✓  #contact\.timezone .hr-base-selection
+		✓  #contact\.timezone .hr-base-selection-label[title]
+-->
+<div class="flex flex-col h-full overflow-y-auto w-full relative bg-contacts-panel rounded-xl" id="record-details-lhs">
+	<div class="flex items-center justify-between px-3 py-2.5 sticky top-0 bg-contacts-panel z-10">
+		<div class="flex items-center gap-1">
+			<i id="back-to-contacts-btn" class="hr-icon-inner cursor-pointer hover:text-primary-600 transition-colors cursor-pointer hover:text-primary-600 transition-colors hr-icon" aria-label="[redacted]" data-pendo-id="contact-details-header-back" role="img">
+				<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+			</i>
+			<p class="hr-text hr-text-2xl hr-text-medium text-gray-900">
+				[text]
+			</p>
+		</div>
+		<div class="flex items-center gap-2"></div>
+	</div>
+	<div class="flex flex-col flex-1 pb-3 px-3">
+		<div class="flex flex-col h-full gap-2">
+			<div class="flex flex-col border border-gray-200 rounded-md bg-white gap-4 p-3">
+				<div class="flex items-center justify-between gap-2 min-w-0">
+					<div class="flex items-center gap-4 flex-1 min-w-0">
+						<div class="relative record-avatar w-8 h-8 cursor-pointer shrink-0" data-pendo-id="contact-details-header-avatar-edit" tabindex="0">
+							<span class="hr-avatar hr-avatar__container hr-avatar-sm" id="avatar-default">
+								<span class="hr-avatar__text">
+									<span>
+										<p class="hr-text hr-text-xs hr-text-regular">
+											[value]
+										</p>
+									</span>
+								</span>
+							</span>
+							<div class="absolute top-0 left-0 w-full h-full items-center justify-center rounded-full cursor-pointer record-avatar-edit hidden">
+								<i class="hr-icon-inner hr-icon" aria-label="[redacted]" role="img">
+									<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+								</i>
+							</div>
+						</div>
+						<div class="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+							<p class="hr-text hr-text-lg hr-text-semibold text-gray-900 min-w-0 flex-1 overflow-hidden">
+								<span class="block min-w-0 truncate">
+									[text]
+								</span>
+							</p>
+						</div>
+					</div>
+					<i id="delete-contact-trigger" class="hr-icon-inner cursor-pointer hover:opacity-80 hover:bg-gray-100 rounded-md cursor-pointer hover:opacity-80 hover:bg-gray-100 rounded-md hr-icon" aria-label="[redacted]" data-pendo-id="contact-details-header-delete" role="img">
+						<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+					</i>
+				</div>
+				<div class="flex gap-3 items-start">
+					<div class="flex-1 space-y-1">
+						<p class="hr-text hr-text-lg hr-text-medium">
+							[text]
+						</p>
+						<div id="owner-dropdown-trigger" class="hr-dropdown__trigger-wrapper" role="presentation">
+							<div class="hr-tag hr-tag--round hr-tag--closable hr-tag--gray hr-tag--interactive hr-tag--bordered hr-tag--round hr-tag--truncated hr-tag__container" id="owner-dropdown-trigger" data-pendo-id="contact-details-header-owner">
+								<span class="hr-tag__content">
+									<span class="hr-tag__avatar">
+										<span class="hr-avatar hr-avatar__container hr-avatar-2xs">
+											<img aria-label="[redacted]">
+										</span>
+									</span>
+									<div class="hr-text hr-text-md hr-text-medium hr-tag__count-wrapper" id="hr-tag-count-wrapper-owner-dropdown-trigger">
+										<span id="hr-tag-ellipsis-owner-dropdown-trigger" class="hr-ellipsis">
+											<span>
+												[value]
+											</span>
+										</span>
+									</div>
+								</span>
+								<button type="button" tabindex="0" aria-disabled="false" aria-label="[redacted]" class="hr-base-close hr-base-close--absolute hr-base-close--round hr-tag__close">
+									<i class="hr-base-icon">
+										<svg viewBox="0 0 12 12" aria-hidden="true">…</svg>
+									</i>
+								</button>
+								<div class="hr-tag__border"></div>
+							</div>
+						</div>
+					</div>
+					<div class="flex-1 space-y-1">
+						<p class="hr-text hr-text-lg hr-text-medium">
+							[text]
+						</p>
+						<div id="followers-dropdown-trigger" class="hr-dropdown__trigger-wrapper" role="presentation">
+							<div class="hr-tag hr-tag--round hr-tag--gray hr-tag--interactive hr-tag--bordered hr-tag--round hr-tag--dropdown hr-tag--truncated hr-tag__container" id="followers-trigger" data-pendo-id="contact-details-header-followers">
+								<span class="hr-tag__content">
+									<span class="hr-tag__icon">
+										<i class="hr-icon-inner hr-icon" aria-label="[redacted]" role="img">
+											<span class="group-avatar-button__placeholder">
+												<i class="hr-icon-inner hr-icon" aria-label="[redacted]" role="img">
+													<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+												</i>
+											</span>
+										</i>
+									</span>
+									<div class="hr-text hr-text-md hr-text-medium hr-tag__count-wrapper with-icon" id="hr-tag-count-wrapper-followers-trigger">
+										<span id="hr-tag-ellipsis-followers-trigger" class="hr-ellipsis">
+											<span></span>
+										</span>
+									</div>
+									<i id="hr-tag-dropdown-icon" class="hr-icon-inner hr-icon" aria-label="[redacted]" role="img">
+										<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+									</i>
+								</span>
+								<div class="hr-tag__border"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="record-tags space-y-1">
+					<div class="flex items-center gap-2">
+						<p class="hr-text hr-text-lg hr-text-medium text-gray-600">
+							[text]
+						</p>
+						<div class="flex items-center">
+							<button class="hr-button hr-button--default-type hr-button--medium-type hr-button--secondary hr-button--3xs rounded-full rounded-full" tabindex="0" type="button" id="add-tag-button-default" aria-label="[redacted]">
+								<span class="hr-button__content">
+									<i class="hr-icon-inner hr-icon hr-icon hr-icon" aria-label="[redacted]" role="img">
+										<i class="hr-icon-inner hr-icon" aria-label="[redacted]" role="img">
+											<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+										</i>
+									</i>
+								</span>
+								<div aria-hidden="true" class="hr-base-wave"></div>
+								<div aria-hidden="true" class="hr-button__border"></div>
+								<div aria-hidden="true" class="hr-button__state-border"></div>
+							</button>
+						</div>
+					</div>
+					<div class="flex items-center gap-1 mt-1 flex-wrap">
+						<span id="tag-[value]" class="record-tag-chip">
+							<span id="hr-ellipsis-id" class="record-tag-chip__label hr-ellipsis">
+								<span>
+									[value]
+								</span>
+							</span>
+							<button type="button" class="record-tag-chip__close" aria-label="[redacted]">
+								<svg viewBox="0 0 24 24">…</svg>
+							</button>
+						</span>
+						<span id="tag-[value]" class="record-tag-chip">
+							<span id="hr-ellipsis-id" class="record-tag-chip__label hr-ellipsis">
+								<span>
+									[value]
+								</span>
+							</span>
+							<button type="button" class="record-tag-chip__close" aria-label="[redacted]">
+								<svg viewBox="0 0 24 24">…</svg>
+							</button>
+						</span>
+						<span id="tag-[value]" class="record-tag-chip">
+							<span id="hr-ellipsis-id" class="record-tag-chip__label hr-ellipsis">
+								<span>
+									[value]
+								</span>
+							</span>
+							<button type="button" class="record-tag-chip__close" aria-label="[redacted]">
+								<svg viewBox="0 0 24 24">…</svg>
+							</button>
+						</span>
+						<span id="tag-[value]" class="record-tag-chip">
+							<span id="hr-ellipsis-id" class="record-tag-chip__label hr-ellipsis">
+								<span>
+									[value]
+								</span>
+							</span>
+							<button type="button" class="record-tag-chip__close" aria-label="[redacted]">
+								<svg viewBox="0 0 24 24">…</svg>
+							</button>
+						</span>
+						<span id="tag-[value]" class="record-tag-chip">
+							<span id="hr-ellipsis-id" class="record-tag-chip__label hr-ellipsis">
+								<span>
+									[value]
+								</span>
+							</span>
+							<button type="button" class="record-tag-chip__close" aria-label="[redacted]">
+								<svg viewBox="0 0 24 24">…</svg>
+							</button>
+						</span>
+					</div>
+				</div>
+			</div>
+			<div class="hr-tabs hr-tabs--segment-type hr-tabs--medium-size hr-tabs--top hr-tabs__container hr-tabs--segment top" id="record-details-tabs" data-pendo-id="contact-details-tabs">
+				<div class="hr-tabs-nav--segment-type hr-tabs-nav--top hr-tabs-nav">
+					<div class="hr-tabs-rail">
+						<div class="hr-tabs-capsule">
+							<div class="hr-tabs-wrapper">
+								<div class="hr-tabs-tab"></div>
+							</div>
+						</div>
+						<div class="hr-tabs-tab-wrapper">
+							<div class="hr-tabs-tab hr-tabs-tab--active">
+								<span class="hr-tabs-tab__label">
+									All fields
+								</span>
+							</div>
+						</div>
+						<div class="hr-tabs-tab-wrapper">
+							<div class="hr-tabs-tab-pad"></div>
+							<div class="hr-tabs-tab">
+								<span class="hr-tabs-tab__label">
+									<span>
+										DND
+									</span>
+								</span>
+							</div>
+						</div>
+						<div class="hr-tabs-tab-wrapper">
+							<div class="hr-tabs-tab-pad"></div>
+							<div class="hr-tabs-tab">
+								<span class="hr-tabs-tab__label">
+									Actions
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="hr-tabs-nav__suffix">
+						<div class="hr-tabs-custom-content hr-tabs-suffix-item">
+							<div class="w-full">
+								<div class="hr-input-container" data-testid="hr-input-container" data-pendo-id="contact-details-fields-search" aria-label="[redacted]">
+									<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="record-tabs-search" data-testid="hl-input">
+										<div class="hr-input-wrapper">
+											<div class="hr-input__prefix">
+												<div class="hr-input__prefix-container">
+													<i class="hr-icon-inner hr-icon" aria-label="[redacted]" role="img">
+														<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+													</i>
+												</div>
+											</div>
+											<div class="hr-input__input">
+												<input type="text" data-pendo-id="contact-details-fields-search" aria-label="[redacted]" class="hr-input__input-el" placeholder="Search fields and folders" size="20" value>
+												<div class="hr-input__placeholder">
+													<span>
+														Search fields and folders
+													</span>
+												</div>
+											</div>
+											<div class="hr-input__suffix">
+												<div class="hr-base-clear">
+													<div class="hr-base-clear__placeholder"></div>
+												</div>
+												<div class="hr-input__suffix-container">
+													<div id="record-tabs-filter-dropdown-trigger" class="hr-dropdown__trigger-wrapper" role="presentation">
+														<i class="hr-icon-inner cursor-pointer cursor-pointer hr-icon" aria-label="[redacted]" role="img">
+															<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+														</i>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="hr-input__border"></div>
+										<div class="hr-input__state-border"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="hr-tabs-pane-wrapper">
+					<div class="hr-tab-pane">
+						<div class="h-full flex flex-col flex-1 mt-[6px]" id="record-blocks-container">
+							<div class="flex flex-col h-full" role="region" aria-label="[redacted]">
+								<div class="vue-recycle-scroller ready direction-vertical scroller">
+									<div class="vue-recycle-scroller__slot"></div>
+									<div class="vue-recycle-scroller__item-wrapper">
+										<div class="vue-recycle-scroller__item-view">
+											<div>
+												<div class="pt-0.5">
+													<div class="hr-collapse hr-accordion hr-collapse-style--border-item">
+														<div class="hr-collapse-item hr-collapse-item--right-arrow-placement hr-collapse-item--active hr-collapse-item--trigger-area-main hr-collapse-item--trigger-area-extra hr-collapse-item--trigger-area-arrow hr-accordion__item hr-collapse-item--hover-effect" id="[id]">
+															<div class="hr-collapse-item__header hr-collapse-item__header--active">
+																<div class="hr-collapse-item__header-main">
+																	<p class="hr-text hr-text-lg hr-text-medium text-gray-900">
+																		Contact
+																	</p>
+																	<div class="hr-collapse-item-arrow">
+																		<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-right hr-collapse-item--icon hr-collapse-item--icon-right hr-icon" aria-label="[redacted]" role="img">
+																			<svg viewBox="0 0 24 24" aria-hidden="true" class="rotate-90">…</svg>
+																		</i>
+																	</div>
+																</div>
+																<div class="hr-collapse-item__header-extra">
+																	<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-left hr-collapse-item--icon hr-collapse-item--icon-left hr-icon" aria-label="[redacted]" role="img">
+																		<svg viewBox="0 0 24 24" aria-hidden="true" class="rotate-180">…</svg>
+																	</i>
+																</div>
+															</div>
+															<div class="hr-collapse-item__content-wrapper">
+																<div class="hr-collapse-item__content-inner">
+																	<div>
+																		<div class="border-t border-gray-200 block-padding">
+																			<div class="flex flex-col gap-4">
+																				<div id="field-container" data-pendo-id="contact-details-field-first_name" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									First name
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.first_name" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="--" size="20" value="[redacted]">
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-last_name" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Last name
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.last_name" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="--" size="20" value="[redacted]">
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-email" class>
+																					<div class="flex flex-col gap-2" id="inline-standard-email">
+																						<div>
+																							<form class="hr-form hr-form-md" id="[id]-primary-form">
+																								<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container hr-form-item__label-slot custom-inline-email" id="[id]-primary-form-item">
+																									<label class="hr-form-item-label hr-form-item-label--right-mark">
+																										<span class="hr-form-item-label__text">
+																											<div class="flex items-center gap-1 w-full">
+																												<p class="hr-text hr-text-lg hr-text-medium text-gray-500">
+																													Email (Primary)
+																												</p>
+																												<div class="flex items-center justify-center add-button border border-primary-300 rounded-full">
+																													<i class="hr-icon-inner cursor-pointer cursor-pointer hr-icon" aria-label="[redacted]" role="img">
+																														<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+																													</i>
+																												</div>
+																											</div>
+																										</span>
+																									</label>
+																									<div class="hr-form-item-blank">
+																										<div class="flex items-center gap-1 w-full">
+																											<label class="hr-radio hr-radio--checked hr-radio__wrapper" id="[id]-primary-radio">
+																												<div class="hr-radio__dot-wrapper">
+																													<div class="hr-radio__dot hr-radio__dot--checked"></div>
+																													<input type="radio" class="hr-radio-input" name="contact.email-email-group" checked value="[redacted]">
+																												</div>
+																											</label>
+																											<div class="flex-1 relative">
+																												<div class="hr-input-container" data-testid="hr-input-container">
+																													<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.email" data-testid="hl-input">
+																														<div class="hr-input-wrapper">
+																															<div class="hr-input__input">
+																																<input type="text" class="hr-input__input-el" placeholder="--" size="20" value="[redacted]">
+																															</div>
+																															<div class="hr-input__suffix">
+																																<div class="hr-input__suffix-container">
+																																	<div>
+																																		<div class="flex">
+																																			<i class="hr-icon-inner hr-icon" aria-label="[redacted]" role="img">
+																																				<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+																																			</i>
+																																		</div>
+																																	</div>
+																																</div>
+																															</div>
+																														</div>
+																														<div class="hr-input__border"></div>
+																														<div class="hr-input__state-border"></div>
+																													</div>
+																												</div>
+																											</div>
+																										</div>
+																									</div>
+																								</div>
+																							</form>
+																							<div>
+																								<span class="hr-text hr-text-sm hr-text-regular text-gray-500">
+																									[text]
+																									<span class="font-medium">
+																										[text]
+																									</span>
+																									[text]
+																								</span>
+																								<span>
+																									<span class="hr-text hr-text-sm hr-text-medium underline underline-offset-4 whitespace-nowrap cursor-pointer text-primary-500 pl-1">
+																										[text]
+																									</span>
+																								</span>
+																							</div>
+																							<div class="flex items-center gap-2 mt-1">
+																								<div class="hr-checkbox hr-checkbox-2xs hr-checkbox__container" tabindex="0" role="checkbox" aria-checked="false" id="[id]-exclude-verification" aria-disabled="false">
+																									<div class="hr-checkbox-box-wrapper">
+																										<div class="hr-checkbox-box">
+																											<div class="hr-checkbox-icon">
+																												<svg viewBox="0 0 64 64" class="check-icon">…</svg>
+																											</div>
+																											<div class="hr-checkbox-box__border"></div>
+																										</div>
+																									</div>
+																								</div>
+																								<p class="hr-text hr-text-sm hr-text-regular select-none cursor-pointer">
+																									[text]
+																								</p>
+																							</div>
+																						</div>
+																						<div>
+																							<form class="hr-form hr-form-md" id="[id]-additional-0-form-[email]">
+																								<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container custom-inline-email" id="[id]-additional-0-form-item-[email]">
+																									<label class="hr-form-item-label hr-form-item-label--right-mark">
+																										<span class="hr-form-item-label__text">
+																											Email (Additional)
+																										</span>
+																									</label>
+																									<div class="hr-form-item-blank">
+																										<div class="flex items-center gap-1 w-full">
+																											<label class="hr-radio hr-radio__wrapper" id="[id]-additional-0-radio-[email]">
+																												<div class="hr-radio__dot-wrapper">
+																													<div class="hr-radio__dot"></div>
+																													<input type="radio" class="hr-radio-input" name="contact.email-email-group" value="[redacted]">
+																												</div>
+																											</label>
+																											<div class="flex-1 relative">
+																												<div class="hr-input-container" data-testid="hr-input-container">
+																													<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.email-additional-0-[email]" data-testid="hl-input">
+																														<div class="hr-input-wrapper">
+																															<div class="hr-input__input">
+																																<input type="text" class="hr-input__input-el" placeholder="--" size="20" value="[redacted]">
+																															</div>
+																															<div class="hr-input__suffix">
+																																<div class="hr-input__suffix-container">
+																																	<i id="delete-icon" class="hr-icon-inner inline-delete cursor-pointer opacity-0 pointer-events-none transition-opacity inline-delete cursor-pointer opacity-0 pointer-events-none transition-opacity hr-icon" aria-label="[redacted]" title="[redacted]" role="img">
+																																		<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																														<div class="hr-input__border"></div>
+																														<div class="hr-input__state-border"></div>
+																													</div>
+																												</div>
+																											</div>
+																										</div>
+																									</div>
+																								</div>
+																							</form>
+																						</div>
+																					</div>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-phone" class>
+																					<div class="flex flex-col gap-2">
+																						<div>
+																							<form class="hr-form hr-form-md" id="[id]-primary-form">
+																								<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container hr-form-item__label-slot custom-inline-phone" id="[id]-primary-form-item">
+																									<label class="hr-form-item-label hr-form-item-label--right-mark">
+																										<span class="hr-form-item-label__text">
+																											<div class="flex items-center gap-1 w-full">
+																												<p class="hr-text hr-text-lg hr-text-medium text-gray-500">
+																													Phone (Primary)
+																												</p>
+																												<div class="flex items-center justify-center add-button border border-primary-300 rounded-full">
+																													<i class="hr-icon-inner cursor-pointer cursor-pointer hr-icon" aria-label="[redacted]" role="img">
+																														<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+																													</i>
+																												</div>
+																											</div>
+																										</span>
+																									</label>
+																									<div class="hr-form-item-blank">
+																										<div class="flex items-center gap-1 w-full">
+																											<label class="hr-radio hr-radio--checked hr-radio__wrapper" id="[id]-primary-radio">
+																												<div class="hr-radio__dot-wrapper">
+																													<div class="hr-radio__dot hr-radio__dot--checked"></div>
+																													<input type="radio" class="hr-radio-input" name="contact.phone-phone-group" checked value="[redacted]">
+																												</div>
+																											</label>
+																											<div class="flex-1 relative">
+																												<div class="hr-input-container hr-input-phone" data-testid="hr-input-container">
+																													<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.phone" data-testid="hl-input">
+																														<div class="hr-input-wrapper">
+																															<div class="hr-input__prefix">
+																																<div class="hr-input__prefix-container">
+																																	<button class="country-code-container" type="button" tabindex="0" aria-label="[redacted]">
+																																		<svg viewBox="0 0 24 24" class="hr-input-phone-dropdown__country">…</svg>
+																																		<svg viewBox="0 0 24 24" aria-hidden="true" class="hr-input-phone-dropdown__chevron">…</svg>
+																																	</button>
+																																</div>
+																															</div>
+																															<div class="hr-input__input">
+																																<input type="tel" class="hr-input__input-el hr-input-phone" placeholder="--" size="20" value="[redacted]">
+																															</div>
+																															<div class="hr-input__suffix">
+																																<div class="hr-base-clear">
+																																	<div class="hr-base-clear__placeholder"></div>
+																																</div>
+																																<div class="hr-input__suffix-container">
+																																	<div id="phone-label-[id]-primary-label-trigger" class="hr-dropdown__trigger-wrapper" role="presentation">
+																																		<button class="hr-button hr-button--default-type hr-button--medium-type hr-button--text hr-button--3xs" tabindex="0" type="button" id="hr-button-v-4-3-0-1-3-0" aria-labelledby="hr-button-v-4-3-0-1-3-0-label" aria-label>
+																																			<span class="hr-button__content">
+																																				<p class="hr-text hr-text-lg hr-text-semibold hr-button__content-default-slot" id="hr-button-v-4-3-0-1-3-0-label">
+																																					Mobile
+																																				</p>
+																																				<i class="hr-icon-inner hr-icon-right hr-icon-right hr-icon" aria-label="[redacted]" role="img">
+																																					<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+																																				</i>
+																																			</span>
+																																			<div aria-hidden="true" class="hr-base-wave"></div>
+																																			<div aria-hidden="true" class="hr-button__border"></div>
+																																			<div aria-hidden="true" class="hr-button__state-border"></div>
+																																		</button>
+																																	</div>
+																																</div>
+																															</div>
+																														</div>
+																														<div class="hr-input__border"></div>
+																														<div class="hr-input__state-border"></div>
+																													</div>
+																												</div>
+																											</div>
+																										</div>
+																									</div>
+																								</div>
+																							</form>
+																						</div>
+																						<div>
+																							<form class="hr-form hr-form-md" id="[id]-additional-0-[phone]-form">
+																								<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container custom-inline-phone" id="[id]-additional-0-[phone]-form-item">
+																									<label class="hr-form-item-label hr-form-item-label--right-mark">
+																										<span class="hr-form-item-label__text">
+																											Phone (Additional)
+																										</span>
+																									</label>
+																									<div class="hr-form-item-blank">
+																										<div class="flex items-center gap-1 w-full">
+																											<label class="hr-radio hr-radio__wrapper" id="[id]-additional-0-[phone]-radio">
+																												<div class="hr-radio__dot-wrapper">
+																													<div class="hr-radio__dot"></div>
+																													<input type="radio" class="hr-radio-input" name="contact.phone-phone-group" value="[redacted]">
+																												</div>
+																											</label>
+																											<div class="flex-1 relative">
+																												<div class="hr-input-container hr-input-phone" data-testid="hr-input-container">
+																													<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.phone-additional-0-[phone]" data-testid="hl-input">
+																														<div class="hr-input-wrapper">
+																															<div class="hr-input__prefix">
+																																<div class="hr-input__prefix-container">
+																																	<button class="country-code-container" type="button" tabindex="0" aria-label="[redacted]">
+																																		<svg viewBox="0 0 24 24" class="hr-input-phone-dropdown__country">…</svg>
+																																		<svg viewBox="0 0 24 24" aria-hidden="true" class="hr-input-phone-dropdown__chevron">…</svg>
+																																	</button>
+																																</div>
+																															</div>
+																															<div class="hr-input__input">
+																																<input type="tel" class="hr-input__input-el hr-input-phone" placeholder="--" size="20" value="[redacted]">
+																															</div>
+																															<div class="hr-input__suffix">
+																																<div class="hr-base-clear">
+																																	<div class="hr-base-clear__placeholder"></div>
+																																</div>
+																																<div class="hr-input__suffix-container">
+																																	<i id="delete-icon" class="hr-icon-inner inline-delete cursor-pointer opacity-0 pointer-events-none transition-opacity inline-delete cursor-pointer opacity-0 pointer-events-none transition-opacity hr-icon" aria-label="[redacted]" title="[redacted]" role="img">
+																																		<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+																																	</i>
+																																	<div id="phone-label-[id]-additional-0-[phone]-label-trigger" class="hr-dropdown__trigger-wrapper" role="presentation">
+																																		<button class="hr-button hr-button--default-type hr-button--medium-type hr-button--text hr-button--3xs" tabindex="0" type="button" id="hr-button-v-4-3-0-1-3-1" aria-labelledby="hr-button-v-4-3-0-1-3-1-label" aria-label>
+																																			<span class="hr-button__content">
+																																				<p class="hr-text hr-text-lg hr-text-semibold hr-button__content-default-slot" id="hr-button-v-4-3-0-1-3-1-label">
+																																					Work
+																																				</p>
+																																				<i class="hr-icon-inner hr-icon-right hr-icon-right hr-icon" aria-label="[redacted]" role="img">
+																																					<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+																																				</i>
+																																			</span>
+																																			<div aria-hidden="true" class="hr-base-wave"></div>
+																																			<div aria-hidden="true" class="hr-button__border"></div>
+																																			<div aria-hidden="true" class="hr-button__state-border"></div>
+																																		</button>
+																																	</div>
+																																</div>
+																															</div>
+																														</div>
+																														<div class="hr-input__border"></div>
+																														<div class="hr-input__state-border"></div>
+																													</div>
+																												</div>
+																											</div>
+																										</div>
+																									</div>
+																								</div>
+																							</form>
+																						</div>
+																						<div>
+																							<form class="hr-form hr-form-md" id="[id]-additional-1-[phone]-form">
+																								<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container custom-inline-phone" id="[id]-additional-1-[phone]-form-item">
+																									<label class="hr-form-item-label hr-form-item-label--right-mark">
+																										<span class="hr-form-item-label__text">
+																											Phone (Additional 2)
+																										</span>
+																									</label>
+																									<div class="hr-form-item-blank">
+																										<div class="flex items-center gap-1 w-full">
+																											<label class="hr-radio hr-radio__wrapper" id="[id]-additional-1-[phone]-radio">
+																												<div class="hr-radio__dot-wrapper">
+																													<div class="hr-radio__dot"></div>
+																													<input type="radio" class="hr-radio-input" name="contact.phone-phone-group" value="[redacted]">
+																												</div>
+																											</label>
+																											<div class="flex-1 relative">
+																												<div class="hr-input-container hr-input-phone" data-testid="hr-input-container">
+																													<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.phone-additional-1-[phone]" data-testid="hl-input">
+																														<div class="hr-input-wrapper">
+																															<div class="hr-input__prefix">
+																																<div class="hr-input__prefix-container">
+																																	<button class="country-code-container" type="button" tabindex="0" aria-label="[redacted]">
+																																		<svg viewBox="0 0 24 24" class="hr-input-phone-dropdown__country">…</svg>
+																																		<svg viewBox="0 0 24 24" aria-hidden="true" class="hr-input-phone-dropdown__chevron">…</svg>
+																																	</button>
+																																</div>
+																															</div>
+																															<div class="hr-input__input">
+																																<input type="tel" class="hr-input__input-el hr-input-phone" placeholder="--" size="20" value="[redacted]">
+																															</div>
+																															<div class="hr-input__suffix">
+																																<div class="hr-base-clear">
+																																	<div class="hr-base-clear__placeholder"></div>
+																																</div>
+																																<div class="hr-input__suffix-container">
+																																	<i id="delete-icon" class="hr-icon-inner inline-delete cursor-pointer opacity-0 pointer-events-none transition-opacity inline-delete cursor-pointer opacity-0 pointer-events-none transition-opacity hr-icon" aria-label="[redacted]" title="[redacted]" role="img">
+																																		<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+																																	</i>
+																																	<div id="phone-label-[id]-additional-1-[phone]-label-trigger" class="hr-dropdown__trigger-wrapper" role="presentation">
+																																		<button class="hr-button hr-button--default-type hr-button--medium-type hr-button--text hr-button--3xs" tabindex="0" type="button" id="hr-button-v-4-3-0-1-3-2" aria-labelledby="hr-button-v-4-3-0-1-3-2-label" aria-label>
+																																			<span class="hr-button__content">
+																																				<p class="hr-text hr-text-lg hr-text-semibold hr-button__content-default-slot" id="hr-button-v-4-3-0-1-3-2-label">
+																																					Select
+																																				</p>
+																																				<i class="hr-icon-inner hr-icon-right hr-icon-right hr-icon" aria-label="[redacted]" role="img">
+																																					<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+																																				</i>
+																																			</span>
+																																			<div aria-hidden="true" class="hr-base-wave"></div>
+																																			<div aria-hidden="true" class="hr-button__border"></div>
+																																			<div aria-hidden="true" class="hr-button__state-border"></div>
+																																		</button>
+																																	</div>
+																																</div>
+																															</div>
+																														</div>
+																														<div class="hr-input__border"></div>
+																														<div class="hr-input__state-border"></div>
+																													</div>
+																												</div>
+																											</div>
+																										</div>
+																									</div>
+																								</div>
+																							</form>
+																						</div>
+																					</div>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_1" class>
+																					<form class="hr-form hr-form--inline hr-form-md" id="[id]-form" rows="4">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 1
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container w-full" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--textarea hr-input--autosize hr-input--stateful hr-input--sm" id="contact.custom_field_1" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__textarea hr-scrollbar" role="none">
+																													<textarea aria-label="[redacted]" class="hr-input__textarea-el w-full" rows="3" placeholder="[custom]" value></textarea>
+																													<div class="hr-input__placeholder">
+																														[custom]
+																													</div>
+																													<div class="hr-input__textarea-mirror"></div>
+																												</div>
+																												<div class="hr-scrollbar-rail hr-scrollbar-rail--vertical hr-scrollbar-rail--vertical--right hr-scrollbar-rail--disabled" aria-hidden="true"></div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-date_of_birth" class>
+																					<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" disabled="false" id="[id]">
+																						<label class="hr-form-item-label hr-form-item-label--right-mark">
+																							<span class="hr-form-item-label__text">
+																								Date of birth
+																							</span>
+																						</label>
+																						<div class="hr-form-item-blank">
+																							<div class="hr-datepicker__trigger-wrapper">
+																								<div class="flex items-center gap-1 w-full date-trigger cursor-pointer h-6" tabindex="0">
+																									<div class="flex items-center justify-between gap-1 w-full">
+																										<span class="font-medium text-gray-700">
+																											[text]
+																										</span>
+																										<div class="inline-flex gap-1"></div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-source" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Contact source
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.source" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="--" size="20" value="[redacted]">
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-type" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Contact type
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full flex items-end">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.type">
+																											<div class="hr-base-selection hr-base-selection--selected">
+																												<div class="hr-base-selection-label" title="[redacted]" tabindex="0">
+																													<input class="hr-base-selection-input" placeholder tabindex="-1" role="presentation" aria-hidden="true" value>
+																													<div class="hr-base-selection-label__render-label hr-base-selection-overlay">
+																														<div class="hr-base-selection-overlay__wrapper">
+																															[value]
+																														</div>
+																													</div>
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_2" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 2
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_2" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_3" class>
+																					<form class="hr-form hr-form--inline hr-form-md" id="[id]-form" rows="4">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 3
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container w-full" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--textarea hr-input--autosize hr-input--stateful hr-input--sm" id="contact.custom_field_3" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__textarea hr-scrollbar" role="none">
+																													<textarea aria-label="[redacted]" class="hr-input__textarea-el w-full" rows="3" placeholder="[custom]" value></textarea>
+																													<div class="hr-input__placeholder">
+																														[custom]
+																													</div>
+																													<div class="hr-input__textarea-mirror"></div>
+																												</div>
+																												<div class="hr-scrollbar-rail hr-scrollbar-rail--vertical hr-scrollbar-rail--vertical--right hr-scrollbar-rail--disabled" aria-hidden="true"></div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="vue-recycle-scroller__item-view">
+											<div>
+												<div class="pt-0.5">
+													<div class="hr-collapse hr-accordion hr-collapse-style--border-item">
+														<div class="hr-collapse-item hr-collapse-item--right-arrow-placement hr-collapse-item--active hr-collapse-item--trigger-area-main hr-collapse-item--trigger-area-extra hr-collapse-item--trigger-area-arrow hr-accordion__item hr-collapse-item--hover-effect" id="[id]">
+															<div class="hr-collapse-item__header hr-collapse-item__header--active">
+																<div class="hr-collapse-item__header-main">
+																	<p class="hr-text hr-text-lg hr-text-medium text-gray-900">
+																		General Info
+																	</p>
+																	<div class="hr-collapse-item-arrow">
+																		<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-right hr-collapse-item--icon hr-collapse-item--icon-right hr-icon" aria-label="[redacted]" role="img">
+																			<svg viewBox="0 0 24 24" aria-hidden="true" class="rotate-90">…</svg>
+																		</i>
+																	</div>
+																</div>
+																<div class="hr-collapse-item__header-extra">
+																	<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-left hr-collapse-item--icon hr-collapse-item--icon-left hr-icon" aria-label="[redacted]" role="img">
+																		<svg viewBox="0 0 24 24" aria-hidden="true" class="rotate-180">…</svg>
+																	</i>
+																</div>
+															</div>
+															<div class="hr-collapse-item__content-wrapper">
+																<div class="hr-collapse-item__content-inner">
+																	<div>
+																		<div class="border-t border-gray-200 block-padding">
+																			<div class="flex flex-col gap-4">
+																				<div id="field-container" data-pendo-id="contact-details-field-company_name" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item--no-label hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<div class="hr-form-item-blank">
+																								<div class="w-full">
+																									<span class="w-full flex items-center gap-1 justify-between">
+																										<p class="hr-text hr-text-lg hr-text-medium text-gray-600">
+																											[text]
+																										</p>
+																										<p class="hr-text hr-text-xs hr-text-medium text-blue-600 hover:text-blue-800 cursor-pointer flex items-center gap-1">
+																											[text]
+																											<i class="hr-icon-inner hr-icon" aria-label="[redacted]" role="img">
+																												<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+																											</i>
+																										</p>
+																									</span>
+																									<div class="hr-input__inline-wrapper">
+																										<div class="hr-input__inline-text hr-input__inline-text--no-border has-value" tabindex="0" role="button" aria-disabled="false">
+																											<div class="hr-input__text-content">
+																												<p class="hr-input__text-content--active">
+																													[value]
+																												</p>
+																											</div>
+																											<div class="hr-input__inline-edit-actions"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_4" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 4
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_4" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<!-- our injected tk-gmaps-container removed -->
+																				<div id="field-container" data-pendo-id="contact-details-field-address1" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Street address
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.address1" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="--" size="20" value="[redacted]" autocomplete="off">
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-city" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									City
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.city" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="--" size="20" value="[redacted]">
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-country" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Country
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.country">
+																											<div class="hr-base-selection hr-base-selection--selected">
+																												<div class="hr-base-selection-label" title="[redacted]" tabindex="0">
+																													<input class="hr-base-selection-input" placeholder tabindex="-1" role="presentation" aria-hidden="true" value>
+																													<div class="hr-base-selection-label__render-label hr-base-selection-overlay">
+																														<div class="hr-base-selection-overlay__wrapper">
+																															[value]
+																														</div>
+																													</div>
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="absolute right-2 top-1/2 -translate-y-1/2 ml-2 inline-flex gap-1"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-state" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									State
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.state" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="--" size="20" value="[redacted]">
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-postal_code" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Postal code
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.postal_code" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="--" size="20" value="[redacted]">
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-website" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container hr-form-item__label-slot inline-url-field" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									<div class="inline-url-field__label-row flex w-full min-w-0 items-center gap-2">
+																										<div class="inline-url-field__label-left flex min-w-0 flex-1 flex-wrap items-center gap-1">
+																											<p class="hr-text hr-text-lg hr-text-medium text-gray-500">
+																												Website
+																											</p>
+																										</div>
+																										<i class="hr-icon-inner inline-url-field__label-open cursor-pointer shrink-0 inline-url-field__label-open cursor-pointer shrink-0 hr-icon" aria-label="[redacted]" role="img">
+																											<svg viewBox="0 -960 960 960">…</svg>
+																										</i>
+																									</div>
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="hr-input-container" data-testid="hr-input-container">
+																									<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.website" data-testid="hl-input">
+																										<div class="hr-input-wrapper">
+																											<div class="hr-input__input">
+																												<input type="text" class="hr-input__input-el" placeholder="--" size="20" value="[redacted]">
+																											</div>
+																											<div class="hr-input__suffix">
+																												<div class="hr-input__suffix-container"></div>
+																											</div>
+																										</div>
+																										<div class="hr-input__border"></div>
+																										<div class="hr-input__state-border"></div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-timezone" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Time zone
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.timezone">
+																											<div class="hr-base-selection hr-base-selection--selected">
+																												<div class="hr-base-selection-label" title="GMT-04:00 America/Detroit (EDT)" tabindex="0">
+																													<input class="hr-base-selection-input" placeholder tabindex="-1" role="presentation" aria-hidden="true" value>
+																													<div class="hr-base-selection-label__render-label hr-base-selection-overlay">
+																														<div class="hr-base-selection-overlay__wrapper">
+																															GMT-04:00 America/Detroit (EDT)
+																														</div>
+																													</div>
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-1 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_5" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 5
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full flex items-end">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.custom_field_5">
+																											<div class="hr-base-selection">
+																												<div class="hr-base-selection-label" tabindex="0">
+																													<input class="hr-base-selection-input" placeholder="[custom]" tabindex="-1" role="presentation" aria-hidden="true" value>
+																													<div class="hr-base-selection-placeholder hr-base-selection-overlay">
+																														<div class="hr-base-selection-overlay__wrapper">
+																															[custom]
+																														</div>
+																													</div>
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-latitude" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Latitude
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.latitude" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="--" size="20" value="[redacted]">
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-longitude" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Longitude
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.longitude" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="--" size="20" value="[redacted]">
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="vue-recycle-scroller__item-view">
+											<div>
+												<div class="pt-0.5">
+													<div class="hr-collapse hr-accordion hr-collapse-style--border-item">
+														<div class="hr-collapse-item hr-collapse-item--right-arrow-placement hr-collapse-item--active hr-collapse-item--trigger-area-main hr-collapse-item--trigger-area-extra hr-collapse-item--trigger-area-arrow hr-accordion__item hr-collapse-item--hover-effect" id="[id]">
+															<div class="hr-collapse-item__header hr-collapse-item__header--active">
+																<div class="hr-collapse-item__header-main">
+																	<p class="hr-text hr-text-lg hr-text-medium text-gray-900">
+																		Custom folder 1
+																	</p>
+																	<div class="hr-collapse-item-arrow">
+																		<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-right hr-collapse-item--icon hr-collapse-item--icon-right hr-icon" aria-label="[redacted]" role="img">
+																			<svg viewBox="0 0 24 24" aria-hidden="true" class="rotate-90">…</svg>
+																		</i>
+																	</div>
+																</div>
+																<div class="hr-collapse-item__header-extra">
+																	<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-left hr-collapse-item--icon hr-collapse-item--icon-left hr-icon" aria-label="[redacted]" role="img">
+																		<svg viewBox="0 0 24 24" aria-hidden="true" class="rotate-180">…</svg>
+																	</i>
+																</div>
+															</div>
+															<div class="hr-collapse-item__content-wrapper">
+																<div class="hr-collapse-item__content-inner">
+																	<div>
+																		<div class="border-t border-gray-200 block-padding">
+																			<div class="flex flex-col gap-4">
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_6" class>
+																					<form class="hr-form hr-form--inline hr-form-md" id="[id]-form" rows="4">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 6
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container w-full" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--textarea hr-input--autosize hr-input--stateful hr-input--sm" id="contact.custom_field_6" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__textarea hr-scrollbar" role="none">
+																													<textarea aria-label="[redacted]" class="hr-input__textarea-el w-full" rows="3" placeholder="[custom]" value="[redacted]"></textarea>
+																													<div class="hr-input__textarea-mirror">
+																														[custom]
+																													</div>
+																												</div>
+																												<div class="hr-scrollbar-rail hr-scrollbar-rail--vertical hr-scrollbar-rail--vertical--right hr-scrollbar-rail--disabled" aria-hidden="true"></div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_7" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 7
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_7" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_8" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 8
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_8" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_9" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 9
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_9" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_10" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 10
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_10" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_11" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 11
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_11" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_12" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 12
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_12" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_13" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 13
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_13" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_14" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 14
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_14" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value="[redacted]">
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_15" class>
+																					<div class="space-y-2">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container hr-form-item__label-slot mb-1" id="[id]">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									<div class="flex items-center gap-1">
+																										<span>
+																											Custom field 15
+																										</span>
+																									</div>
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="hr-upload hr-upload--dragger-inside hr-upload__container" id="[id].custom_field_15">
+																									<input type="file" class="hr-upload-file-input" accept=".png,.gif,.jpeg,.jpg">
+																									<div class="hr-upload-trigger">
+																										<div class="hr-upload-dragger">
+																											<div class="hr-upload-icon">
+																												<svg viewBox="0 0 24 24" aria-hidden="true" class>…</svg>
+																											</div>
+																											<div class="flex flex-row items-center justify-center gap-1">
+																												<p class="hr-text hr-text-md hr-text-medium text-blue-600">
+																													[custom]
+																												</p>
+																												<p class="hr-text hr-text-md hr-text-regular text-gray-600">
+																													[custom]
+																												</p>
+																											</div>
+																											<p class="hr-text hr-text-xs hr-text-regular text-gray-600">
+																												[custom]
+																											</p>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																							<div class="hr-form-item-feedback-wrapper"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_16" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 16
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_16" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_17" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 17
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_17" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value="[redacted]">
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_18" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 18
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.custom_field_18">
+																											<div class="hr-base-selection">
+																												<div class="hr-base-selection-label" tabindex="0">
+																													<div class="hr-base-selection-placeholder hr-base-selection-overlay">
+																														<div class="hr-base-selection-placeholder__inner">
+																															[custom]
+																														</div>
+																													</div>
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_19" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 19
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_19" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value="[redacted]">
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_20" class>
+																					<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" disabled="false" id="[id]">
+																						<label class="hr-form-item-label hr-form-item-label--right-mark">
+																							<span class="hr-form-item-label__text">
+																								Custom field 20
+																							</span>
+																						</label>
+																						<div class="hr-form-item-blank">
+																							<div class="hr-datepicker__trigger-wrapper">
+																								<div class="flex items-center gap-1 w-full date-trigger cursor-pointer h-6" tabindex="0">
+																									<div class="flex items-center justify-between gap-1 w-full">
+																										<span class="font-medium text-gray-700">
+																											[custom]
+																										</span>
+																										<div class="inline-flex gap-1"></div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_21" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container custom-inline-phone" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 21
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container hr-input-phone" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_21" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__prefix">
+																													<div class="hr-input__prefix-container">
+																														<button class="country-code-container" type="button" tabindex="0" aria-label="[redacted]">
+																															<svg viewBox="0 0 24 24" class="hr-input-phone-dropdown__country">…</svg>
+																															<svg viewBox="0 0 24 24" aria-hidden="true" class="hr-input-phone-dropdown__chevron">…</svg>
+																														</button>
+																													</div>
+																												</div>
+																												<div class="hr-input__input">
+																													<input type="tel" class="hr-input__input-el hr-input-phone" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-base-clear">
+																														<div class="hr-base-clear__placeholder"></div>
+																													</div>
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_22" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 22
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_22" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_23" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 23
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_23" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_24" class>
+																					<div class="space-y-2">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container hr-form-item__label-slot mb-1" id="[id]">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									<div class="flex items-center gap-1">
+																										<span>
+																											Custom field 24
+																										</span>
+																									</div>
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="hr-upload hr-upload--dragger-inside hr-upload__container" id="[id].custom_field_24">
+																									<input type="file" class="hr-upload-file-input" accept=".png,.jpeg,.jpg">
+																									<div class="hr-upload-trigger">
+																										<div class="hr-upload-dragger">
+																											<div class="hr-upload-icon">
+																												<svg viewBox="0 0 24 24" aria-hidden="true" class>…</svg>
+																											</div>
+																											<div class="flex flex-row items-center justify-center gap-1">
+																												<p class="hr-text hr-text-md hr-text-medium text-blue-600">
+																													[custom]
+																												</p>
+																												<p class="hr-text hr-text-md hr-text-regular text-gray-600">
+																													[custom]
+																												</p>
+																											</div>
+																											<p class="hr-text hr-text-xs hr-text-regular text-gray-600">
+																												[custom]
+																											</p>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																							<div class="hr-form-item-feedback-wrapper"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_25" class>
+																					<form class="hr-form hr-form--inline hr-form-md" id="[id]-form" rows="4">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 25
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container w-full" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--textarea hr-input--autosize hr-input--stateful hr-input--sm" id="contact.custom_field_25" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__textarea hr-scrollbar" role="none">
+																													<textarea aria-label="[redacted]" class="hr-input__textarea-el w-full" rows="3" placeholder="[custom]" value></textarea>
+																													<div class="hr-input__placeholder">
+																														[custom]
+																													</div>
+																													<div class="hr-input__textarea-mirror"></div>
+																												</div>
+																												<div class="hr-scrollbar-rail hr-scrollbar-rail--vertical hr-scrollbar-rail--vertical--right hr-scrollbar-rail--disabled" aria-hidden="true"></div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_26" class>
+																					<form class="hr-form hr-form--inline hr-form-md" id="[id]-form" rows="4">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 26
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container w-full" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--textarea hr-input--autosize hr-input--stateful hr-input--sm" id="contact.custom_field_26" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__textarea hr-scrollbar" role="none">
+																													<textarea aria-label="[redacted]" class="hr-input__textarea-el w-full" rows="3" placeholder="[custom]" value></textarea>
+																													<div class="hr-input__placeholder">
+																														[custom]
+																													</div>
+																													<div class="hr-input__textarea-mirror"></div>
+																												</div>
+																												<div class="hr-scrollbar-rail hr-scrollbar-rail--vertical hr-scrollbar-rail--vertical--right hr-scrollbar-rail--disabled" aria-hidden="true"></div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_27" class>
+																					<form class="hr-form hr-form--inline hr-form-md" id="[id]-form" rows="4">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 27
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container w-full" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--textarea hr-input--autosize hr-input--stateful hr-input--sm" id="contact.custom_field_27" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__textarea hr-scrollbar" role="none">
+																													<textarea aria-label="[redacted]" class="hr-input__textarea-el w-full" rows="3" placeholder="[custom]" value></textarea>
+																													<div class="hr-input__placeholder">
+																														[custom]
+																													</div>
+																													<div class="hr-input__textarea-mirror"></div>
+																												</div>
+																												<div class="hr-scrollbar-rail hr-scrollbar-rail--vertical hr-scrollbar-rail--vertical--right hr-scrollbar-rail--disabled" aria-hidden="true"></div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="vue-recycle-scroller__item-view">
+											<div>
+												<div class="pt-0.5">
+													<div class="hr-collapse hr-accordion hr-collapse-style--border-item">
+														<div class="hr-collapse-item hr-collapse-item--right-arrow-placement hr-collapse-item--active hr-collapse-item--trigger-area-main hr-collapse-item--trigger-area-extra hr-collapse-item--trigger-area-arrow hr-accordion__item hr-collapse-item--hover-effect" id="[id]">
+															<div class="hr-collapse-item__header hr-collapse-item__header--active">
+																<div class="hr-collapse-item__header-main">
+																	<p class="hr-text hr-text-lg hr-text-medium text-gray-900">
+																		Additional Info
+																	</p>
+																	<div class="hr-collapse-item-arrow">
+																		<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-right hr-collapse-item--icon hr-collapse-item--icon-right hr-icon" aria-label="[redacted]" role="img">
+																			<svg viewBox="0 0 24 24" aria-hidden="true" class="rotate-90">…</svg>
+																		</i>
+																	</div>
+																</div>
+																<div class="hr-collapse-item__header-extra">
+																	<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-left hr-collapse-item--icon hr-collapse-item--icon-left hr-icon" aria-label="[redacted]" role="img">
+																		<svg viewBox="0 0 24 24" aria-hidden="true" class="rotate-180">…</svg>
+																	</i>
+																</div>
+															</div>
+															<div class="hr-collapse-item__content-wrapper">
+																<div class="hr-collapse-item__content-inner">
+																	<div>
+																		<div class="border-t border-gray-200 block-padding">
+																			<div class="flex flex-col gap-4">
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_28" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 28
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full flex items-end">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.custom_field_28">
+																											<div class="hr-base-selection">
+																												<div class="hr-base-selection-label" tabindex="0">
+																													<input class="hr-base-selection-input" placeholder="[custom]" tabindex="-1" role="presentation" aria-hidden="true" value>
+																													<div class="hr-base-selection-placeholder hr-base-selection-overlay">
+																														<div class="hr-base-selection-overlay__wrapper">
+																															[custom]
+																														</div>
+																													</div>
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_29" class>
+																					<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" disabled="false" id="[id]">
+																						<label class="hr-form-item-label hr-form-item-label--right-mark">
+																							<span class="hr-form-item-label__text">
+																								Custom field 29
+																							</span>
+																						</label>
+																						<div class="hr-form-item-blank">
+																							<div class="hr-datepicker__trigger-wrapper">
+																								<div class="flex items-center gap-1 w-full date-trigger cursor-pointer h-6" tabindex="0">
+																									<div class="flex items-center justify-between gap-1 w-full">
+																										<span class="font-medium text-gray-700">
+																											[custom]
+																										</span>
+																										<div class="inline-flex gap-1"></div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_30" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 30
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.custom_field_30">
+																											<div class="hr-base-selection hr-base-selection--multiple">
+																												<div class="hr-base-selection-tags" tabindex="0">
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection-placeholder hr-base-selection-overlay">
+																													<div class="hr-base-selection-placeholder__inner">
+																														[custom]
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_31" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 31
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full flex items-end">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.custom_field_31">
+																											<div class="hr-base-selection">
+																												<div class="hr-base-selection-label" tabindex="0">
+																													<input class="hr-base-selection-input" placeholder="[custom]" tabindex="-1" role="presentation" aria-hidden="true" value>
+																													<div class="hr-base-selection-placeholder hr-base-selection-overlay">
+																														<div class="hr-base-selection-overlay__wrapper">
+																															[custom]
+																														</div>
+																													</div>
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_32" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 32
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full flex items-end">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.custom_field_32">
+																											<div class="hr-base-selection">
+																												<div class="hr-base-selection-label" tabindex="0">
+																													<input class="hr-base-selection-input" placeholder="[custom]" tabindex="-1" role="presentation" aria-hidden="true" value>
+																													<div class="hr-base-selection-placeholder hr-base-selection-overlay">
+																														<div class="hr-base-selection-overlay__wrapper">
+																															[custom]
+																														</div>
+																													</div>
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_33" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 33
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.custom_field_33">
+																											<div class="hr-base-selection hr-base-selection--multiple">
+																												<div class="hr-base-selection-tags" tabindex="0">
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection-placeholder hr-base-selection-overlay">
+																													<div class="hr-base-selection-placeholder__inner">
+																														[custom]
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_34" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 34
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.custom_field_34">
+																											<div class="hr-base-selection hr-base-selection--multiple">
+																												<div class="hr-base-selection-tags" tabindex="0">
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection-placeholder hr-base-selection-overlay">
+																													<div class="hr-base-selection-placeholder__inner">
+																														[custom]
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_35" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 35
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.custom_field_35">
+																											<div class="hr-base-selection">
+																												<div class="hr-base-selection-label" tabindex="0">
+																													<div class="hr-base-selection-placeholder hr-base-selection-overlay">
+																														<div class="hr-base-selection-placeholder__inner">
+																															[custom]
+																														</div>
+																													</div>
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_36" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 36
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-number w-full hr-input-number hr-input-number__container w-full" id="contact.custom_field_36">
+																										<div class="hr-input hr-input--resizable hr-input--stateful">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__prefix">
+																													<span class="text-gray-500">
+																														[custom]
+																													</span>
+																												</div>
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix"></div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_37" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 37
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_37" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_38" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 38
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_38" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="vue-recycle-scroller__item-view">
+											<div>
+												<div class="pt-0.5">
+													<div class="hr-collapse hr-accordion hr-collapse-style--border-item">
+														<div class="hr-collapse-item hr-collapse-item--right-arrow-placement hr-collapse-item--active hr-collapse-item--trigger-area-main hr-collapse-item--trigger-area-extra hr-collapse-item--trigger-area-arrow hr-accordion__item hr-collapse-item--hover-effect" id="[id]">
+															<div class="hr-collapse-item__header hr-collapse-item__header--active">
+																<div class="hr-collapse-item__header-main">
+																	<p class="hr-text hr-text-lg hr-text-medium text-gray-900">
+																		Custom folder 2
+																	</p>
+																	<div class="hr-collapse-item-arrow">
+																		<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-right hr-collapse-item--icon hr-collapse-item--icon-right hr-icon" aria-label="[redacted]" role="img">
+																			<svg viewBox="0 0 24 24" aria-hidden="true" class="rotate-90">…</svg>
+																		</i>
+																	</div>
+																</div>
+																<div class="hr-collapse-item__header-extra">
+																	<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-left hr-collapse-item--icon hr-collapse-item--icon-left hr-icon" aria-label="[redacted]" role="img">
+																		<svg viewBox="0 0 24 24" aria-hidden="true" class="rotate-180">…</svg>
+																	</i>
+																</div>
+															</div>
+															<div class="hr-collapse-item__content-wrapper">
+																<div class="hr-collapse-item__content-inner">
+																	<div>
+																		<div class="border-t border-gray-200 block-padding">
+																			<div class="flex flex-col gap-4">
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_39" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 39
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.custom_field_39">
+																											<div class="hr-base-selection hr-base-selection--multiple">
+																												<div class="hr-base-selection-tags" tabindex="0">
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection-placeholder hr-base-selection-overlay">
+																													<div class="hr-base-selection-placeholder__inner">
+																														[custom]
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_40" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 40
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_40" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_41" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 41
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_41" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_42" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 42
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_42" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_43" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 43
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_43" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_44" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 44
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.custom_field_44">
+																											<div class="hr-base-selection">
+																												<div class="hr-base-selection-label" tabindex="0">
+																													<div class="hr-base-selection-placeholder hr-base-selection-overlay">
+																														<div class="hr-base-selection-placeholder__inner">
+																															[custom]
+																														</div>
+																													</div>
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_45" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 45
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-select-wrapper hr-select-wrapper--inline">
+																										<div class="hr-select" id="contact.custom_field_45">
+																											<div class="hr-base-selection hr-base-selection--multiple">
+																												<div class="hr-base-selection-tags" tabindex="0">
+																													<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																														<div class="hr-base-loading__placeholder">
+																															<div class="hr-base-clear">
+																																<div class="hr-base-clear__placeholder">
+																																	<i class="hr-base-icon hr-base-suffix__arrow">
+																																		<svg viewBox="0 0 16 16">…</svg>
+																																	</i>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div>
+																												<div class="hr-base-selection-placeholder hr-base-selection-overlay">
+																													<div class="hr-base-selection-placeholder__inner">
+																														[custom]
+																													</div>
+																												</div>
+																												<div class="hr-base-selection__border"></div>
+																												<div class="hr-base-selection__state-border"></div>
+																											</div>
+																										</div>
+																										<div class="hr-select-icon-container"></div>
+																										<span class="hr-select__inline-actions-container">
+																											<div class="hr-select__inline-edit-actions"></div>
+																										</span>
+																									</div>
+																									<div class="inline-flex gap-1 absolute right-22 top-1/2 -translate-y-1/2"></div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_46" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 46
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_46" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_47" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 47
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_47" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																				<div id="field-container" data-pendo-id="contact-details-field-custom_field_48" class>
+																					<form class="hr-form hr-form-md" id="[id]-form">
+																						<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled hr-form-item hr-form-item--2xs-size hr-form-item__container" id="[id]-form-item">
+																							<label class="hr-form-item-label hr-form-item-label--right-mark">
+																								<span class="hr-form-item-label__text">
+																									Custom field 48
+																								</span>
+																							</label>
+																							<div class="hr-form-item-blank">
+																								<div class="relative w-full">
+																									<div class="hr-input-container" data-testid="hr-input-container">
+																										<div class="hr-input hr-input--resizable hr-input--stateful hr-input--sm" id="contact.custom_field_48" data-testid="hl-input">
+																											<div class="hr-input-wrapper">
+																												<div class="hr-input__input">
+																													<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value>
+																													<div class="hr-input__placeholder">
+																														<span>
+																															[custom]
+																														</span>
+																													</div>
+																												</div>
+																												<div class="hr-input__suffix">
+																													<div class="hr-input__suffix-container"></div>
+																												</div>
+																											</div>
+																											<div class="hr-input__border"></div>
+																											<div class="hr-input__state-border"></div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</form>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="vue-recycle-scroller__item-view">
+											<div>
+												<div class="pt-0.5">
+													<div class="hr-collapse hr-accordion hr-collapse-style--border-item">
+														<div class="hr-collapse-item hr-collapse-item--right-arrow-placement hr-collapse-item--trigger-area-main hr-collapse-item--trigger-area-extra hr-collapse-item--trigger-area-arrow hr-accordion__item hr-collapse-item--hover-effect" id="[id]">
+															<div class="hr-collapse-item__header">
+																<div class="hr-collapse-item__header-main">
+																	<p class="hr-text hr-text-lg hr-text-medium text-gray-900">
+																		Custom folder 3
+																	</p>
+																	<div class="hr-collapse-item-arrow">
+																		<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-right hr-collapse-item--icon hr-collapse-item--icon-right hr-icon" aria-label="[redacted]" role="img">
+																			<svg viewBox="0 0 24 24" aria-hidden="true" class>…</svg>
+																		</i>
+																	</div>
+																</div>
+																<div class="hr-collapse-item__header-extra">
+																	<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-left hr-collapse-item--icon hr-collapse-item--icon-left hr-icon" aria-label="[redacted]" role="img">
+																		<svg viewBox="0 0 24 24" aria-hidden="true" class>…</svg>
+																	</i>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="vue-recycle-scroller__item-view">
+											<div>
+												<div class="pt-0.5">
+													<div class="hr-collapse hr-accordion hr-collapse-style--border-item">
+														<div class="hr-collapse-item hr-collapse-item--right-arrow-placement hr-collapse-item--trigger-area-main hr-collapse-item--trigger-area-extra hr-collapse-item--trigger-area-arrow hr-accordion__item hr-collapse-item--hover-effect" id="[id]">
+															<div class="hr-collapse-item__header">
+																<div class="hr-collapse-item__header-main">
+																	<p class="hr-text hr-text-lg hr-text-medium text-gray-900">
+																		Custom folder 4
+																	</p>
+																	<div class="hr-collapse-item-arrow">
+																		<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-right hr-collapse-item--icon hr-collapse-item--icon-right hr-icon" aria-label="[redacted]" role="img">
+																			<svg viewBox="0 0 24 24" aria-hidden="true" class>…</svg>
+																		</i>
+																	</div>
+																</div>
+																<div class="hr-collapse-item__header-extra">
+																	<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-left hr-collapse-item--icon hr-collapse-item--icon-left hr-icon" aria-label="[redacted]" role="img">
+																		<svg viewBox="0 0 24 24" aria-hidden="true" class>…</svg>
+																	</i>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="vue-recycle-scroller__item-view">
+											<div>
+												<div class="pt-0.5">
+													<div class="hr-collapse hr-accordion hr-collapse-style--border-item">
+														<div class="hr-collapse-item hr-collapse-item--right-arrow-placement hr-collapse-item--trigger-area-main hr-collapse-item--trigger-area-extra hr-collapse-item--trigger-area-arrow hr-accordion__item hr-collapse-item--hover-effect" id="[id]">
+															<div class="hr-collapse-item__header">
+																<div class="hr-collapse-item__header-main">
+																	<p class="hr-text hr-text-lg hr-text-medium text-gray-900">
+																		Custom folder 5
+																	</p>
+																	<div class="hr-collapse-item-arrow">
+																		<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-right hr-collapse-item--icon hr-collapse-item--icon-right hr-icon" aria-label="[redacted]" role="img">
+																			<svg viewBox="0 0 24 24" aria-hidden="true" class>…</svg>
+																		</i>
+																	</div>
+																</div>
+																<div class="hr-collapse-item__header-extra">
+																	<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-left hr-collapse-item--icon hr-collapse-item--icon-left hr-icon" aria-label="[redacted]" role="img">
+																		<svg viewBox="0 0 24 24" aria-hidden="true" class>…</svg>
+																	</i>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="vue-recycle-scroller__item-view">
+											<div>
+												<div class="pt-0.5">
+													<div class="hr-collapse hr-accordion hr-collapse-style--border-item">
+														<div class="hr-collapse-item hr-collapse-item--right-arrow-placement hr-collapse-item--trigger-area-main hr-collapse-item--trigger-area-extra hr-collapse-item--trigger-area-arrow hr-accordion__item hr-collapse-item--hover-effect" id="[id]">
+															<div class="hr-collapse-item__header">
+																<div class="hr-collapse-item__header-main">
+																	<p class="hr-text hr-text-lg hr-text-medium text-gray-900">
+																		Custom folder 6
+																	</p>
+																	<div class="hr-collapse-item-arrow">
+																		<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-right hr-collapse-item--icon hr-collapse-item--icon-right hr-icon" aria-label="[redacted]" role="img">
+																			<svg viewBox="0 0 24 24" aria-hidden="true" class>…</svg>
+																		</i>
+																	</div>
+																</div>
+																<div class="hr-collapse-item__header-extra">
+																	<i class="hr-icon-inner hr-collapse-item--icon hr-collapse-item--icon-left hr-collapse-item--icon hr-collapse-item--icon-left hr-icon" aria-label="[redacted]" role="img">
+																		<svg viewBox="0 0 24 24" aria-hidden="true" class>…</svg>
+																	</i>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="vue-recycle-scroller__slot"></div>
+									<div class="resize-observer" tabindex="-1">
+										<object aria-hidden="true" tabindex="-1" type="text/html"></object>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="px-3 py-2 bg-gray-50 border-t border-gray-300 mt-auto flex flex-col gap-1">
+		<p class="hr-text hr-text-xs hr-text-regular">
+			[text]
+			<span class="internal-source-link" id="internal-source-customer">
+				[text]
+			</span>
+		</p>
+		<p class="hr-text hr-text-xs hr-text-regular">
+			[text]
+		</p>
+		<button class="hr-button hr-button--default-type hr-button--medium-type hr-button--secondary hr-button--2xs" tabindex="0" type="button" id="audit-logs-button" aria-labelledby="audit-logs-button-label" aria-label data-pendo-id="contact-details-audit-logs">
+			<span class="hr-button__content">
+				<p class="hr-text hr-text-sm hr-text-semibold hr-button__content-default-slot" id="audit-logs-button-label">
+					Audit logs
+				</p>
+				<i class="hr-icon-inner hr-icon-right hr-icon-right hr-icon" aria-label="[redacted]" role="img">
+					<i class="hr-icon-inner hr-icon" aria-label="[redacted]" role="img">
+						<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+					</i>
+				</i>
+			</span>
+			<div aria-hidden="true" class="hr-base-wave"></div>
+			<div aria-hidden="true" class="hr-button__border"></div>
+			<div aria-hidden="true" class="hr-button__state-border"></div>
+		</button>
+	</div>
+</div>

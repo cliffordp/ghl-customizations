@@ -1,0 +1,701 @@
+<!--
+	GHL DOM snapshot: Company / Business details side panel
+	Captured: 2026-10-16
+	Root: .details-wrapper, .details-view, #fields-form
+	Anonymized by ghl-dom-reference/capture.js:
+		[value]/[redacted] = record data, [custom] / "Custom field N" / "Custom folder N" = agency-defined names,
+		[text] = other text, [option] = non-time-zone menu options, [id] = generated IDs. Non-structural attributes, inline styles, and SVG paths are removed.
+	Still review for personal data before committing.
+
+	Selectors used by gmaps-address-autocomplete-crm/script.js:
+		✓  .details-view
+		✓  .details-view .primary-property-name
+		✓  .fields .hr-form-item-label__text, .details-view .hr-form-item-label__text
+		✓  .fields input.hr-input__input-el
+-->
+<div class="flex flex-col h-full details-wrapper">
+	<div class="flex items-center justify-between h-[50.5px] gap-4 !pt-[11.5px] !pb-[10.5px] !pl-4 !pr-[13px] border-b border-solid border-[#E8EAED]">
+		<p class="m-0 truncate font-medium text-gray-900 text-base capitalize">
+			[text]
+		</p>
+		<div class="flex items-center gap-4">
+			<button class="hr-button hr-button--default-type hr-button--medium-type ui-button quaternary icon-only ui-text-btn !p-0 h-5 !p-0 h-5" tabindex="0" type="button" id="custom-associations-actions-btn" aria-label="[redacted]">
+				<span class="hr-button__content">
+					<svg viewBox="0 0 24 24" aria-hidden="true" class="w-5 h-5 text-gray-600">…</svg>
+				</span>
+			</button>
+			<button class="hr-button hr-button--default-type hr-button--medium-type ui-button quaternary icon-only ui-text-btn p-0 h-5 p-0 h-5" tabindex="0" type="button" id="custom-associations-close-btn" aria-label="[redacted]">
+				<span class="hr-button__content">
+					<svg viewBox="0 0 24 24" aria-hidden="true" class="w-5 h-5 text-gray-600">…</svg>
+				</span>
+			</button>
+		</div>
+	</div>
+	<div class="w-full flex flex-1 overflow-hidden">
+		<div class="flex-1 overflow-auto">
+			<div class="flex flex-col justify-between h-full">
+				<div class="details-view flex-1 flex flex-col">
+					<div class="primary-ds-prop pd-view pt-4 flex items-center gap-2">
+						<div class="company-logo flex-none">
+							<div class="group relative record-company-logo w-11 h-11 flex items-center justify-center cursor-pointer" id="company-logo-entry-tile" role="button" tabindex="0" aria-label="[redacted]">
+								<span class="hr-avatar hr-avatar__container hr-avatar-44" id="company-logo-default">
+									<span class="hr-avatar__text">
+										<span>
+											<span>
+												[value]
+											</span>
+										</span>
+									</span>
+								</span>
+								<div id="company-logo-edit-overlay" class="absolute top-0 left-0 w-full h-full flex items-center justify-center rounded-full cursor-pointer company-logo-edit-overlay opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+									<i class="hr-icon-inner hr-icon" aria-label="[redacted]" role="img">
+										<svg viewBox="0 0 24 24" aria-hidden="true">…</svg>
+									</i>
+								</div>
+							</div>
+						</div>
+						<div class="record-name text-3xl font-extrabold flex flex-auto">
+							<div class="cursor-default w-[80%] text-gray-800 text-2xl">
+								<div class="truncate primary-property-name">
+									[value]
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="info-tabs mt-3">
+						<div class="hr-tabs hr-tabs--line-type hr-tabs--medium-size hr-tabs--top ui-tabs">
+							<div class="hr-tabs-nav--line-type hr-tabs-nav--top hr-tabs-nav">
+								<div class="hr-tabs-nav-scroll-wrapper">
+									<div class="v-x-scroll">
+										<div class="hr-tabs-nav-scroll-content">
+											<div class="hr-tabs-wrapper">
+												<div class="hr-tabs-scroll-padding"></div>
+												<div class="hr-tabs-tab-wrapper">
+													<div class="hr-tabs-tab hr-tabs-tab--active">
+														<span class="hr-tabs-tab__label">
+															All fields
+														</span>
+													</div>
+												</div>
+												<div class="hr-tabs-scroll-padding"></div>
+											</div>
+											<div class="hr-tabs-bar"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="hr-tabs-pane-wrapper">
+								<div class="hr-tab-pane">
+									<div class="text-gray-400 font-sans leading-normal tracking-normal custom-fields co-record-edit-picker-scope mt-2">
+										<div class="fields-container bg-grey-700">
+											<div class="flex hide-empty-fields pd-view mb-2">
+												<div class="hr-checkbox hr-checkbox--show-label ml-3 pt-1 pb-3 ui-checkbox" tabindex="0" role="checkbox" aria-checked="false" aria-labelledby="[id]" id="hide-empty-fields">
+													<div class="hr-checkbox-box-wrapper">
+														<div class="hr-checkbox-box">
+															<div class="hr-checkbox-icon">
+																<svg viewBox="0 0 64 64" class="check-icon">…</svg>
+															</div>
+															<div class="hr-checkbox-box__border"></div>
+														</div>
+													</div>
+													<span class="hr-checkbox__label" id="[id]">
+														Hide empty fields & folders
+													</span>
+												</div>
+											</div>
+											<div class="bg-white shadow overflow-hidden sm:rounded-md">
+												<div class="overflow-y-auto">
+													<button class="w-full px-2 btn-folder flex items-center text-sm leading-5 text-gray-700 focus:outline-none transition ease-in-out border-none duration-150 mb-2">
+														<svg class="h-5 w-5 transform transition-transform duration-150 ease-in-out ml-4" viewBox="0 0 20 20">…</svg>
+														<span class="font-semibold ml-2 mx-400 folder-name flex">
+															<div class="truncate mx-400">
+																Company Info
+															</div>
+														</span>
+													</button>
+													<div class="fields-folder py-2">
+														<form class="hr-form" id="fields-form">
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Company Name
+																					</span>
+																					<span class="hr-form-item-label__asterisk">
+																						*
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="relative w-full">
+																						<div class="hr-input hr-input--resizable hr-input--stateful ui-input-text font-sans" id="[id]">
+																							<div class="hr-input-wrapper">
+																								<div class="hr-input__input">
+																									<input type="text" class="hr-input__input-el" placeholder="Please input" size="20" value="[redacted]">
+																								</div>
+																							</div>
+																							<div class="hr-input__border"></div>
+																							<div class="hr-input__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Domain name
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="relative w-full">
+																						<div class="hr-input hr-input--resizable hr-input--focus hr-input--stateful ui-input-text font-sans" id="[id]">
+																							<div class="hr-input-wrapper">
+																								<div class="hr-input__input">
+																									<input type="text" class="hr-input__input-el" placeholder="Please input" maxlength="253" size="20">
+																									<div class="hr-input__placeholder">
+																										<span>
+																											Please input
+																										</span>
+																									</div>
+																								</div>
+																							</div>
+																							<div class="hr-input__border"></div>
+																							<div class="hr-input__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Phone
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="inline-grid w-full">
+																						<div class="hr-input hr-input--resizable hr-input--stateful ui-phone-input-container ui-input-text font-sans ui-phone-input-container" id="[id]">
+																							<div class="hr-input-wrapper">
+																								<div class="hr-input__prefix">
+																									<div class="ui-country-code-container">
+																										<svg viewBox="0 0 24 24">…</svg>
+																										<svg viewBox="0 0 24 24" aria-hidden="true" class="w-5 h-5">…</svg>
+																									</div>
+																								</div>
+																								<div class="hr-input__input">
+																									<input type="tel" class="hr-input__input-el" placeholder="[phone]" size="20" value>
+																									<div class="hr-input__placeholder">
+																										<span>
+																											[phone]
+																										</span>
+																									</div>
+																								</div>
+																							</div>
+																							<div class="hr-input__border"></div>
+																							<div class="hr-input__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Email
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="hr-input hr-input--resizable hr-input--stateful ui-input-text font-sans" id="[id]">
+																						<div class="hr-input-wrapper">
+																							<div class="hr-input__prefix">
+																								<svg viewBox="0 0 24 24" aria-hidden="true" class="w-6">…</svg>
+																							</div>
+																							<div class="hr-input__input">
+																								<input type="text" class="hr-input__input-el" placeholder="Please input" size="20">
+																								<div class="hr-input__placeholder">
+																									<span>
+																										Please input
+																									</span>
+																								</div>
+																							</div>
+																						</div>
+																						<div class="hr-input__border"></div>
+																						<div class="hr-input__state-border"></div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Website
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="relative w-full">
+																						<div class="hr-input hr-input--resizable hr-input--stateful ui-input-text font-sans" id="[id]">
+																							<div class="hr-input-wrapper">
+																								<div class="hr-input__input">
+																									<input type="text" class="hr-input__input-el" placeholder="Please input" size="20">
+																									<div class="hr-input__placeholder">
+																										<span>
+																											Please input
+																										</span>
+																									</div>
+																								</div>
+																							</div>
+																							<div class="hr-input__border"></div>
+																							<div class="hr-input__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<!-- our injected tk-gmaps-container removed -->
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Address
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="relative w-full">
+																						<div class="hr-input hr-input--resizable hr-input--stateful ui-input-text font-sans" id="[id]">
+																							<div class="hr-input-wrapper">
+																								<div class="hr-input__input">
+																									<input type="text" class="hr-input__input-el" placeholder="Please input" size="20" value="[redacted]" autocomplete="off">
+																								</div>
+																							</div>
+																							<div class="hr-input__border"></div>
+																							<div class="hr-input__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						City
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="relative w-full">
+																						<div class="hr-input hr-input--resizable hr-input--stateful ui-input-text font-sans" id="[id]">
+																							<div class="hr-input-wrapper">
+																								<div class="hr-input__input">
+																									<input type="text" class="hr-input__input-el" placeholder="Please input" size="20" value="[redacted]">
+																								</div>
+																							</div>
+																							<div class="hr-input__border"></div>
+																							<div class="hr-input__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						State
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="relative w-full">
+																						<div class="hr-input hr-input--resizable hr-input--stateful ui-input-text font-sans" id="[id]">
+																							<div class="hr-input-wrapper">
+																								<div class="hr-input__input">
+																									<input type="text" class="hr-input__input-el" placeholder="Please input" size="20" value="[redacted]">
+																								</div>
+																							</div>
+																							<div class="hr-input__border"></div>
+																							<div class="hr-input__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Postal Code
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="relative w-full">
+																						<div class="hr-input hr-input--resizable hr-input--stateful ui-input-text font-sans" id="[id]">
+																							<div class="hr-input-wrapper">
+																								<div class="hr-input__input">
+																									<input type="text" class="hr-input__input-el" placeholder="Please input" size="20" value="[redacted]">
+																								</div>
+																							</div>
+																							<div class="hr-input__border"></div>
+																							<div class="hr-input__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Country
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="hr-select ui-select" id="[id]">
+																						<div class="hr-base-selection hr-base-selection--selected">
+																							<div class="hr-base-selection-label" title="[redacted]" tabindex="0">
+																								<input class="hr-base-selection-input" placeholder tabindex="-1" value>
+																								<div class="hr-base-selection-label__render-label hr-base-selection-overlay">
+																									<div class="hr-base-selection-overlay__wrapper">
+																										[value]
+																									</div>
+																								</div>
+																								<div class="hr-base-loading hr-base-suffix" role="img" aria-label="[redacted]">
+																									<div class="hr-base-loading__placeholder">
+																										<div class="hr-base-clear">
+																											<div class="hr-base-clear__placeholder">
+																												<i class="hr-base-icon hr-base-suffix__arrow">
+																													<svg viewBox="0 0 16 16">…</svg>
+																												</i>
+																											</div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																							<div class="hr-base-selection__border"></div>
+																							<div class="hr-base-selection__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Description
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="hr-input hr-input--textarea hr-input--resizable hr-input--stateful ui-input-text font-sans" id="[id]">
+																						<div class="hr-input-wrapper">
+																							<div class="hr-input__textarea hr-scrollbar" role="none">
+																								<textarea class="hr-input__textarea-el" rows="5" placeholder="Please input" value></textarea>
+																								<div class="hr-input__placeholder">
+																									Please input
+																								</div>
+																							</div>
+																							<div class="hr-scrollbar-rail hr-scrollbar-rail--vertical hr-scrollbar-rail--disabled" aria-hidden="true"></div>
+																						</div>
+																						<div class="hr-input__border"></div>
+																						<div class="hr-input__state-border"></div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields"></div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Custom field 1
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="relative w-full">
+																						<div class="hr-input hr-input--resizable hr-input--stateful ui-input-text font-sans" id="[id]">
+																							<div class="hr-input-wrapper">
+																								<div class="hr-input__input">
+																									<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20">
+																									<div class="hr-input__placeholder">
+																										<span>
+																											[custom]
+																										</span>
+																									</div>
+																								</div>
+																							</div>
+																							<div class="hr-input__border"></div>
+																							<div class="hr-input__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Custom field 2
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="relative w-full">
+																						<div class="hr-input hr-input--resizable hr-input--stateful ui-input-text font-sans" id="[id]">
+																							<div class="hr-input-wrapper">
+																								<div class="hr-input__input">
+																									<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value="[redacted]">
+																								</div>
+																							</div>
+																							<div class="hr-input__border"></div>
+																							<div class="hr-input__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Custom field 3
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="relative w-full">
+																						<div class="hr-input hr-input--resizable hr-input--stateful ui-input-text font-sans" id="[id]">
+																							<div class="hr-input-wrapper">
+																								<div class="hr-input__input">
+																									<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20" value="[redacted]">
+																								</div>
+																							</div>
+																							<div class="hr-input__border"></div>
+																							<div class="hr-input__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="fields">
+																<div>
+																	<div id="[id]">
+																		<div>
+																			<div class="hr-form-item hr-form-item--medium-size hr-form-item--top-labelled w-full ui-form-item">
+																				<label class="hr-form-item-label hr-form-item-label--right-mark">
+																					<span class="hr-form-item-label__text">
+																						Custom field 4
+																					</span>
+																				</label>
+																				<div class="hr-form-item-blank">
+																					<div class="relative w-full">
+																						<div class="hr-input hr-input--resizable hr-input--stateful ui-input-text font-sans" id="[id]">
+																							<div class="hr-input-wrapper">
+																								<div class="hr-input__input">
+																									<input type="text" class="hr-input__input-el" placeholder="[custom]" size="20">
+																									<div class="hr-input__placeholder">
+																										<span>
+																											[custom]
+																										</span>
+																									</div>
+																								</div>
+																							</div>
+																							<div class="hr-input__border"></div>
+																							<div class="hr-input__state-border"></div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="hr-form-item-feedback-wrapper"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="sentinel flex justify-center items-center"></div>
+														</form>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="p-2 mb-2 px-4 mt-auto">
+						<div class>
+							<div class="text-xs">
+								<span>
+									[text]
+								</span>
+								<span class="pl-1 truncate max-w-[280px] inline-block align-bottom">
+									[text]
+								</span>
+							</div>
+							<div>
+								<span class="text-xs">
+									[text]
+								</span>
+							</div>
+							<div>
+								<span class="flex items-center text-xs">
+									[text]
+									<span class="cursor-pointer pl-1 text-blue-700">
+										[text]
+									</span>
+									<svg viewBox="0 0 24 24" aria-hidden="true" class="ml-1 h-3 w-3 cursor-pointer text-blue-700">…</svg>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="flex items-center justify-end gap-3 px-6 py-2 border-t border-solid border-gray-300">
+					<button class="hr-button hr-button--default-type hr-button--medium-type ui-button w-[76px] w-[76px]" tabindex="0" type="button" id="edit-record-cancel">
+						<span class="hr-button__content">
+							<span class="font-semibold">
+								Cancel
+							</span>
+						</span>
+						<div aria-hidden="true" class="hr-base-wave"></div>
+						<div aria-hidden="true" class="hr-button__border"></div>
+						<div aria-hidden="true" class="hr-button__state-border"></div>
+					</button>
+					<button class="hr-button hr-button--primary-type hr-button--medium-type ui-button w-[81px] w-[81px]" tabindex="0" type="button" id="edit-record-save">
+						<span class="hr-button__content">
+							<span id="edit-record-save" class="font-semibold">
+								Save
+							</span>
+						</span>
+						<div aria-hidden="true" class="hr-base-wave"></div>
+						<div aria-hidden="true" class="hr-button__border"></div>
+						<div aria-hidden="true" class="hr-button__state-border"></div>
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="h-full">
+			<div class="h-full box-border border-l border-gray-200 border-solid">
+				<div class="pt-6 px-2 pb-8 flex flex-col gap-6">
+					<div class="inline-block cursor-pointer rounded text-[#004EEB] bg-[#EFF4FF]">
+						<div class="p-[9px]">
+							<svg viewBox="0 0 24 24" aria-hidden="true" class="w-6 h-6 leading-6">…</svg>
+						</div>
+					</div>
+					<div class="inline-block cursor-pointer rounded text-[#61656C]">
+						<div class="p-[9px]">
+							<svg viewBox="0 0 24 24" class="w-6 h-6 leading-6">…</svg>
+						</div>
+					</div>
+					<div class="inline-block cursor-pointer rounded text-[#61656C]">
+						<div class="p-[9px]">
+							<svg viewBox="0 0 24 24" aria-hidden="true" class="w-6 h-6 leading-6">…</svg>
+						</div>
+					</div>
+					<div class="inline-block cursor-pointer rounded text-[#61656C]">
+						<div class="p-[9px]">
+							<svg viewBox="0 0 24 24" aria-hidden="true" class="w-6 h-6 leading-6">…</svg>
+						</div>
+					</div>
+					<div class="w-full h-[1px] bg-gray-200"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
