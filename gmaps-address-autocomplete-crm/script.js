@@ -17,6 +17,11 @@
 			document.currentScript;
 		const googleMapsApiKey = ''; // ONLY ENTER YOUR GOOGLE MAPS API KEY HERE if pasting entire snippet into Company Settings instead of passing to static file embed
 		const resolvedApiKey = (googleMapsApiKey || scriptElement?.dataset?.apiKey || window.tkGmapsApiKey || '').trim();
+		// Auto-set the Contact "Time zone" field from the chosen address (requires Time Zone API on the key).
+		// Disable with data-set-tz="false" on the <script> tag, or window.tkGmapsSetTz = false.
+		const setTimeZoneEnabled = !['false', '0', 'no', 'off'].includes(
+			String(scriptElement?.dataset?.setTz ?? window.tkGmapsSetTz ?? 'true').trim().toLowerCase()
+		);
 		const config = {
 			debounceTime: 500,
 			retryTime: 4000,
@@ -31,14 +36,14 @@
 			autocompleteInstances: {}
 		};
 
+		// One Places (New) autocomplete instance per input element
+		const autocompleteByInput = new WeakMap();
+
 		let missingKeyWarned = false;
 		let placesImportPromise = null;
 
 		// Inject dropdown styles. Max z-index + pointer-events so the dropdown works above GHL modals' focus/click traps.
 		if (!document.getElementById('tk-gmaps-pac-style')) {
-		// One Places (New) autocomplete instance per input element
-		const autocompleteByInput = new WeakMap();
-
 			const styleEl = document.createElement('style');
 			styleEl.id = 'tk-gmaps-pac-style';
 			styleEl.textContent = [
@@ -69,11 +74,6 @@
 			};
 		}
 
-		/**
-		 * Load the Google Maps API with Places library
-		 * @returns {boolean} Whether an API key is configured
-		 */
-		function loadGoogleMapsApi() {
 		/**
 		 * Convert a Places API (New) Place into the legacy shape the field-mapping code expects
 		 * @param {google.maps.places.Place} place
@@ -271,6 +271,11 @@
 			return instance;
 		}
 
+		/**
+		 * Load the Google Maps API with Places library
+		 * @returns {boolean} Whether an API key is configured
+		 */
+		function loadGoogleMapsApi() {
 			if (!resolvedApiKey) {
 				if (!missingKeyWarned) {
 					console.error(`Google Maps API key is missing from Agency's Company settings (set googleMapsApiKey or data-api-key).`);
@@ -574,15 +579,15 @@
 					closeAutocompleteDropdown();
 				});
 				
+				// Store the autocomplete instance for future reference
+				cache.autocompleteInstances['appt'] = autocomplete;
+				apptAddressInput.dataset.tkAutocompleteAttached = 'true';
+				
 				console.log('Appointment autocomplete attached successfully');
 			} catch (error) {
 				console.error('Error attaching appointment autocomplete:', error);
 			}
 			
-				// Store the autocomplete instance for future reference
-				cache.autocompleteInstances['appt'] = autocomplete;
-				apptAddressInput.dataset.tkAutocompleteAttached = 'true';
-				
 			// Do NOT embed the map here - only embed after a place is selected
 			// This prevents the map from showing up prematurely
 		}
@@ -940,6 +945,11 @@
 						// Embed map for non-appointment types
 						embedGoogleMap(type, place.formatted_address);
 						
+						// Time zone only exists on Contact Details. Runs after closeAutocompleteDropdown() so its body click can't close the menu we open.
+						if (type === 'contact' && setTimeZoneEnabled && latitude !== '' && longitude !== '') {
+							setTimeZoneFromCoordinates(latitude, longitude);
+						}
+						
 						// For business type, reattach autocomplete after a delay
 						if (type === 'business') {
 							setTimeout(() => {
@@ -948,8 +958,125 @@
 						}
 					}
 				});
+				
+				// Store the autocomplete instance for future reference
+				cache.autocompleteInstances[type] = autocomplete;
+				inputElement.dataset.tkAutocompleteAttached = 'true';
 			} catch (error) {
 				console.error('Error attaching autocomplete:', error);
+			}
+		}
+
+		const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+		/**
+		 * Look up the IANA time zone ID (e.g. 'America/Detroit') for coordinates via the Time Zone API
+		 * @returns {Promise<string>} The time zone ID, or '' on failure
+		 */
+		async function fetchTimeZoneId(latitude, longitude) {
+			const url = 'https://maps.googleapis.com/maps/api/timezone/json' +
+				`?location=${encodeURIComponent(latitude)},${encodeURIComponent(longitude)}` +
+				`&timestamp=${Math.floor(Date.now() / 1000)}` +
+				`&key=${encodeURIComponent(resolvedApiKey)}`;
+			const response = await fetch(url);
+			const data = await response.json();
+			if (data.status !== 'OK') {
+				console.error(`Time Zone API error: ${data.status}${data.errorMessage ? ` (${data.errorMessage})` : ''}. Enable the Time Zone API on this key, or add data-set-tz="false" to the script tag.`);
+				return '';
+			}
+			return data.timeZoneId || '';
+		}
+
+		/**
+		 * Find the Contact Details "Time zone" HighRise select (a custom component, not a native <select>)
+		 * @returns {HTMLElement|null} The .hr-base-selection element
+		 */
+		function getTimeZoneSelection() {
+			const labels = document.querySelectorAll('#field-container .hr-form-item-label__text, #field-container .n-form-item-label__text');
+			for (const label of labels) {
+				if (label.textContent.trim().toLowerCase().replace(/\s+/g, '') !== 'timezone') {
+					continue;
+				}
+				const selection = label.closest('.hr-form-item, .n-form-item')?.querySelector('.hr-base-selection, .n-base-selection');
+				if (selection) {
+					return selection;
+				}
+			}
+			return null;
+		}
+
+		/**
+		 * Whether option/label text matches a time zone ID as a whole token,
+		 * e.g. 'GMT-04:00 America/Detroit (EDT)' matches 'America/Detroit' but 'America/Indiana/Indianapolis' doesn't match 'America/Indiana'
+		 */
+		function textMatchesTimeZone(text, timeZoneId) {
+			const escaped = timeZoneId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			return new RegExp(`(^|\\s)${escaped}(\\s|\\(|$)`).test((text || '').trim());
+		}
+
+		function findOpenTimeZoneOption(timeZoneId) {
+			const options = document.querySelectorAll('.hr-base-select-option, .n-base-select-option');
+			return Array.from(options).find(option => textMatchesTimeZone(option.textContent, timeZoneId)) || null;
+		}
+
+		/**
+		 * Look up the time zone for coordinates and select it in the Contact "Time zone" field.
+		 * Like other fields, the user still has to click Save.
+		 */
+		async function setTimeZoneFromCoordinates(latitude, longitude) {
+			try {
+				const timeZoneId = await fetchTimeZoneId(latitude, longitude);
+				if (!timeZoneId) return;
+
+				const selection = getTimeZoneSelection();
+				if (!selection) return; // No Time zone field on this screen
+
+				const currentText = selection.querySelector('.hr-base-selection-overlay__wrapper, .n-base-selection-overlay__wrapper')?.textContent;
+				if (textMatchesTimeZone(currentText, timeZoneId)) return; // Already correct
+
+				// Open the dropdown
+				const trigger = selection.querySelector('.hr-base-selection-label, .n-base-selection-label') || selection;
+				trigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+				trigger.click();
+				await wait(250);
+
+				let option = findOpenTimeZoneOption(timeZoneId);
+
+				// If the select is filterable, type the ID to narrow the list
+				if (!option) {
+					const filterInput = selection.querySelector('input.hr-base-selection-input, input.n-base-selection-input');
+					if (filterInput) {
+						filterInput.focus();
+						setNativeInputValue(filterInput, timeZoneId);
+						filterInput.dispatchEvent(new Event('input', { bubbles: true }));
+						await wait(250);
+						option = findOpenTimeZoneOption(timeZoneId);
+					}
+				}
+
+				// Long lists are virtualized (only visible options exist in the DOM), so scroll through to render the rest
+				if (!option) {
+					const menu = document.querySelector('.hr-base-select-menu, .n-base-select-menu');
+					const scroller = menu?.querySelector('.v-vl, .hr-virtual-list, .n-virtual-list, .hr-scrollbar-container, .n-scrollbar-container');
+					if (scroller) {
+						const step = Math.max(scroller.clientHeight * 0.8, 100);
+						for (let top = 0; top <= scroller.scrollHeight && !option; top += step) {
+							scroller.scrollTop = top;
+							scroller.dispatchEvent(new Event('scroll'));
+							await wait(60);
+							option = findOpenTimeZoneOption(timeZoneId);
+						}
+					}
+				}
+
+				if (option) {
+					option.click();
+				} else {
+					document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+					console.warn(`Time zone "${timeZoneId}" not found in the Time zone dropdown.`);
+				}
+			} catch (error) {
+				console.error('Error setting time zone:', error);
 			}
 		}
 		
@@ -958,10 +1085,6 @@
 		 */
 		function closeAutocompleteDropdown() {
 			try {
-				
-				// Store the autocomplete instance for future reference
-				cache.autocompleteInstances[type] = autocomplete;
-				inputElement.dataset.tkAutocompleteAttached = 'true';
 				// Force close any open autocomplete dropdowns
 				if (document.activeElement && typeof document.activeElement.blur === 'function') {
 					document.activeElement.blur();
@@ -1481,6 +1604,7 @@
 							}
 							if (cache.autocompleteInstances['business']) {
 								try {
+									cache.autocompleteInstances['business'].destroy();
 									delete cache.autocompleteInstances['business'];
 								} catch (error) {
 									console.error('Error clearing business autocomplete instance:', error);
@@ -1604,6 +1728,5 @@
 		loadGoogleMapsApi();
 
 		// Check URL on initial load
-									cache.autocompleteInstances['business'].destroy();
 		isRelevantScreen();
 	})();

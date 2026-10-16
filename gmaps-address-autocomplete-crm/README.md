@@ -14,6 +14,7 @@ Adds **Google Maps Places Address Autocomplete** and an **interactive embedded G
      - **State** (full state name, e.g., `Oklahoma`, as required for GHL automated tax calculation)
      - **Postal code**
      - **Latitude** & **Longitude** *(if you have created custom fields with those exact names)*
+     - **Time zone** *(looked up from the address's coordinates; see [Time zone auto-select](#time-zone-auto-select))*
    - Fires the input events GHL needs to register each new value, so the fields keep their values and are saved when you click **Save**.
    - Embeds an interactive Google Map above the Street address field whenever a contact has an existing address or a new address is selected.
 
@@ -44,7 +45,8 @@ Because users may type an address without clicking an autocomplete suggestion—
    - **Maps JavaScript API**
    - **Places API (New)**
    - **Maps Embed API**
-3. Restrict the API key by **HTTP referrers** to your GHL domains (e.g., `*.gohighlevel.com/*` and your white-label domain `app.yourdomain.com/*`), and restrict it to the three APIs above.
+   - **Time Zone API** *(optional; only needed for [Time zone auto-select](#time-zone-auto-select) on Contact Details)*
+3. Restrict the API key by **HTTP referrers** to your GHL domains (e.g., `*.gohighlevel.com/*` and your white-label domain `app.yourdomain.com/*`), and restrict it to the APIs above.
 
 > **Upgrading from an older version?** This script previously used the legacy **Places API**, which Google no longer offers to new projects. It now uses **Places API (New)**; enable that on your key or autocomplete suggestions won't load (check the browser console for an error).
 
@@ -67,3 +69,17 @@ Copy and paste this single line (see [`put-in-agency-company-white-label-setting
 If you prefer pasting the full code directly into **Custom JS** without loading an external file:
 1. Copy the wrapper from [`crm-gmaps-address-autocomplete.html`](./crm-gmaps-address-autocomplete.html).
 2. Paste the contents of [`script.js`](./script.js) inside the `<script>` tag and set your API key in `const googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';`.
+
+---
+
+## Time Zone Auto-Select
+
+When an address is chosen on the **Contact Detail** screen, the script looks up its time zone with Google's **Time Zone API** and selects it in the **Time zone** field (e.g., `America/Detroit`). As with every other field, click **Save** to keep it. *(Company and Appointment screens don't have a Time zone field, so this doesn't apply there.)*
+
+This is **on by default**. If the Time Zone API isn't enabled for your key, turn it off by adding `data-set-tz="false"` to the script tag:
+
+```html
+<script defer id="crm-gmaps-address-autocomplete" data-api-key="YOUR_GOOGLE_MAPS_API_KEY" data-set-tz="false" src="https://cdn.jsdelivr.net/gh/cliffordp/ghl-customizations@main/gmaps-address-autocomplete-crm/script.js"></script>
+```
+
+For the inline embed, add `data-set-tz="false"` to the wrapper `<script>` tag, or set `window.tkGmapsSetTz = false;` before the script runs.
