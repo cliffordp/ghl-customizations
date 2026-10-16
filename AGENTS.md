@@ -45,6 +45,8 @@ Instructions and technical context for AI coding agents working in this reposito
 
 GHL's desktop web application is a **Vue 3 + Naive UI + Tailwind CSS Single Page Application (SPA)**. Keep these architectural realities in mind whenever writing or debugging CRM scripts:
 
+> **Real markup:** Sanitized DOM snapshots of the Contact detail page, Appointment modal, and Company side panel live in [`ghl-dom-reference/`](./ghl-dom-reference/). Read the relevant snapshot before writing selectors, and check its `Captured:` date. If GHL has changed since, ask the user to re-run [`ghl-dom-reference/capture.js`](./ghl-dom-reference/capture.js).
+
 ### 1. SPA Lifecycle & Navigation
 - Agency Custom JS loads once when the browser tab initializes and persists across client-side route changes.
 - Never rely solely on `DOMContentLoaded` or `window.onload`.
@@ -84,3 +86,14 @@ GHL uses different component libraries across different screens in the same app:
      - `z-index: 2147483647 !important;`
      - `pointer-events: auto !important;`
      - `mousedown` `stopPropagation()` so the modal's outside-click handler does not swallow selection clicks.
+
+### 4. Focus & Scroll Jumps
+- The Contact detail left panel scrolls inside `#record-details-lhs`, not the window.
+- Calling `input.focus()` makes the browser scroll that input into view. When a script fills several fields in sequence, the panel jumps to the **last** field focused (e.g. a Longitude custom field near the bottom). Always use `focus({ preventScroll: true })`.
+- Opening a Naive UI select can scroll its container. Save the scroll positions of the select's scrollable ancestors and restore them after selecting (see `saveScrollPositions()` in `gmaps-address-autocomplete-crm/script.js`).
+- Don't patch `HTMLElement.prototype` / `Element.prototype` methods or restore scroll on timers as a guess.
+
+### 5. Debug With Evidence, Not Guesses
+When GHL behaves unexpectedly, give the user a short DevTools Console diagnostic that logs what actually happens: the target element's `outerHTML`, scroll events with the element that scrolled, and wrapped `focus` / `scrollIntoView` calls with stack traces. Fix the cause it reveals.
+
+If a user reports that a fix "didn't change anything", first confirm they're running the new code. Stack trace line numbers reveal stale browser or jsDelivr caches. For testing, pin the embed to a commit (`@<sha>` instead of `@main`).

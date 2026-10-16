@@ -18,6 +18,8 @@ I created this repository for **GHL agency owners, SaaSpreneurs, and GHL admins*
 | **[`gmaps-address-autocomplete-crm`](./gmaps-address-autocomplete-crm/)** | Agency White-Label Custom JS (Desktop Web App) | Adds Google Maps Places Address Autocomplete and an embedded Google Map to **Contact Details**, **Company Details**, and the **Book/Edit Appointment Modal** (Custom meeting location). |
 | **[`gmaps-address-autocomplete-forms`](./gmaps-address-autocomplete-forms/)** | GHL Forms & Surveys (Custom HTML Field) | Adds Google Maps Places Address Autocomplete to public-facing GHL Forms & Surveys, populating street, city, state, postal code, latitude, and longitude. |
 
+**For contributors:** [`ghl-dom-reference/`](./ghl-dom-reference/) holds sanitized HTML snapshots of the GHL screens these scripts modify, plus a console tool to refresh them when GHL's UI changes.
+
 ## Desktop vs. Mobile App & Background Workflow Backstop
 
 GoHighLevel only runs Agency **Custom JS** inside the **desktop/computer web browser** (`app.gohighlevel.com` or your white-labeled web domain)—it does **not** run inside the GHL / LeadConnector mobile app, nor can browser autocomplete force a user to click a dropdown suggestion if they just type and hit save.
