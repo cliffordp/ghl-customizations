@@ -72,16 +72,22 @@ GHL's desktop web application is a **Vue 3 + Naive UI + Tailwind CSS Single Page
   }
   ```
 
-### 3. Three Distinct DOM Patterns in GHL CRM
+### 3. Four Distinct DOM Patterns in GHL CRM
 GHL uses different component libraries across different screens in the same app:
 1. **Contact Detail View (`/v2/location/.../contacts/detail/...`):**
    - Standard inputs use `name="contact.<field>"` (e.g., `input[name="contact.address1"]`, `input[name="contact.city"]`, `input[name="contact.postal_code"]`) inside `.hr-input__input-el` wrappers.
    - Select dropdowns (such as Country and State) are custom Naive UI / HighRise components (`.hr-base-selection-input__content` / `div[tabindex="0"]`), **not** native `<select>` elements.
-2. **Company Side Panel (opened from a Contact's Company, or `/objects/`):**
+2. **Add Contact Drawer (Contacts list → `#add-contact-btn`):**
+   - Slide-out `.hr-drawer` with id `#add-record-form-drawer-contact`, mounted only while open.
+   - The field key is on the **wrapper**, not the input: `.hr-form-item[name="contact.address1"]` → `#form-input-contact.address1` → `input.hr-input__input-el` (the `<input>` itself has no `name` or `id`).
+   - Time zone is `.hr-select#contact.timezone`. State is a plain text input. Agencies can add/remove fields via **Customize form**, so fall back to label text.
+   - The Contact page's `#field-container` / `contact.*` selectors can also match the drawer if both are in the DOM, so scope drawer lookups to the drawer and exclude it from Contact lookups.
+   - Don't `document.body.click()` while the drawer is open (it can be treated as an outside click).
+3. **Company Side Panel (opened from a Contact's Company, or `/objects/`):**
    - Each field has its own `.fields` wrapper containing an `.hr-form-item-label__text` label and an already-mounted `input.hr-input__input-el`.
    - Inputs have no stable `id` or `name`, so find fields **by label text**, scoped to that field's own `.fields` wrapper.
    - Country is a HighRise select found by its label, like on the Contact page.
-3. **Book/Edit Appointment Modal:**
+4. **Book/Edit Appointment Modal:**
    - Has a **single** address line only: `.bookAppointmentFormContainer #meeting-location-text-input input`. No City/State/Zip/Country/Time zone fields to fill.
    - The input mounts only when the Meeting location dropdown (`#meeting-location-dropdown`, Naive UI `n-` components) is set to Custom, so observe that dropdown for changes.
    - Modals render inside high-z-index overlays (`.hr-modal-container`, `.n-modal-mask`) with focus/click traps. Any floating dropdowns appended to `document.body` (such as the Places autocomplete `.tk-pac-container`) require:

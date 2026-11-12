@@ -1,7 +1,7 @@
 /**
  * @name GHL Customizations: Google Maps Address Autocomplete & Map Embed (CRM)
  * @description Google Places address autocomplete, sibling-field fill, Time zone auto-select, and map embed
- *              for GHL Contact detail, Company side panel, and Book/Edit Appointment modal.
+ *              for GHL Contact detail, Add Contact drawer, Company side panel, and Book/Edit Appointment modal.
  * @see https://github.com/cliffordp/ghl-customizations/tree/main/gmaps-address-autocomplete-crm
  * @author Clifford Paulick (https://tourkick.com/)
  * @license AGPL-3.0
@@ -43,6 +43,16 @@
 
 	// Book/Edit Appointment modal: "Enter meeting location" input (only rendered when Meeting location is Custom)
 	const APPT_INPUT_SELECTOR = '.bookAppointmentFormContainer #meeting-location-text-input input';
+
+	// Add Contact drawer (Contacts list > "Add Contact" button). Its fields are wrapped in .hr-form-item[name="contact.<key>"].
+	const NEW_CONTACT_DRAWER_SELECTOR = '#add-record-form-drawer-contact';
+	// Drawer field keys by the label names this script uses (label text is the fallback, e.g. if GHL renames a key)
+	const NEW_CONTACT_FIELD_KEYS = {
+		'Street Address': 'address1',
+		City: 'city',
+		State: 'state',
+		'Postal Code': 'postal_code'
+	};
 
 	// Cache for DOM elements and autocomplete instances
 	const cache = {
@@ -394,7 +404,7 @@
 	 * Find the outer wrapper element for a field input to insert the map before.
 	 * Uses sequential closest() calls so outer wrappers (.fields, #field-container)
 	 * are matched before inner wrappers (.hr-form-item).
-	 * @param {string} type - The type of address ('contact', 'business', or 'appt')
+	 * @param {string} type - The type of address ('contact', 'newContact', 'business', or 'appt')
 	 * @param {HTMLElement} inputElement - The street address input element
 	 * @returns {HTMLElement|null} The field wrapper element
 	 */
@@ -422,12 +432,15 @@
 		if (type === 'appt') {
 			return inputElement.closest('#meeting-location-text-input');
 		}
+		if (type === 'newContact') {
+			return inputElement.closest('.hr-form-item') || inputElement.closest('.n-form-item');
+		}
 		return null;
 	}
 
 	/**
 	 * Embed a Google Map for the specified address type
-	 * @param {string} type - The type of address ('contact', 'business', or 'appt')
+	 * @param {string} type - The type of address ('contact', 'newContact', 'business', or 'appt')
 	 * @param {string} fullAddress - The full address to display on the map
 	 */
 	async function embedGoogleMap(type, fullAddress = '') {
@@ -442,11 +455,11 @@
 
 		try {
 			// Use different map classes for different types to allow maps to coexist
-			const mapClass = type === 'appt'
-				? 'tk-gmaps-embed-appt'
-				: type === 'business'
-					? 'tk-gmaps-embed-business'
-					: 'tk-gmaps-embed-contact';
+			const mapClass = {
+				appt: 'tk-gmaps-embed-appt',
+				business: 'tk-gmaps-embed-business',
+				newContact: 'tk-gmaps-embed-new-contact'
+			}[type] || 'tk-gmaps-embed-contact';
 
 			// Remove any existing map of the same type before checking if the new record has an address
 			const existingIframe = document.querySelector(`iframe.${mapClass}`);
@@ -474,6 +487,8 @@
 			mapContainer.classList.add('tk-gmaps-container');
 			if (type === 'appt') {
 				mapContainer.classList.add('tk-gmaps-container-appt');
+			} else if (type === 'newContact') {
+				mapContainer.classList.add('tk-gmaps-container-new-contact');
 			}
 
 			const iframe = document.createElement('iframe');
@@ -792,7 +807,7 @@
 
 	/**
 	 * Get the existing full address for the specified type
-	 * @param {string} type - The type of address ('contact', 'business', or 'appt')
+	 * @param {string} type - The type of address ('contact', 'newContact', 'business', or 'appt')
 	 * @returns {string|undefined} The full address or undefined if not found
 	 */
 	function getExistingFullAddress(type) {
@@ -859,7 +874,7 @@
 	/**
 	 * Attach Google Maps autocomplete to the Contact or Company street address input
 	 * (appointments use reattachAppointmentAutocomplete())
-	 * @param {string} type - 'contact' or 'business'
+	 * @param {string} type - 'contact', 'newContact', or 'business'
 	 * @param {HTMLElement} inputElement - The input element to attach autocomplete to
 	 */
 	function attachAutocompleteToElement(type, inputElement) {
@@ -892,7 +907,7 @@
 				setFieldValue(type, 'Latitude', address.latitude); // Custom Field name
 				setFieldValue(type, 'Longitude', address.longitude); // Custom Field name
 
-				closeAutocompleteDropdown();
+				closeAutocompleteDropdown(type);
 				embedGoogleMap(type, place.formatted_address);
 
 				// Dropdowns are set one at a time so two menus are never open at once.
@@ -901,9 +916,9 @@
 					if (address.countryCode) {
 						await setCountry(type, address.countryCode, address.country);
 					}
-					// Time zone only exists on Contact Details
-					if (type === 'contact' && setTimeZoneEnabled) {
-						await setTimeZone(address);
+					// Time zone only exists on Contact Details and the Add Contact drawer
+					if ((type === 'contact' || type === 'newContact') && setTimeZoneEnabled) {
+						await setTimeZone(type, address);
 					}
 				})();
 
@@ -1268,12 +1283,30 @@
 	}
 
 	/**
+	 * Find a HighRise select in the Add Contact drawer by its GHL field key, falling back to its label
+	 * @param {string} fieldKey - e.g. 'timezone' or 'country' (matches id="contact.timezone" / name="contact.timezone")
+	 * @param {string} labelText - e.g. 'Time zone' or 'Country'
+	 * @returns {HTMLElement|null} The .hr-base-selection element
+	 */
+	function getNewContactSelect(fieldKey, labelText) {
+		const drawer = document.querySelector(NEW_CONTACT_DRAWER_SELECTOR);
+		if (!drawer) return null;
+		const id = `[id="contact.${fieldKey}"]`;
+		const name = `[name="contact.${fieldKey}"]`;
+		return (
+			drawer.querySelector(`${id} .hr-base-selection, ${id} .n-base-selection, ${name} .hr-base-selection, ${name} .n-base-selection`) ||
+			getHighRiseSelectByLabel(labelText, NEW_CONTACT_DRAWER_SELECTOR)
+		);
+	}
+
+	/**
 	 * Select the best time zone for the address in the Contact "Time zone" field.
 	 * Changes the field unless it already holds the best zone (e.g. a Michigan contact on
 	 * America/New_York becomes America/Detroit). Like other fields, the user still has to click Save.
+	 * @param {string} type - 'contact' or 'newContact'
 	 * @param {Object} address - From parsePlace()
 	 */
-	async function setTimeZone(address) {
+	async function setTimeZone(type, address) {
 		try {
 			const candidates = getTimeZoneCandidates(address);
 			if (!candidates.length) {
@@ -1282,9 +1315,10 @@
 			}
 
 			// Prefer the stable id (label text may be translated per GHL user language)
-			const selection =
-				document.getElementById('contact.timezone')?.querySelector('.hr-base-selection, .n-base-selection') ||
-				getHighRiseSelectByLabel('Time zone', '#record-details-lhs, #field-container');
+			const selection = type === 'newContact'
+				? getNewContactSelect('timezone', 'Time zone')
+				: (document.getElementById('contact.timezone')?.querySelector('.hr-base-selection, .n-base-selection') ||
+					getHighRiseSelectByLabel('Time zone', '#record-details-lhs, #field-container'));
 			if (!selection) return; // No Time zone field on this screen
 
 			if (textHasTimeZoneId(getSelectionText(selection), candidates[0])) {
@@ -1366,7 +1400,7 @@
 	/**
 	 * Select the Country dropdown option for an ISO country code (Contact and Company).
 	 * Like other fields, the user still has to click Save.
-	 * @param {string} type - 'contact' or 'business'
+	 * @param {string} type - 'contact', 'newContact', or 'business'
 	 * @param {string} countryCode - ISO 3166-1 alpha-2 code from Google (e.g. 'CZ')
 	 * @param {string} countryName - Google's name, only used in warnings
 	 */
@@ -1379,10 +1413,15 @@
 			}
 
 			// Prefer the stable id on Contact (label text may be translated per GHL user language)
-			const selection = type === 'contact'
-				? (document.getElementById('contact.country')?.querySelector('.hr-base-selection, .n-base-selection') ||
-					getHighRiseSelectByLabel('Country', '#field-container'))
-				: getHighRiseSelectByLabel('Country', '.fields, .details-view, #fields-form');
+			let selection = null;
+			if (type === 'contact') {
+				selection = document.getElementById('contact.country')?.querySelector('.hr-base-selection, .n-base-selection') ||
+					getHighRiseSelectByLabel('Country', '#field-container');
+			} else if (type === 'newContact') {
+				selection = getNewContactSelect('country', 'Country');
+			} else {
+				selection = getHighRiseSelectByLabel('Country', '.fields, .details-view, #fields-form');
+			}
 			if (!selection) return;
 
 			const wanted = normalizeName(ghlLabel);
@@ -1397,8 +1436,9 @@
 
 	/**
 	 * Force close any open autocomplete dropdowns
+	 * @param {string} [type] - Address type. The body click is skipped in the Add Contact drawer so it can't close the drawer.
 	 */
-	function closeAutocompleteDropdown() {
+	function closeAutocompleteDropdown(type) {
 		try {
 			// Force close any open autocomplete dropdowns
 			if (document.activeElement && typeof document.activeElement.blur === 'function') {
@@ -1412,7 +1452,9 @@
 			});
 
 			// Click elsewhere on the page to force close dropdowns
-			document.body.click();
+			if (type !== 'newContact') {
+				document.body.click();
+			}
 		} catch (error) {
 			console.error('Error closing autocomplete dropdown:', error);
 		}
@@ -1464,7 +1506,7 @@
 
 	/**
 	 * Set the value of a field and trigger events
-	 * @param {string} type - The type of address ('contact', 'business', or 'appt')
+	 * @param {string} type - The type of address ('contact', 'newContact', 'business', or 'appt')
 	 * @param {string} inputLabel - The label of the input field
 	 * @param {string} value - The value to set
 	 * @returns {boolean} Whether the value was successfully set
@@ -1492,7 +1534,7 @@
 
 	/**
 	 * Get an input element based on its label text
-	 * @param {string} type - The type of address ('contact', 'business', or 'appt')
+	 * @param {string} type - The type of address ('contact', 'newContact', 'business', or 'appt')
 	 * @param {string} textString - The label text to search for
 	 * @returns {HTMLElement|null} The input element or null if not found
 	 */
@@ -1525,16 +1567,35 @@
 
 			let searchWithin = [];
 
-			// Find input from labels text (scoped to Contact vs Company/Business vs Appointment containers)
+			// Find input from labels text (scoped to Contact vs Add Contact drawer vs Company/Business vs Appointment containers)
 			if (type === 'contact') {
-				searchWithin = document.querySelectorAll(
+				searchWithin = Array.from(document.querySelectorAll(
 					'#field-container .hr-form-item-label__text, ' +
 					'#field-container .hr-form-item label, ' +
 					'#field-container .n-form-item-label__text, ' +
 					'#field-container .n-form-item label, ' +
 					'.form-group .label, ' +
 					'.form-group label'
-				);
+				)).filter(label => !label.closest(NEW_CONTACT_DRAWER_SELECTOR)); // Drawer fields belong to 'newContact'
+			} else if (type === 'newContact') {
+				const drawer = document.querySelector(NEW_CONTACT_DRAWER_SELECTOR);
+				if (!drawer) {
+					return null;
+				}
+				// Prefer the stable field key on the wrapper (label text may be translated per GHL user language)
+				const fieldKey = NEW_CONTACT_FIELD_KEYS[textString];
+				if (fieldKey) {
+					const keyedInput = drawer.querySelector(
+						`[name="contact.${fieldKey}"] input.hr-input__input-el, ` +
+						`[name="contact.${fieldKey}"] input.n-input__input-el, ` +
+						`[id="form-input-contact.${fieldKey}"] input`
+					);
+					if (keyedInput) {
+						cache.elements[cacheKey] = keyedInput;
+						return keyedInput;
+					}
+				}
+				searchWithin = drawer.querySelectorAll('.hr-form-item-label__text, .n-form-item-label__text');
 			} else if (type === 'business') {
 				searchWithin = document.querySelectorAll(
 					'.fields .hr-form-item-label__text, ' +
@@ -1571,6 +1632,10 @@
 							} else if (type === 'business') {
 								container =
 									label.closest('.fields') ||
+									label.closest('.hr-form-item') ||
+									label.closest('.n-form-item');
+							} else if (type === 'newContact') {
+								container =
 									label.closest('.hr-form-item') ||
 									label.closest('.n-form-item');
 							}
@@ -1636,7 +1701,7 @@
 
 	/**
 	 * Try to attach autocomplete to a Contact or Company input, retrying while the input mounts
-	 * @param {string} type - 'contact' or 'business'
+	 * @param {string} type - 'contact', 'newContact', or 'business'
 	 * @param {HTMLElement} inputElement - The input element to attach autocomplete to
 	 * @param {number} retries - The number of retries left
 	 */
@@ -1658,7 +1723,7 @@
 
 	/**
 	 * Check if Google Maps API is loaded and attach autocomplete
-	 * @param {string} type - The type of address ('contact', 'business', or 'appt')
+	 * @param {string} type - The type of address ('contact', 'newContact', 'business', or 'appt')
 	 */
 	function checkGoogleMapsLoaded(type) {
 		if (!type) {
@@ -1696,7 +1761,7 @@
 
 	/**
 	 * Get the street address input selector for the specified type
-	 * @param {string} type - The type of address ('contact', 'business', or 'appt')
+	 * @param {string} type - The type of address ('contact', 'newContact', 'business', or 'appt')
 	 * @returns {HTMLElement|false} The input element or false if not found
 	 */
 	function getStreetAddressInput(type) {
@@ -1720,7 +1785,7 @@
 
 		let getSelector = '';
 
-		if (type === 'contact') {
+		if (type === 'contact' || type === 'newContact') {
 			getSelector = getInputElementFromText(type, 'Street Address');
 		} else if (type === 'business') {
 			getSelector = getInputElementFromText(type, 'Address');
@@ -1744,7 +1809,7 @@
 	let pageObserver = null;
 
 	/**
-	 * Clear cached elements for a specific type ('contact', 'business', or 'appt')
+	 * Clear cached elements for a specific type ('contact', 'newContact', 'business', or 'appt')
 	 * @param {string} type - The address type to clear
 	 */
 	function clearTypeCache(type) {
@@ -1786,6 +1851,17 @@
 				if (apptAddressInput && !apptAddressInput.dataset.tkAutocompleteAttached) {
 					checkGoogleMapsLoaded('appt');
 				}
+			}
+		}
+
+		// 4. Check Add Contact drawer (Contacts list > Add Contact)
+		const newContactAddressInput = getStreetAddressInput('newContact');
+		if (newContactAddressInput) {
+			if (!newContactAddressInput.dataset.tkAutocompleteAttached) {
+				checkGoogleMapsLoaded('newContact');
+			} else if (!newContactAddressInput.value.trim()) {
+				// "Save and add another" clears the form, so drop the previous contact's map
+				document.querySelector('.tk-gmaps-container-new-contact')?.remove();
 			}
 		}
 	}
@@ -1845,6 +1921,11 @@
 		const contactAddressInput = getStreetAddressInput('contact');
 		if (contactAddressInput && target === contactAddressInput) {
 			checkGoogleMapsLoaded('contact');
+			return;
+		}
+		const newContactAddressInput = getStreetAddressInput('newContact');
+		if (newContactAddressInput && target === newContactAddressInput) {
+			checkGoogleMapsLoaded('newContact');
 			return;
 		}
 		const businessAddressInput = getStreetAddressInput('business');

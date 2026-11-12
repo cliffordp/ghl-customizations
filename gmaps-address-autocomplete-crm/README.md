@@ -17,11 +17,15 @@ Adds **Google Maps Places Address Autocomplete** and an **interactive embedded G
    - Fires the input events GHL needs to register each new value, so the fields keep their values and are saved when you click **Save**.
    - Embeds an interactive Google Map above the Street address field whenever a contact has an existing address or a new address is selected.
 
-2. **Company / Business Detail Screen** (`/businesses`, `/companies`, `/objects`)
+2. **Add Contact Drawer** (Contacts list → **Add Contact** button)
+   - Attaches Google Places Autocomplete to the **Street address** field in the slide-out panel.
+   - Populates the same fields as the Contact Detail screen (**Street address**, **City**, **State**, **Postal code**, **Country**, **Time zone**, and **Latitude** & **Longitude** if you've added them via **Customize form**), and embeds a Google Map above the Street address field.
+
+3. **Company / Business Detail Screen** (`/businesses`, `/companies`, `/objects`)
    - Attaches Google Places Autocomplete to the Company **Address** field in the details panel.
    - Populates **Address**, **City**, **State**, **Postal Code**, **Country**, **Latitude**, and **Longitude**, and embeds a Google Map above the Address field.
 
-3. **Book / Edit Appointment Modal** (Calendars, Contacts, Conversations, Opportunities)
+4. **Book / Edit Appointment Modal** (Calendars, Contacts, Conversations, Opportunities)
    - Whenever **Meeting location** is set to **Custom** (`Custom` radio + `Custom` dropdown), attaches Google Places Autocomplete to the **Enter meeting location** input field and embeds a Google Map once an address is selected.
 
 ## Important Limitation: Desktop Web Browser Only (Not Mobile App)
