@@ -28,6 +28,10 @@ Adds **Google Maps Places Address Autocomplete** and an **interactive embedded G
 4. **Book / Edit Appointment Modal** (Calendars, Contacts, Conversations, Opportunities)
    - Whenever **Meeting location** is set to **Custom** (`Custom` radio + `Custom` dropdown), attaches Google Places Autocomplete to the **Enter meeting location** input field and embeds a Google Map once an address is selected.
 
+## Where It Can't Work
+
+- **Sub-account Settings → Billing → Payments → Billing Information modal:** these fields are a [Stripe Address Element](https://docs.stripe.com/elements/address-element) inside a secure `js.stripe.com` iframe. Browsers block page scripts (including Agency Custom JS) from reading or filling fields inside another site's iframe. Address autocomplete there can only be turned on by GHL, by passing `autocomplete: { mode: 'google_maps_api', apiKey }` when it creates the Address Element.
+
 ## Important Limitation: Desktop Web Browser Only (Not Mobile App)
 
 > **Note:** GoHighLevel only executes Agency **Custom JS** inside the **desktop/computer web browser version** of GHL (`app.gohighlevel.com` or your white-labeled web domain). Custom JS is **not** loaded inside the GoHighLevel / LeadConnector mobile app (iOS / Android).
