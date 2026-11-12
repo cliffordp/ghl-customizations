@@ -92,7 +92,7 @@ For the inline embed, add `data-set-tz="false"` to the wrapper `<script>` tag, o
 - **Script updates not showing up in GHL?** jsDelivr edge-caches branch URLs like `@main` for up to 12 hours. You can clear it immediately:
   - Visit the [jsDelivr Purge Link](https://purge.jsdelivr.net/gh/cliffordp/ghl-customizations@main/gmaps-address-autocomplete-crm/script.js) for this script.
   - Or paste the URL into the [jsDelivr Purge Tool](https://www.jsdelivr.com/tools/purge).
-  - Then hard-refresh your browser (`Cmd + Shift + R` or `Ctrl + Shift + R`).
+  - Then reload GHL with a fresh browser copy: open DevTools → **Network** tab → tick **Disable cache** → reload (keep DevTools open). A hard refresh (`Cmd + Shift + R`) often isn't enough, because GHL adds the Custom JS tag after the page loads and browsers may keep the file for up to 7 days.
   - To test a specific version, replace `@main` in the script URL with a commit hash (e.g. `@3cde5c6`). Commit URLs are never stale.
 - **Need verbose console logs?** Add `data-debug="true"` to the script tag (or set `window.tkGmapsDebug = true;` for the inline embed). Errors and warnings always log; informational messages only log in debug mode.
 - **Need help, found a bug, or want to contribute?** See the [main repository README](../README.md#troubleshooting--contributing) for issue reporting, PR guidelines, and contact links.

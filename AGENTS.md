@@ -105,3 +105,5 @@ GHL uses different component libraries across different screens in the same app:
 When GHL behaves unexpectedly, give the user a short DevTools Console diagnostic that logs what actually happens: the target element's `outerHTML`, scroll events with the element that scrolled, and wrapped `focus` / `scrollIntoView` calls with stack traces. Fix the cause it reveals.
 
 If a user reports that a fix "didn't change anything", first confirm they're running the new code. Stack trace line numbers reveal stale browser or jsDelivr caches. For testing, pin the embed to a commit (`@<sha>` instead of `@main`).
+
+After pushing to `main`, purge jsDelivr (`https://purge.jsdelivr.net/gh/cliffordp/ghl-customizations@main/<path>`), then have the user reload with DevTools → Network → **Disable cache** ticked. `Cmd + Shift + R` is not enough: GHL injects the Custom JS `<script>` after page load, and jsDelivr sends `max-age=604800` (7 days), so the browser keeps the old file. To confirm which version the browser has, check `(await (await fetch(src, { cache: 'force-cache' })).text()).includes('<new identifier>')`.

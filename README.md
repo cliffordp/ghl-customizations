@@ -40,7 +40,7 @@ To guarantee clean, standardized addresses and coordinates 100% of the time—in
 If you load scripts via jsDelivr using `@main`, updates are cached at the CDN edge for up to 12 hours. You can clear the cache immediately whenever needed:
 - **Instant Purge Link:** Replace `cdn.jsdelivr.net` with `purge.jsdelivr.net` in the URL (for example: [Purge CRM Script](https://purge.jsdelivr.net/gh/cliffordp/ghl-customizations@main/gmaps-address-autocomplete-crm/script.js)).
 - **Web UI Tool:** Paste any file URL into the official [jsDelivr Purge Tool](https://www.jsdelivr.com/tools/purge).
-- **Browser Cache:** After purging the CDN, remember to perform a hard refresh in your browser (`Cmd + Shift + R` or `Ctrl + Shift + R`).
+- **Browser Cache:** After purging the CDN, open DevTools → **Network** tab → tick **Disable cache** → reload (keep DevTools open). A hard refresh (`Cmd + Shift + R` or `Ctrl + Shift + R`) often isn't enough, because GHL adds Custom JS tags after the page loads and browsers may keep jsDelivr files for up to 7 days.
 
 ### Reporting Issues & Submitting PRs
 GoHighLevel updates its UI frequently. If a GHL update breaks a selector or you have an improvement:
