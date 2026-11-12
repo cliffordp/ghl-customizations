@@ -95,6 +95,8 @@ GHL uses different component libraries across different screens in the same app:
      - `pointer-events: auto !important;`
      - `mousedown` `stopPropagation()` so the modal's outside-click handler does not swallow selection clicks.
 
+**Not reachable (do not attempt):** Sub-account Settings > Billing > Payments > **Billing Information** modal (`#billing-form #address-element.StripeElement`). The fields are a Stripe Address Element in a cross-origin `js.stripe.com` iframe, so page scripts cannot read or fill them. Do not wrap or patch `window.Stripe` / `elements.create()` to inject options: it is GHL's payment code, and breaking it breaks sub-account billing. Before targeting a new screen, check whether its fields are inside an `<iframe>`.
+
 ### 4. Focus & Scroll Jumps
 - The Contact detail left panel scrolls inside `#record-details-lhs`, not the window.
 - Calling `input.focus()` makes the browser scroll that input into view. When a script fills several fields in sequence, the panel jumps to the **last** field focused (e.g. a Longitude custom field near the bottom). Always use `focus({ preventScroll: true })`.
